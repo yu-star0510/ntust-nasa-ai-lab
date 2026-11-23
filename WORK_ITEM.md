@@ -65,7 +65,7 @@ MAIN → STUDENT-RESEARCH Brain-to-Brain 正式派工登錄（由 STUDENT 轉交
 | TO | STUDENT-RESEARCH Brain |
 | RETURN_TO | STUDENT-MAIN Brain |
 | AUTHORIZED_BY | STUDENT（已要求啟動 M1，並指示 MAIN 完成正式派工） |
-| STATUS | BRAIN_REVIEWED（AMENDMENT-001 / RESEARCH_ACCEPTED / READY_FOR_MAIN_REVIEW；STUDENT-MAIN 最終驗收待處理；M1 尚未 PASS） |
+| STATUS | BLOCKED（AMENDMENT-001 / MAIN_EVIDENCE_INCOMPLETE；Research Brain 成果已審查但真實執行證據仍須補齊；M1 尚未 PASS；M2 維持 BLOCKED） |
 | PREREQUISITE | WO-M0-001=PASS；不得提前啟動 M2 |
 | INPUT | **修訂後有效輸入**：本地專案根目錄 `C:\Users\z2324\Desktop\NTUST\115\115_1\115-1\20261123` 下之 **`synthetic_sensor.csv`**（完整路徑 `C:\Users\z2324\Desktop\NTUST\115\115_1\115-1\20261123\synthetic_sensor.csv`）；由 STUDENT 透過 Windows 檔案總管提供位置，尚待 Worker 在本地實際查核；預期六筆，實際筆數、內容及 SHA-256 均未驗證；來源類型 SYNTHETIC；READ_ONLY。原先 `data/intro/synthetic_sensor.csv` 為被取代的路徑，歷史保留於下方阻礙紀錄。 |
 | SCOPE | 由 Research Brain 負責安排及審查 Research Own Worker，使用指定 CSV 進行資料品質檢查、簡易數值顯示及 Sensor Trend；不得直接指派 Web Worker 或進入 M2。 |
@@ -104,3 +104,17 @@ TYPE=BRAIN_TO_BRAIN_RETURN；WORK_ITEM_ID=WO-M1-RESEARCH-001；FROM=STUDENT-RESE
 - `STOP_IF`: 新輸入不存在／不可讀、實際筆數非六筆、讀取或解析不合規、數值／雜湊不一致、無真實執行證據、公開資料風險或 GitHub 無法驗證，應回報 BLOCKED，不可自動替換或產生假資料。
 - `M2_GATE`: M1 仍未 PASS，M2 持續 BLOCKED。STUDENT-MAIN Brain 必須審查 GitHub 真實結果並決定 M1 PASS；後續須 STUDENT 另行正式批准 M2。
 - `EXECUTION_RESULTS`: READY_FOR_REVIEW；根目錄 `synthetic_sensor.csv` 已以 READ_ONLY 方式驗證：234 bytes、rows=6、columns=4、exact duplicates=1、missing=1；SHA-256 before/after=`cd536b46eb628909fdc986bbad956c24a2e50afb287968998374befc62204377`；Row Index × `load_pct` Trend 6/6 點可回查；7/7 tests 通過、Exit Code 0。Research Brain 與 MAIN 尚未進行最終驗收。
+
+
+## WO-M1-RESEARCH-001 — MAIN EVIDENCE REVIEW (2026-11-23)
+
+- **REVIEWER:** STUDENT-MAIN Brain
+- **REVIEW_TARGET:** GitHub `main` at `04e16f987c3ca45cb65e917212ecff934fe1decd`; Worker delivery `30ac2a6e2692cb8b885e518b8493a5cfa1e8813f`.
+- **MAIN_DECISION:** `BLOCKED / EVIDENCE_INCOMPLETE`（可補證的驗收關卡，非程式功能退件；未核發最終 `PASS`）。
+- **INDEPENDENT_GITHUB_CHECKS:** 從 GitHub 讀取最新 `AGENTS.md`、`WORK_ITEM.md`、`.gitignore`、兩個研究程式、`tests/test_m1_profile.py`、三份 M1 報告、遠端提交與檔案樹。確認 Worker delivery commit 恰含八個授權檔案（`.gitignore`、`WORK_ITEM.md`、兩個 research 程式、一個測試、三份報告），Research Brain 後續 commit 為 `WORK_ITEM.md` 審查更新；遠端樹沒有原始 `synthetic_sensor.csv` 或 NASA FD001 檔案。程式確實實作動態 CSV 解析、rows/columns、exact duplicates、missing by column、有限數值欄位辨識、原始列顯示和按來源列映射的六點 trend；測試程式定義七個測試。
+- **REPORTED_RESULTS_NOT_INDEPENDENTLY_REMEASURED:** rows=6、columns=4、欄位 `timestamp/load_pct/coolant_out_c/oil_pressure_bar`、duplicates=1、missing=1（逐欄 0/0/0/1）、6/6 trend、7/7 tests、Exit Code=0、輸入 SHA-256 `cd536b46eb628909fdc986bbad956c24a2e50afb287968998374befc62204377` 及執行前後一致；這些源自 Worker 在 GitHub 的執行報告，而非 MAIN 直接讀取學生 Windows CSV。
+- **EVIDENCE_GAP:** `reports/M1_EXECUTION_EVIDENCE.md` 只提供選摘的 stdout/stderr 結果與測試摘要，缺少完整終端原始輸出；輸入預檢仍以 `python -c <csv structure preflight using csv.reader>` 佔位，無法復原精確命令。因此原工作單要求的完整真實執行證據尚未充分交付。
+- **REQUIRED_REMEDIATION_TO_RESEARCH_BRAIN:** 在同一 M1 工作單內補交可復核的實際預檢命令、逐條 Profile/Trend/Unittest 指令的完整 stdout/stderr 與 Exit Code、執行時間／工作目錄／Python 版本、補證前後輸入 SHA-256。若原終端紀錄未保存，允許在相同本地唯讀 CSV 上重新執行、產生新的真實原始記錄，標記 `EVIDENCE_RERUN`，不可將新執行冒稱為既有執行。遮蔽敏感本地帳號和絕對路徑，但不得修改數值、測試輸出或錯誤。不得上傳原始 CSV。
+- **REVIEW_CHAIN:** STUDENT-RESEARCH Brain 先驗證補證內容，從 GitHub `main` 讀取及審查後再回傳 STUDENT-MAIN；MAIN 依 GitHub 實際結果決定 `PASS/FAIL/BLOCKED`。
+- **M2_GATE:** M1 未 PASS；M2 不得開始且須 STUDENT 另行正式批准。
+- **RETURN_TO:** STUDENT-RESEARCH Brain（經 STUDENT 轉交），不得由 MAIN 直接指揮 Research Own Worker。
