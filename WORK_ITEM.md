@@ -50,3 +50,38 @@
 | `WORKER_REPORT` | 已從 GitHub 驗證儲存庫為公開，預設分支為 `main`。首次推送後，遠端 `main` 與本地成果提交一致，四份治理文件及 `.gitignore` 均可讀取，且五個檔案的 Git blob ID 與本地相符。公開內容清單僅有這五個獲准檔案，NASA 原始資料、合成 CSV 及敏感檔案均未列入。 |
 | `BRAIN_REVIEW` | **PASS（2026-11-23）**：STUDENT-MAIN Brain 透過 GitHub 連線獨立讀取 `main` 的 `AGENTS.md`、`ROADMAP.md`、`WORK_ITEM.md`、`DECISIONS.md` 及 `.gitignore`；確認 Repository 為 PUBLIC、預設分支為 `main`、審查前 HEAD 為 `9536c1da440b73a6d519c627df9a2d3c93487080`，首次提交 `b18281492175a103f5d6c4dcf6339348573b98c3` 與後續狀態提交的父子關係正確，首次提交含五個授權檔案、後續提交僅修改 `WORK_ITEM.md`，遠端樹僅含五個 M0 授權檔案，治理內容符合 M0 工作單。**驗證限制：**無法獨立存取學生的 Windows 本地工作樹或重算 `git cat-file commit` 的 SHA-256；上述本地結果與 SHA-256 依 Worker 報告，未冒充獨立驗證。下一階段 M1 仍需 STUDENT 另行正式批准；本次驗收不構成派工。 |
 | `STUDENT_APPROVAL` | 已批准 `WO-M0-001`。後續里程碑須分別取得正式批准。 |
+
+
+## WO-M1-RESEARCH-001
+
+MAIN → STUDENT-RESEARCH Brain-to-Brain 正式派工登錄（由 STUDENT 轉交）。此工作單不直接下令 Research Own Worker，亦不表示已跨對話送達。
+
+| 欄位 | 內容 |
+| --- | --- |
+| TYPE | BRAIN_TO_BRAIN_WORK_ORDER |
+| WORK_ITEM_ID | WO-M1-RESEARCH-001 |
+| MILESTONE | M1 |
+| FROM | STUDENT-MAIN Brain |
+| TO | STUDENT-RESEARCH Brain |
+| RETURN_TO | STUDENT-MAIN Brain |
+| AUTHORIZED_BY | STUDENT（已要求啟動 M1，並指示 MAIN 完成正式派工） |
+| STATUS | COMMAND_DISPATCHED（RELAY_STATUS=PENDING_STUDENT_RELAY，Own Worker 尚未開始） |
+| PREREQUISITE | WO-M0-001=PASS；不得提前啟動 M2 |
+| INPUT | 本地專案根目錄 C:\Users\z2324\Desktop\NTUST\115\115_1\115-1\20261123 下之 data/intro/synthetic_sensor.csv，預期六筆，實際須驗證；來源類型 SYNTHETIC；READ_ONLY |
+| SCOPE | 由 Research Brain 負責安排及審查 Research Own Worker，使用指定 CSV 進行資料品質檢查、簡易數值顯示及 Sensor Trend；不得直接指派 Web Worker 或進入 M2。 |
+| OUTPUT | 可重現 CSV loader/profiler、欄位與數值顯示、依實際欄位建構並回查來源的簡易 Sensor Trend、rows/columns/duplicates/missing 報告、測試與真實執行證據，Research Brain 回報及 GitHub 提交。 |
+| ALLOWED_CHANGES | 研究程式 research/m1_csv_profile.py、research/m1_sensor_trend.py；測試 tests/test_m1_profile.py；報告 reports/M1_SYNTHETIC_PROFILE.md、reports/M1_EXECUTION_EVIDENCE.md、reports/M1_TREND_VALIDATION.md；最小限度調整 .gitignore 放行前述程式及報告並保護原始檔；更新 WORK_ITEM.md 執行證據欄位但最終 PASS 只由 MAIN 記錄。變更檔名需 Research Brain 核准且不得擴大範圍。 |
+| READ_ONLY_SCOPE | data/intro/synthetic_sensor.csv、全部 NASA FD001 原始檔及其他未授權本地資料；不得修改／覆寫／重新保存／公開提交。 |
+| ACCEPTANCE | 實測 data rows=6（非預填）、欄數與真實欄名／順序、exact duplicate rows 定義與數量、missing 總數與逐欄數量及判定規則；提供未修改數值的簡易顯示與原始 Sensor Trend；輸入 SHA-256 執行前後一致；可重現程式和測試；真實 command、timestamp、Python version、stdout、stderr、exit code；Research Brain 實際審閱 GitHub main；MAIN 再獨立驗收。 |
+| STOP_IF | 找不到或無法安全讀取 CSV、列數不是 6、缺少可用欄位而無法合法呈現趨勢、欄位或數值錯配、原始檔 hash 改變、缺真實執行證據、GitHub push/驗證失敗、需公開原始資料或敏感資訊、AGENTS.md 衝突、其他未完工作衝突或任務擴權；遇 STOP_IF 回報 BLOCKED。 |
+| GOVERNANCE | STUDENT-RESEARCH Brain 派工前與 Research Own Worker 開工前各自讀取 GitHub main 最新 AGENTS.md 並遵守；單一 main 分支循序執行，檢查 staged files；不得 force push；Worker 完成 Commit/Push 後 Research Brain 從遠端審查；只有 MAIN 可決定最終 PASS。 |
+| WORKER_REPORT | NOT_EXECUTED；待正式轉交、執行與真實結果。 |
+| BRAIN_REVIEW | PENDING；Research Brain 必須先審查，再由 MAIN 獨立審查。 |
+| STUDENT_APPROVAL | 已授權啟動 M1；M2 尚未獲執行授權。 |
+
+### RETURN FORMAT
+
+TYPE=BRAIN_TO_BRAIN_RETURN；WORK_ITEM_ID=WO-M1-RESEARCH-001；FROM=STUDENT-RESEARCH Brain；RETURN_TO=STUDENT-MAIN Brain；STATUS=READY_FOR_MAIN_REVIEW/FAIL/BLOCKED。
+須包含：input path、source type、actual rows、columns、column names、duplicates、missing、missing by column、missing rules、source SHA-256 before/after、sensor trend/display evidence、actual command、timestamp、runtime、exit code、stdout/stderr、test results、Commit ID、SHA-256 與計算對象、GitHub Commit URL、Push status、GitHub verification、data safety、Research Brain review、逐項 acceptance 及 blockers。
+
+**M2 GATE:** M1 只有在 MAIN 實際讀取 GitHub 成果並正式記錄 PASS 後才完成；須再取得 STUDENT 對 M2 執行的正式批准。
