@@ -65,7 +65,7 @@ MAIN → STUDENT-RESEARCH Brain-to-Brain 正式派工登錄（由 STUDENT 轉交
 | TO | STUDENT-RESEARCH Brain |
 | RETURN_TO | STUDENT-MAIN Brain |
 | AUTHORIZED_BY | STUDENT（已要求啟動 M1，並指示 MAIN 完成正式派工） |
-| STATUS | BLOCKED（AMENDMENT-001 / MAIN_EVIDENCE_INCOMPLETE；Research Brain 成果已審查但真實執行證據仍須補齊；M1 尚未 PASS；M2 維持 BLOCKED） |
+| STATUS | READY_FOR_REVIEW（AMENDMENT-001 / EVIDENCE_REMEDIATION；Worker 已完成 EVIDENCE_RERUN 並提交完整執行證據，待 Research Brain 與 MAIN 獨立審查；M1 尚未 PASS；M2 維持 BLOCKED） |
 | PREREQUISITE | WO-M0-001=PASS；不得提前啟動 M2 |
 | INPUT | **修訂後有效輸入**：本地專案根目錄 `C:\Users\z2324\Desktop\NTUST\115\115_1\115-1\20261123` 下之 **`synthetic_sensor.csv`**（完整路徑 `C:\Users\z2324\Desktop\NTUST\115\115_1\115-1\20261123\synthetic_sensor.csv`）；由 STUDENT 透過 Windows 檔案總管提供位置，尚待 Worker 在本地實際查核；預期六筆，實際筆數、內容及 SHA-256 均未驗證；來源類型 SYNTHETIC；READ_ONLY。原先 `data/intro/synthetic_sensor.csv` 為被取代的路徑，歷史保留於下方阻礙紀錄。 |
 | SCOPE | 由 Research Brain 負責安排及審查 Research Own Worker，使用指定 CSV 進行資料品質檢查、簡易數值顯示及 Sensor Trend；不得直接指派 Web Worker 或進入 M2。 |
@@ -118,3 +118,16 @@ TYPE=BRAIN_TO_BRAIN_RETURN；WORK_ITEM_ID=WO-M1-RESEARCH-001；FROM=STUDENT-RESE
 - **REVIEW_CHAIN:** STUDENT-RESEARCH Brain 先驗證補證內容，從 GitHub `main` 讀取及審查後再回傳 STUDENT-MAIN；MAIN 依 GitHub 實際結果決定 `PASS/FAIL/BLOCKED`。
 - **M2_GATE:** M1 未 PASS；M2 不得開始且須 STUDENT 另行正式批准。
 - **RETURN_TO:** STUDENT-RESEARCH Brain（經 STUDENT 轉交），不得由 MAIN 直接指揮 Research Own Worker。
+
+## WO-M1-RESEARCH-001 — EVIDENCE REMEDIATION WORKER RECORD (2026-11-23)
+
+- **EVIDENCE_TYPE:** `EVIDENCE_RERUN`；原始逐命令紀錄不完整，因此依正式補證派工重新執行，未冒稱為先前 17:43–17:48 的紀錄。
+- **EXECUTION_WINDOW:** 2026-11-23 17:58:41.449–17:59:51.250 UTC+08:00。
+- **ENVIRONMENT:** PowerShell 7.6.9、Python 3.12.7、branch `main`、baseline HEAD `526641bc83b58f18c4c83a90ae8ac50eb2ff1c2f`；本地工作目錄於同步及補證前乾淨。
+- **PREFLIGHT:** 完整 PowerShell here-string 與 `python -c $preflight` 已記錄於 `reports/M1_EXECUTION_EVIDENCE.md`；Exit Code 0；rows=6、columns=4、六列 row widths 均為 4；stdout 完整、stderr 為空。
+- **PROFILE:** `python research/m1_csv_profile.py --input synthetic_sensor.csv`，Exit Code 0；完整 stdout 與空 stderr 已記錄，僅遮蔽公開報告中的本地使用者路徑。
+- **TREND:** `python research/m1_sensor_trend.py --input synthetic_sensor.csv`，Exit Code 0；完整六點 trend/source mapping stdout 與空 stderr 已記錄。
+- **UNITTEST:** `python -m unittest -v tests/test_m1_profile.py`，Exit Code 0；完整 stdout（空）與 stderr（7 個 verbose test 結果、Ran 7 tests、OK）已記錄；7 passed、0 failed、0 errors。
+- **INTEGRITY:** SHA-256 before/after 均為 `cd536b46eb628909fdc986bbad956c24a2e50afb287968998374befc62204377`，亦與先前 Worker 報告一致；來源未修改。
+- **SCOPE:** 本輪僅更新 `reports/M1_EXECUTION_EVIDENCE.md` 與本 Worker 補證紀錄；未修改研究程式、測試、其他報告、`.gitignore`、CSV 或 NASA FD001 資料，未執行 M2。
+- **DELIVERY:** 補證提交 ID、GitHub URL、Push 與遠端可讀性驗證由 Worker Return 提供，避免提交自我引用。Worker 僅回報 `READY_FOR_REVIEW`，不宣告 M1 PASS。
