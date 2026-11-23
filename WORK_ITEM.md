@@ -65,13 +65,13 @@ MAIN → STUDENT-RESEARCH Brain-to-Brain 正式派工登錄（由 STUDENT 轉交
 | TO | STUDENT-RESEARCH Brain |
 | RETURN_TO | STUDENT-MAIN Brain |
 | AUTHORIZED_BY | STUDENT（已要求啟動 M1，並指示 MAIN 完成正式派工） |
-| STATUS | BLOCKED（INPUT_NOT_FOUND；2026-11-23；等待 STUDENT-RESEARCH Brain 確認路徑及正式回報，M1 未通過） |
+| STATUS | COMMAND_DISPATCHED（AMENDMENT-001 / INPUT_PATH_CORRECTED；RELAY_STATUS=PENDING_STUDENT_RELAY；Research Own Worker 尚未重新執行；M1 未通過） |
 | PREREQUISITE | WO-M0-001=PASS；不得提前啟動 M2 |
-| INPUT | 本地專案根目錄 C:\Users\z2324\Desktop\NTUST\115\115_1\115-1\20261123 下之 data/intro/synthetic_sensor.csv，預期六筆，實際須驗證；來源類型 SYNTHETIC；READ_ONLY |
+| INPUT | **修訂後有效輸入**：本地專案根目錄 `C:\Users\z2324\Desktop\NTUST\115\115_1\115-1\20261123` 下之 **`synthetic_sensor.csv`**（完整路徑 `C:\Users\z2324\Desktop\NTUST\115\115_1\115-1\20261123\synthetic_sensor.csv`）；由 STUDENT 透過 Windows 檔案總管提供位置，尚待 Worker 在本地實際查核；預期六筆，實際筆數、內容及 SHA-256 均未驗證；來源類型 SYNTHETIC；READ_ONLY。原先 `data/intro/synthetic_sensor.csv` 為被取代的路徑，歷史保留於下方阻礙紀錄。 |
 | SCOPE | 由 Research Brain 負責安排及審查 Research Own Worker，使用指定 CSV 進行資料品質檢查、簡易數值顯示及 Sensor Trend；不得直接指派 Web Worker 或進入 M2。 |
 | OUTPUT | 可重現 CSV loader/profiler、欄位與數值顯示、依實際欄位建構並回查來源的簡易 Sensor Trend、rows/columns/duplicates/missing 報告、測試與真實執行證據，Research Brain 回報及 GitHub 提交。 |
 | ALLOWED_CHANGES | 研究程式 research/m1_csv_profile.py、research/m1_sensor_trend.py；測試 tests/test_m1_profile.py；報告 reports/M1_SYNTHETIC_PROFILE.md、reports/M1_EXECUTION_EVIDENCE.md、reports/M1_TREND_VALIDATION.md；最小限度調整 .gitignore 放行前述程式及報告並保護原始檔；更新 WORK_ITEM.md 執行證據欄位但最終 PASS 只由 MAIN 記錄。變更檔名需 Research Brain 核准且不得擴大範圍。 |
-| READ_ONLY_SCOPE | data/intro/synthetic_sensor.csv、全部 NASA FD001 原始檔及其他未授權本地資料；不得修改／覆寫／重新保存／公開提交。 |
+| READ_ONLY_SCOPE | **有效新路徑 `synthetic_sensor.csv`（專案根目錄）**、歷史舊路徑 `data/intro/synthetic_sensor.csv`、全部 NASA FD001 原始檔及其他未授權本地資料皆 READ_ONLY；禁止更動、覆寫、複製公開、重新保存或上傳；`.gitignore` 須維持對根目錄 `synthetic_sensor.csv` 及其他原始資料的排除保護。 |
 | ACCEPTANCE | 實測 data rows=6（非預填）、欄數與真實欄名／順序、exact duplicate rows 定義與數量、missing 總數與逐欄數量及判定規則；提供未修改數值的簡易顯示與原始 Sensor Trend；輸入 SHA-256 執行前後一致；可重現程式和測試；真實 command、timestamp、Python version、stdout、stderr、exit code；Research Brain 實際審閱 GitHub main；MAIN 再獨立驗收。 |
 | STOP_IF | 找不到或無法安全讀取 CSV、列數不是 6、缺少可用欄位而無法合法呈現趨勢、欄位或數值錯配、原始檔 hash 改變、缺真實執行證據、GitHub push/驗證失敗、需公開原始資料或敏感資訊、AGENTS.md 衝突、其他未完工作衝突或任務擴權；遇 STOP_IF 回報 BLOCKED。 |
 | GOVERNANCE | STUDENT-RESEARCH Brain 派工前與 Research Own Worker 開工前各自讀取 GitHub main 最新 AGENTS.md 並遵守；單一 main 分支循序執行，檢查 staged files；不得 force push；Worker 完成 Commit/Push 後 Research Brain 從遠端審查；只有 MAIN 可決定最終 PASS。 |
@@ -85,3 +85,22 @@ TYPE=BRAIN_TO_BRAIN_RETURN；WORK_ITEM_ID=WO-M1-RESEARCH-001；FROM=STUDENT-RESE
 須包含：input path、source type、actual rows、columns、column names、duplicates、missing、missing by column、missing rules、source SHA-256 before/after、sensor trend/display evidence、actual command、timestamp、runtime、exit code、stdout/stderr、test results、Commit ID、SHA-256 與計算對象、GitHub Commit URL、Push status、GitHub verification、data safety、Research Brain review、逐項 acceptance 及 blockers。
 
 **M2 GATE:** M1 只有在 MAIN 實際讀取 GitHub 成果並正式記錄 PASS 後才完成；須再取得 STUDENT 對 M2 執行的正式批准。
+
+## WO-M1-RESEARCH-001 — AMENDMENT-001（Input Path Correction / Re-dispatch）
+
+- `DATE`: 2026-11-23
+- `TYPE`: BRAIN_TO_BRAIN_WORK_ORDER_AMENDMENT
+- `FROM`: STUDENT-MAIN Brain
+- `TO`: STUDENT-RESEARCH Brain
+- `RETURN_TO`: STUDENT-MAIN Brain
+- `AUTHORIZED_BY`: STUDENT 提供實際本地路徑，Research Brain 提出正式修訂與重新派工請求；沿用已授權的 M1 範圍。
+- `PRIOR_STATUS`: BLOCKED / INPUT_NOT_FOUND。原始 Worker 回報、GitHub Commit `c58aec1c7c451001dedf06c5df0299bd3506d18e` 及兩級 Brain 阻礙審查完整保留於 `WO-M1-RESEARCH-001`。
+- `CAUSE`: 原工單指定 `data/intro/synthetic_sensor.csv`，STUDENT 於 Windows 檔案總管發現實際檔案位於專案根目錄；目前僅路徑已確認，未驗證檔案內容。
+- `OLD_INPUT`: `data/intro/synthetic_sensor.csv`（被取代，不得再作為本輪指定輸入）。
+- `NEW_INPUT`: `synthetic_sensor.csv`（專案根目錄相對路徑），完整路徑 `C:\Users\z2324\Desktop\NTUST\115\115_1\115-1\20261123\synthetic_sensor.csv`。
+- `NEW_STATUS`: COMMAND_DISPATCHED / RELAY_STATUS=PENDING_STUDENT_RELAY（僅授權 Research Brain 重新派工，並不宣稱已送達或 Own Worker 已執行）。
+- `UNCHANGED`: 原資料 READ_ONLY、禁止 GitHub 公開上傳；rows/columns/duplicates/missing、Basic Display、Sensor Trend、輸入前後 SHA-256、可重現測試、真實命令／Exit Code／stdout／stderr、Commit+Push、Research Brain 遠端獨立審查及 MAIN 最終驗收均保持原驗收條件。
+- `RESTART_CONTROL`: STUDENT-RESEARCH Brain 在收到此修訂工單後，須先從 GitHub `main` 重讀最新 `AGENTS.md`、`WORK_ITEM.md`；只可由其管理 Research Own Worker；Own Worker 開工前也須重新核對治理規則與修訂後輸入，先檢查檔案可讀及 SHA-256，再執行 CSV 分析。
+- `STOP_IF`: 新輸入不存在／不可讀、實際筆數非六筆、讀取或解析不合規、數值／雜湊不一致、無真實執行證據、公開資料風險或 GitHub 無法驗證，應回報 BLOCKED，不可自動替換或產生假資料。
+- `M2_GATE`: M1 仍未 PASS，M2 持續 BLOCKED。STUDENT-MAIN Brain 必須審查 GitHub 真實結果並決定 M1 PASS；後續須 STUDENT 另行正式批准 M2。
+- `EXECUTION_RESULTS`: NOT_EXECUTED_AFTER_AMENDMENT；rows、columns、duplicates、missing、input SHA-256 均為 NOT_YET_VERIFIED。
