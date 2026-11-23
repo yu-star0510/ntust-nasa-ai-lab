@@ -29,3 +29,17 @@ research/
 *password*
 *secret*
 *token*
+
+# WO-M1-RESEARCH-001: allow only the authorized reproducible deliverables.
+!/research/
+/research/*
+!/research/m1_csv_profile.py
+!/research/m1_sensor_trend.py
+!/tests/
+/tests/*
+!/tests/test_m1_profile.py
+!/reports/
+/reports/*
+!/reports/M1_SYNTHETIC_PROFILE.md
+!/reports/M1_EXECUTION_EVIDENCE.md
+!/reports/M1_TREND_VALIDATION.md
