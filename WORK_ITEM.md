@@ -65,7 +65,7 @@ MAIN → STUDENT-RESEARCH Brain-to-Brain 正式派工登錄（由 STUDENT 轉交
 | TO | STUDENT-RESEARCH Brain |
 | RETURN_TO | STUDENT-MAIN Brain |
 | AUTHORIZED_BY | STUDENT（已要求啟動 M1，並指示 MAIN 完成正式派工） |
-| STATUS | BRAIN_REVIEWED（AMENDMENT-001 / EVIDENCE_RERUN_RESEARCH_ACCEPTED / READY_FOR_MAIN_REVIEW；待 STUDENT-MAIN 最終驗收，M1 尚未 PASS；M2 維持 BLOCKED） |
+| STATUS | PASS（AMENDMENT-001 / EVIDENCE_RERUN；STUDENT-MAIN Brain 已完成 GitHub 獨立審查並正式驗收 M1；M2 尚未取得 STUDENT 執行批准） |
 | PREREQUISITE | WO-M0-001=PASS；不得提前啟動 M2 |
 | INPUT | **修訂後有效輸入**：本地專案根目錄 `C:\Users\z2324\Desktop\NTUST\115\115_1\115-1\20261123` 下之 **`synthetic_sensor.csv`**（完整路徑 `C:\Users\z2324\Desktop\NTUST\115\115_1\115-1\20261123\synthetic_sensor.csv`）；由 STUDENT 透過 Windows 檔案總管提供位置，尚待 Worker 在本地實際查核；預期六筆，實際筆數、內容及 SHA-256 均未驗證；來源類型 SYNTHETIC；READ_ONLY。原先 `data/intro/synthetic_sensor.csv` 為被取代的路徑，歷史保留於下方阻礙紀錄。 |
 | SCOPE | 由 Research Brain 負責安排及審查 Research Own Worker，使用指定 CSV 進行資料品質檢查、簡易數值顯示及 Sensor Trend；不得直接指派 Web Worker 或進入 M2。 |
@@ -144,3 +144,22 @@ TYPE=BRAIN_TO_BRAIN_RETURN；WORK_ITEM_ID=WO-M1-RESEARCH-001；FROM=STUDENT-RESE
 - **REPORTED_MEASUREMENTS:** rows=6；columns=4；column_names=[timestamp,load_pct,coolant_out_c,oil_pressure_bar]；duplicates=1；missing=1，missing_by_column=0/0/0/1；Row Index × load_pct 的 6 個 trend 點可回查；預檢、Profile、Trend、Unittest 的 Exit Code 均為 0；輸入 SHA-256 before/after 均為 `cd536b46eb628909fdc986bbad956c24a2e50afb287968998374befc62204377`，且與先前 Worker 回報一致。
 - **LIMITATION:** 原始 CSV 留在學生本地且未上傳，Research Brain 不可獨立重算輸入檔 SHA-256、資料數值或在學生端重跑；GitHub 提供的是 Worker 公開保存的本地執行紀錄，並非第三方執行環境的自動簽章逐位元組紀錄。Worker 所報 Commit SHA-256 未由 Research Brain 獨立重算；所有地方均未將此驗證層級冒稱為直接本地驗證。
 - **DECISION:** 本次 MAIN 指定之執行證據缺口已依補證報告形式補齊，Research Brain 接受補證並提交 STUDENT-MAIN 獨立最終驗收；`M1_FINAL_PASS=PENDING_MAIN`；`M2=BLOCKED`。
+
+## WO-M1-RESEARCH-001 — MAIN FINAL ACCEPTANCE (2026-11-23)
+
+- **TYPE:** MAIN_INDEPENDENT_GITHUB_ACCEPTANCE
+- **WORK_ITEM_ID:** `WO-M1-RESEARCH-001` / `AMENDMENT-001`
+- **FROM:** STUDENT-MAIN Brain
+- **RESEARCH_RETURN:** `RESEARCH_ACCEPTED / READY_FOR_MAIN_REVIEW`
+- **MAIN_DECISION:** `PASS`（M1 驗收結案；先前 INPUT_NOT_FOUND 與 EVIDENCE_INCOMPLETE 歷史保留）。
+- **REVIEWED_GITHUB_HEAD:** `adb1f6760052d928173e517c2f33e2dcdc8836d2`
+- **WORKER_EVIDENCE_COMMIT:** `3e655fd0c370152a2e55cbde5cbe6859722ac516`；已從 GitHub 核對其變更僅 `WORK_ITEM.md` 和 `reports/M1_EXECUTION_EVIDENCE.md`。
+- **RESEARCH_REVIEW_COMMIT:** `adb1f6760052d928173e517c2f33e2dcdc8836d2`；已從 GitHub 核對其變更僅 `WORK_ITEM.md`。
+- **EVIDENCE_INSPECTED:** GitHub 最新 `AGENTS.md`、`WORK_ITEM.md`、兩個 M1 研究程式、七項測試定義、三份 M1 報告、完整 `EVIDENCE_RERUN` 區段、補證與 Research 審查 Commit、Git tree。輸入 CSV 與 NASA FD001 原始檔未出現在遠端樹。
+- **MEASUREMENTS_FROM_WORKER_RERUN_EVIDENCE:** 預檢/profile/trend/unittest 各 Exit Code=0；rows=6；columns=4；欄位依序 `timestamp` / `load_pct` / `coolant_out_c` / `oil_pressure_bar`；exact duplicates=1；missing=1，逐欄 0/0/0/1；Sensor Trend 採 Row Index × `load_pct` 且原始資料映射 6/6；7 tests passed、0 failed、0 errors。
+- **SOURCE_INTEGRITY_REPORTED:** `SHA-256 before = SHA-256 after = cd536b46eb628909fdc986bbad956c24a2e50afb287968998374befc62204377`。CSV 保持 `SYNTHETIC`、READ_ONLY 並從公開 Git 排除。
+- **EVIDENCE_GAP_CLOSED:** GitHub `reports/M1_EXECUTION_EVIDENCE.md` 補證段已具完整 PowerShell here-string、實際 `python -c $preflight`、Profile/Trend/Unittest 命令、執行時間、Exit Code、完整（公開路徑遮蔽）stdout/stderr、Python/PowerShell 版本、前後 hash。未將補證冒稱原先執行紀錄。
+- **VERIFICATION_LIMITATIONS:** MAIN 審查的是 GitHub 保存的 Worker 本地執行紀錄與 GitHub 程式，無法直接存取學生 Windows 原始 CSV、獨立重算其 SHA-256 或重新執行本地測試；Commit SHA-256 未獨立重算。這些不是 M1 所授權的公開資料要求，報告已披露驗證層級，足以完成本次程式與執行證據驗收。
+- **ACCEPTANCE:** 本工作單所要求的 Profile、Basic Display、Sensor Trend、Source Integrity、真實執行證據、Research Brain 審查與 GitHub 提交均符合；最終 `M1=PASS`。
+- **NEXT_GATE:** `M2=NOT_AUTHORIZED / BLOCKED_PENDING_STUDENT_APPROVAL`。須 STUDENT 另行正式批准 M2，MAIN 在下一張派工前重新讀取 GitHub main 最新 `AGENTS.md`，並確認工作單與資料契約交接條件；不自動派送 Research Own Worker 或開始 NASA FD001 資料解析。
+- **RETURN_TO:** STUDENT（由 STUDENT 決定是否批准 M2）。
