@@ -12,3 +12,4 @@
 | D-M0-004 | 2026-11-23 | STUDENT | 驗收需要可在遠端核對的證據。 | Worker 必須 Commit 並 Push。Brain 必須從 GitHub 讀取實際成果才能驗收。 | 確保審查內容與公開提交一致。 | Worker 提供提交證據，Brain 獨立判定驗收結果。 | `WO-M0-001` |
 | D-M0-005 | 2026-11-23 | STUDENT | 本地含 NASA 原始資料與合成 CSV。 | 原始 NASA 資料及合成 CSV 預設唯讀，禁止未經授權公開。 | 保護原始來源，維持後續比較與追溯的一致性。 | 未獲授權時，資料留存本地，任何合成數據顯示均須標明來源。 | `WO-M0-001` |
 | D-M0-006 | 2026-11-23 | STUDENT | 現行工作單只有 M0 授權。 | M1–M5 尚未獲得執行授權，須逐階段驗收及批准。 | 讓每個里程碑使用上一階段已驗證且獲准的成果。 | Brain 完成前一項審查後，仍須等待 STUDENT 批准下一項工作。 | `WO-M0-001` |
+| D-M2-001 | 2026-11-23 | STUDENT | WO-M1-RESEARCH-001 經 MAIN 正式驗收 PASS 後，STUDENT 指示「進行M2」。 | 正式批准啟動 M2，授權 STUDENT-MAIN Brain 向 STUDENT-RESEARCH Brain 下發 FD001 本地資料驗證、品質趨勢與 Data Contract 工單；由 Research Brain 才能管理 Research Own Worker。 | 確保里程碑依序進行且先驗證三份已信任本地檔案，再建立資料契約。 | 授權限 M2；原始 FD001 檔只可本地 READ_ONLY；不需再次上網確認來源；不批准 M3–M5 或資料公開；M2 只有 MAIN GitHub 驗收後才能 PASS。 | WO-M2-RESEARCH-001 |
