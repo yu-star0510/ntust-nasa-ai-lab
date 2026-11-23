@@ -176,7 +176,7 @@ TYPE=BRAIN_TO_BRAIN_RETURN；WORK_ITEM_ID=WO-M1-RESEARCH-001；FROM=STUDENT-RESE
 | TO | STUDENT-RESEARCH Brain |
 | RETURN_TO | STUDENT-MAIN Brain |
 | AUTHORIZED_BY | STUDENT（2026-11-23 本對話正式指示「進行M2」） |
-| STATUS | COMMAND_DISPATCHED（RELAY_STATUS=PENDING_STUDENT_RELAY；僅向 Research Brain 派工，尚未直接送達 Research Own Worker） |
+| STATUS | WORKER_EXECUTION_COMPLETE；等待 Commit/Push 遠端驗證後由 Worker 回報 `READY_FOR_REVIEW`，最終驗收仍為 `PENDING`。 |
 | PREREQUISITE | WO-M0-001=PASS；WO-M1-RESEARCH-001=PASS，MAIN final acceptance commit 661df6e9741b2d17c86e022776adfba91caa36d4 |
 | GOVERNANCE_BASELINE | GitHub main AGENTS.md，派工前已由 MAIN 從 661df6e9741b2d17c86e022776adfba91caa36d4 讀取；Research Brain 與 Own Worker 開工前仍各自重讀最新版本 |
 | PROJECT_ROOT | C:\Users\z2324\Desktop\NTUST\115\115_1\115-1\20261123（僅作定位，不需公開私人絕對路徑） |
@@ -186,7 +186,7 @@ TYPE=BRAIN_TO_BRAIN_RETURN；WORK_ITEM_ID=WO-M1-RESEARCH-001；FROM=STUDENT-RESE
 | OUTPUT | Phase A 三檔來源／格式／RUL 語意與 Raw Index 驗證、Phase B 品質統計與可追溯趨勢、欄位定義及網站可使用的 Data Contract（Markdown + JSON）、可重現程式與測試、完整實際執行證據、Research Brain GitHub 獨立審查回報。 |
 | ACCEPTANCE | Phase A 全部通過才能 Phase B；行列/Unit/Cycle/3 Settings/21 Sensors/Train-Test-RUL mapping/Raw Index 實際檢查；趨勢和品質結果可回查；Data Contract schema/interface/error handling/provenance 完整；GitHub main 只有獲准程式與非原始資料摘要；Worker Commit+Push、Research Brain 審查、MAIN 再獨立驗收。 |
 | STOP_IF | M1 未 PASS、三檔不存在或不可讀、原始 SHA-256 異常變化、schema/Unit-Cycle/RUL 映射不可可靠驗證、Raw Index 無法回查、Phase A 未 PASS、無真實執行證據、需要下載或上網重新查核來源、原始資料公開風險、GitHub 無法 Commit/Push/驗證、與最新 AGENTS.md 衝突、越權觸及 Web/M3。立即 BLOCKED 並回報。 |
-| WORKER_REPORT | NOT_EXECUTED；三個實際本地資料路徑、行列數、雜湊、趨勢及品質尚未取得。 |
+| WORKER_REPORT | **2026-11-23 Research Own Worker 執行完成**：開工前從 GitHub `main` 核對治理與 M1 PASS，起始提交 `79392158d20b9fcf657e2329ead6aaf2921ebdc9`。以 READ_ONLY 方式確認 `FD001/train_FD001.txt`、`FD001/test_FD001.txt`、`FD001/RUL_FD001.txt`；before/after SHA-256 分別為 `963b5e22825b34d8b21c69e1aeb4af3e647050eb672ee8834ba4b5d91d2de0f8`、`3cda7109ce17bafb5443f2ac926cfcf88154b941b8c4cf95eb55d1ddd6f52851`、`a19c8ec94931949d0485bdc35118206e9c81c4547b422efb9cf86f4ceddbceca`，前後一致。Phase A PASS：Train=20,631×26、Test=13,096×26、RUL=100×1；Train/Test 各 100 Units，Unit/Cycle/schema/RUL order mapping/Raw Index 全部可驗證，missing/duplicate key/parse/non-finite/cycle gap/order error 均為 0。Phase B PASS：完成 3 settings+21 sensors 的 split-wise min/max/mean/population std、constant/near-constant 規則、可回查的 Train Unit 1 Sensor 2 共 192 點趨勢，以及 `FD001_DATA_CONTRACT` v1.0.0 Markdown/JSON 與六個介面。`python -m unittest -v tests/test_m2_fd001.py` 實際 14/14 通過，Exit Code 0。僅新增/修改工作單授權的程式、測試、三份 M2 報告、兩份契約、最小 `.gitignore` 與本欄；原始資料持續排除，未執行 M3/Web。Commit ID、Commit SHA-256、GitHub URL 與遠端驗證由 Worker Return 提供，避免提交自我引用。 |
 | BRAIN_REVIEW | PENDING；Research Brain 必須先獨立從 GitHub 審查成果，再回 MAIN 審查。 |
 | STUDENT_APPROVAL | 已批准進行 M2；不包含 M3、Web 建置或 M4 Evidence Prompt 執行授權。 |
 
@@ -218,4 +218,4 @@ TYPE=BRAIN_TO_BRAIN_RETURN；WORK_ITEM_ID=WO-M1-RESEARCH-001；FROM=STUDENT-RESE
 TYPE=BRAIN_TO_BRAIN_RETURN; WORK_ITEM_ID=WO-M2-RESEARCH-001; FROM=STUDENT-RESEARCH Brain; RETURN_TO=STUDENT-MAIN Brain; STATUS=READY_FOR_MAIN_REVIEW/FAIL/BLOCKED。
 須附 Phase A PASS/FAIL/BLOCKED、Phase B PASS/FAIL/BLOCKED/NOT_STARTED、三檔實際相對路徑、三組 SHA-256 before/after、Train/Test/RUL rows/columns、Train/Test Unit/Cycle 驗證、RUL mapping、Raw Index 檢查結果、Missing/Duplicates/Quality、Trend 與來源核對、Data Contract 文件/JSON GitHub 路徑、實際命令與執行證據、Exit Codes、Tests、Commit ID/Commit SHA256 計算對象、遠端 Commit URL、GitHub Verify、Data Safety、Research Brain Review 與 blockers。
 
-**M2 CURRENT STATUS:** COMMAND_DISPATCHED to STUDENT-RESEARCH Brain via STUDENT relay; RELAY_STATUS=PENDING_STUDENT_RELAY; actual local data has NOT been accessed by MAIN; no M2 result has been claimed.
+**M2 CURRENT STATUS:** Research Own Worker execution complete; Phase A=`PASS`, Phase B=`PASS`, tests=14/14; pending commit/push verification and independent Research Brain/Main review. Worker does not claim final M2 acceptance and does not authorize M3/Web.

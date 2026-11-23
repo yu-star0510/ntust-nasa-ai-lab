@@ -1,0 +1,119 @@
+{
+  "contract_name": "FD001_DATA_CONTRACT",
+  "schema_version": "1.0.0",
+  "dataset": "NASA_CMAPSS_FD001",
+  "source_type": "TRUSTED_LOCAL_FILES",
+  "validation_status": "PASS",
+  "main_acceptance": "PENDING",
+  "splits": ["train", "test"],
+  "source_files": {
+    "train": {
+      "path": "FD001/train_FD001.txt",
+      "sha256": "963b5e22825b34d8b21c69e1aeb4af3e647050eb672ee8834ba4b5d91d2de0f8"
+    },
+    "test": {
+      "path": "FD001/test_FD001.txt",
+      "sha256": "3cda7109ce17bafb5443f2ac926cfcf88154b941b8c4cf95eb55d1ddd6f52851"
+    },
+    "rul": {
+      "path": "FD001/RUL_FD001.txt",
+      "sha256": "a19c8ec94931949d0485bdc35118206e9c81c4547b422efb9cf86f4ceddbceca"
+    }
+  },
+  "required_fields": [
+    "dataset_split",
+    "unit_id",
+    "cycle",
+    "setting_1",
+    "setting_2",
+    "setting_3",
+    "sensor_1",
+    "sensor_2",
+    "sensor_3",
+    "sensor_4",
+    "sensor_5",
+    "sensor_6",
+    "sensor_7",
+    "sensor_8",
+    "sensor_9",
+    "sensor_10",
+    "sensor_11",
+    "sensor_12",
+    "sensor_13",
+    "sensor_14",
+    "sensor_15",
+    "sensor_16",
+    "sensor_17",
+    "sensor_18",
+    "sensor_19",
+    "sensor_20",
+    "sensor_21",
+    "source_file",
+    "source_sha256",
+    "physical_line_number",
+    "data_row_index",
+    "source_column_index"
+  ],
+  "field_types": {
+    "dataset_split": "enum(train,test)",
+    "unit_id": "positive integer",
+    "cycle": "positive integer",
+    "setting_1..setting_3": "finite number",
+    "sensor_1..sensor_21": "finite number",
+    "source_file": "repository-relative string",
+    "source_sha256": "lowercase hexadecimal string[64]",
+    "physical_line_number": "positive integer, 1-based",
+    "data_row_index": "non-negative integer, 0-based",
+    "source_column_index": "positive integer, 1-based"
+  },
+  "semantics": {
+    "train": "Training engine operating sequences. Train and Test Unit IDs are split-local identifiers.",
+    "test": "Partial test engine observations; the last observed cycle is not a failure cycle.",
+    "rul": "Ground-truth remaining-life label at each Test Unit's last observed cycle, not a model prediction and not an original per-cycle sensor field.",
+    "rul_mapping": "RUL file order maps to Test Units only after Test first-appearance order is verified equal to ascending Unit ID order and row counts match.",
+    "missing_policy": "Do not fill, interpolate, delete, or rewrite. Structural missing values fail validation; quality issues are reported.",
+    "cycle_sorting": "Ascending numeric cycle within one split and one unit.",
+    "unit_ordering": "Ascending Unit ID for public interface results.",
+    "source_traceability": "References identify source file SHA-256, physical line, 0-based data row, and 1-based source column.",
+    "validation_errors": "Invalid width, numeric type, non-finite values, invalid keys, ambiguous RUL mapping, or source hash changes block validated use."
+  },
+  "interfaces": {
+    "get_units": {
+      "input": {"split": "enum(train,test)"},
+      "output": "ascending list[integer unit_id]",
+      "errors": ["ValueError for invalid split"],
+      "provenance": "Unit IDs parsed from the selected source split."
+    },
+    "get_cycles": {
+      "input": {"split": "enum(train,test)", "unit_id": "positive integer"},
+      "output": "ascending list[integer cycle]",
+      "errors": ["ValueError for invalid split", "KeyError for unknown split-local unit"],
+      "provenance": "Cycles parsed from rows matching the selected split and unit."
+    },
+    "get_sensor_series": {
+      "input": {"split": "enum(train,test)", "unit_id": "positive integer", "sensor_name": "enum(sensor_1..sensor_21)"},
+      "output": "list[{cycle: integer, value: number, raw_reference: RawReference}] sorted by cycle",
+      "errors": ["ValueError for invalid split or sensor", "KeyError for unknown unit"],
+      "provenance": "Every point includes a raw source reference and no interpolation or smoothing."
+    },
+    "get_raw_reference": {
+      "input": {"split": "enum(train,test)", "unit_id": "positive integer", "cycle": "positive integer", "column_name": "one of 26 mapped source columns"},
+      "output": "RawReference{dataset_split,source_file,source_sha256,physical_line_number,data_row_index,data_row_index_base,unit_id,cycle,column_name,source_column_index,original_value,reread_value,reread_matches}",
+      "errors": ["ValueError for invalid split", "KeyError for invalid key or column"],
+      "provenance": "The implementation rereads the source token at the recorded physical line and column."
+    },
+    "get_test_rul_label": {
+      "input": {"unit_id": "positive integer Test Unit"},
+      "output": "{test_unit_id,rul_physical_line_number,rul_data_row_index,last_observed_cycle,rul_label,rul_raw_value}",
+      "errors": ["KeyError for unknown Test Unit"],
+      "provenance": "RUL source row mapped by the verified Test Unit order convention; label applies only at the last observed Test cycle."
+    },
+    "get_quality_summary": {
+      "input": {"split": "enum(train,test)"},
+      "output": "aggregate rows, columns, units, cycle lengths, missing, duplicates, statistics, and constant/near-constant flags",
+      "errors": ["ValueError for invalid split"],
+      "provenance": "Aggregated directly from the selected validated split; population standard deviation uses ddof=0."
+    }
+  },
+  "disclosure_boundary": "Raw files, full raw indexes, and complete sensor series remain local and are not GitHub deliverables."
+}

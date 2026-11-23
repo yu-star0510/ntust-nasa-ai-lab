@@ -43,3 +43,15 @@ research/
 !/reports/M1_SYNTHETIC_PROFILE.md
 !/reports/M1_EXECUTION_EVIDENCE.md
 !/reports/M1_TREND_VALIDATION.md
+
+# WO-M2-RESEARCH-001: allow only the authorized FD001 code, tests, reports, and contracts.
+!/research/m2_fd001_validate.py
+!/research/m2_fd001_analysis.py
+!/tests/test_m2_fd001.py
+!/reports/M2_FD001_VALIDATION.md
+!/reports/M2_FD001_QUALITY_TRENDS.md
+!/reports/M2_EXECUTION_EVIDENCE.md
+!/contracts/
+/contracts/*
+!/contracts/FD001_DATA_CONTRACT.md
+!/contracts/FD001_DATA_CONTRACT.json
