@@ -163,3 +163,59 @@ TYPE=BRAIN_TO_BRAIN_RETURN；WORK_ITEM_ID=WO-M1-RESEARCH-001；FROM=STUDENT-RESE
 - **ACCEPTANCE:** 本工作單所要求的 Profile、Basic Display、Sensor Trend、Source Integrity、真實執行證據、Research Brain 審查與 GitHub 提交均符合；最終 `M1=PASS`。
 - **NEXT_GATE:** `M2=NOT_AUTHORIZED / BLOCKED_PENDING_STUDENT_APPROVAL`。須 STUDENT 另行正式批准 M2，MAIN 在下一張派工前重新讀取 GitHub main 最新 `AGENTS.md`，並確認工作單與資料契約交接條件；不自動派送 Research Own Worker 或開始 NASA FD001 資料解析。
 - **RETURN_TO:** STUDENT（由 STUDENT 決定是否批准 M2）。
+
+
+## WO-M2-RESEARCH-001 — FD001 Trusted Local Data Validation, Trends and Data Contract
+
+| 欄位 | 正式內容 |
+| --- | --- |
+| TYPE | BRAIN_TO_BRAIN_WORK_ORDER |
+| WORK_ITEM_ID | WO-M2-RESEARCH-001 |
+| MILESTONE | M2 — Real FD001 Data Integration |
+| FROM | STUDENT-MAIN Brain |
+| TO | STUDENT-RESEARCH Brain |
+| RETURN_TO | STUDENT-MAIN Brain |
+| AUTHORIZED_BY | STUDENT（2026-11-23 本對話正式指示「進行M2」） |
+| STATUS | COMMAND_DISPATCHED（RELAY_STATUS=PENDING_STUDENT_RELAY；僅向 Research Brain 派工，尚未直接送達 Research Own Worker） |
+| PREREQUISITE | WO-M0-001=PASS；WO-M1-RESEARCH-001=PASS，MAIN final acceptance commit 661df6e9741b2d17c86e022776adfba91caa36d4 |
+| GOVERNANCE_BASELINE | GitHub main AGENTS.md，派工前已由 MAIN 從 661df6e9741b2d17c86e022776adfba91caa36d4 讀取；Research Brain 與 Own Worker 開工前仍各自重讀最新版本 |
+| PROJECT_ROOT | C:\Users\z2324\Desktop\NTUST\115\115_1\115-1\20261123（僅作定位，不需公開私人絕對路徑） |
+| INPUT | 本地已信任的 train_FD001.txt、test_FD001.txt、RUL_FD001.txt；實際子目錄由 Research Brain 在本地確認後登錄，不可自行假設檔案位置；TRUSTED_LOCAL、READ_ONLY、NO_EXTERNAL_SOURCE_LOOKUP、NO_DOWNLOAD |
+| READ_ONLY_SCOPE | 三個 FD001 原始文字檔、synthetic_sensor.csv、其他學生原始資料、現有 M0/M1 程式及其結果；不得刪除、覆寫、重新保存、移動或公開 Git 上傳原始資料 |
+| ALLOWED_CHANGES | 僅限 M2 必要來源程式 research/m2_fd001_validate.py、research/m2_fd001_analysis.py、測試 tests/test_m2_fd001.py、報告 reports/M2_FD001_VALIDATION.md、reports/M2_FD001_QUALITY_TRENDS.md、reports/M2_EXECUTION_EVIDENCE.md、契約 contracts/FD001_DATA_CONTRACT.md、contracts/FD001_DATA_CONTRACT.json、最小限度安全修改 .gitignore 以放行上述成果並持續排除資料，以及 WORK_ITEM.md 的本工作單執行回報。變更檔名/範圍需先由 Research Brain 協調 MAIN 核准。 |
+| OUTPUT | Phase A 三檔來源／格式／RUL 語意與 Raw Index 驗證、Phase B 品質統計與可追溯趨勢、欄位定義及網站可使用的 Data Contract（Markdown + JSON）、可重現程式與測試、完整實際執行證據、Research Brain GitHub 獨立審查回報。 |
+| ACCEPTANCE | Phase A 全部通過才能 Phase B；行列/Unit/Cycle/3 Settings/21 Sensors/Train-Test-RUL mapping/Raw Index 實際檢查；趨勢和品質結果可回查；Data Contract schema/interface/error handling/provenance 完整；GitHub main 只有獲准程式與非原始資料摘要；Worker Commit+Push、Research Brain 審查、MAIN 再獨立驗收。 |
+| STOP_IF | M1 未 PASS、三檔不存在或不可讀、原始 SHA-256 異常變化、schema/Unit-Cycle/RUL 映射不可可靠驗證、Raw Index 無法回查、Phase A 未 PASS、無真實執行證據、需要下載或上網重新查核來源、原始資料公開風險、GitHub 無法 Commit/Push/驗證、與最新 AGENTS.md 衝突、越權觸及 Web/M3。立即 BLOCKED 並回報。 |
+| WORKER_REPORT | NOT_EXECUTED；三個實際本地資料路徑、行列數、雜湊、趨勢及品質尚未取得。 |
+| BRAIN_REVIEW | PENDING；Research Brain 必須先獨立從 GitHub 審查成果，再回 MAIN 審查。 |
+| STUDENT_APPROVAL | 已批准進行 M2；不包含 M3、Web 建置或 M4 Evidence Prompt 執行授權。 |
+
+### M2 Phase A — Trust & Source Semantics (MANDATORY GATE)
+
+1. **Find local files:** 僅在學生既有本地專案中確認 train_FD001.txt / test_FD001.txt / RUL_FD001.txt 的實際相對路徑、檔案存在性、可讀性及大小；不再上網比對 NASA 來源、不下載替代檔。逐檔在檢查前後計算 SHA-256。
+2. **Semantics:** Train 是訓練引擎至運轉終點的序列；Test 是各引擎部分觀測的序列，不可將其最後 Cycle 當失效；RUL 為各 Test Engine 在其最後觀測 Cycle 的剩餘壽命標籤，並非模型預測或 Train 原生逐列資料。驗證 Test Unit 的實際順序（以 Unit 首次出現順序及其他可查資料檢查）與 RUL 行數一一對應，不得假設排序而忽略映射風險；若映射不能可靠建立則 BLOCKED。
+3. **Schema:** Train/Test 預期每個有效資料列剛好 26 欄、1-based 位置為 1: Unit ID、2: Cycle、3–5: Operational Setting 1–3、6–26: Sensor 1–21；RUL 預期每有效行 1 個非負數值欄。採空白分隔，忽略合法尾端空白但不可忽略實際多餘資料欄；檢查數值型態及 finite、Unit/Cycle 的正整數性。不得預填常見 FD001 rows/units 數量。
+4. **Shape & keys:** 分別量測三檔行數、欄數、資料列數、Unit IDs、Unit Count、每 Unit Cycle min/max/長度、Cycle 是否有缺口／倒序、主鍵唯一性（split,unit_id,cycle）、空值、重複及解析異常；RUL 不存在 Unit/Cycle 欄位需標 N/A，不可虛構。
+5. **Raw Index & traceability:** Train/Test 每個資料點可回查 split、source-relative-path、source_sha256、physical_line_number (1-based)、data_row_index (明示 0-based 或 1-based)、unit_id、cycle、原始 source_column_index (1-based)、column_name、原始字串或未更動數值。RUL 提供 physical_line_number、Test Unit 映射、last_observed_cycle 及 RUL label。若有空行，physical line number 不等於資料列索引加固定常數，務必以實際行號定位。禁止以合成數值取代原始記錄。
+6. **Phase A exit criteria:** 三檔可讀且 SHA-256 穩定；Train/Test 26 欄及 RUL 1 欄解析正確；Train/Test/RUL 語意與映射確認；Unit/Cycle 結構與 Raw Index 可驗證；實際測試與命令/退出碼/輸出證據完整。未全部通過不得開始 Phase B，也不得將契約標為 VALIDATED。
+
+### M2 Phase B — Quality, Traceable Trend, Data Contract (ONLY AFTER A PASS)
+
+1. **Quality:** 每個 split 的 rows/columns/unit counts、各 Unit Cycle 長度、重複整列與重複鍵、missing total/by column、finite 數值檢查、3 Operational Settings + 21 Sensors 的 min/max/mean/std、constant/near-constant 條件及規則。資料品質異常須報告，不得自行補值、刪除原始資料或將所有異常都誤判為來源失效。
+2. **Trend:** 依 split + unit_id + sensor_{1..21} 以實際 Cycle 遞增，提供至少一組真實來源對應的趨勢；每一點具 raw source reference，檢查 points 數量、值、cycle、原始行號與欄位一致；不得跨 Train/Test 或 Unit 混合。不得把 Trend 宣稱成健康分數或未實作的 RUL 預測。
+3. **Data Contract:** Markdown + JSON 規定 contract_name=FD001_DATA_CONTRACT、schema_version、split、unit_id、cycle、setting_1..3、sensor_1..21、row provenance、file hash、型別、缺失值規則、排序、異常處理及版本。提供 get_units(split)、get_cycles(split,unit_id)、get_sensor_series(split,unit_id,sensor_name)、get_raw_reference(split,unit_id,cycle,column_name)、get_test_rul_label(unit_id)、get_quality_summary(split) 之輸入/輸出/錯誤契約與驗證測試；RUL 原始標籤與衍生 RUL 必須區隔，且不得在未定義與未驗證時將 RUL 當成逐 Cycle 原始值。
+4. **Disclosure boundary:** GitHub 僅提交可重現程式、聚合品質指標、契約規格及必要的小量可查證例子／源行號，不得提交完整原始文字列、全量衍生的原始感測器數列、資料集副本或敏感本地路徑。真正逐點 raw lookup 僅在學生本地程式以唯讀方式運作。
+
+### M2 Execution Evidence / Git
+
+- 每個關鍵步驟須記錄完整實際命令、時間、工作目錄（公開前遮蔽敏感部分）、Python/PowerShell 版本、exit code、公開安全的 stdout/stderr 與測試結果；輸入 SHA-256 before/after 分別提供。
+- Research Own Worker 僅由 STUDENT-RESEARCH Brain 下令。Brain 派工前與 Worker 開工前都須重讀 GitHub main 最新 AGENTS.md；若範圍衝突，STOP_IF。
+- Commit 前查 staged diff、.gitignore 排除與實際 Git tree（包括歷史敏感檔風險）；僅推送 main，禁止 force push。Worker 推送後只可報 READY_FOR_REVIEW；Research Brain 從 GitHub 實際審查，然後向 MAIN 返回 BRAIN_TO_BRAIN_RETURN。
+- MAIN 須再次從 GitHub 讀取程式、契約、證據與 Commit，才能核發 M2 PASS。資料契約只有 MAIN 正式接受後才可交給 STUDENT-WEB Brain；不得提前啟動 M3。
+
+### M2 Return Contract
+
+TYPE=BRAIN_TO_BRAIN_RETURN; WORK_ITEM_ID=WO-M2-RESEARCH-001; FROM=STUDENT-RESEARCH Brain; RETURN_TO=STUDENT-MAIN Brain; STATUS=READY_FOR_MAIN_REVIEW/FAIL/BLOCKED。
+須附 Phase A PASS/FAIL/BLOCKED、Phase B PASS/FAIL/BLOCKED/NOT_STARTED、三檔實際相對路徑、三組 SHA-256 before/after、Train/Test/RUL rows/columns、Train/Test Unit/Cycle 驗證、RUL mapping、Raw Index 檢查結果、Missing/Duplicates/Quality、Trend 與來源核對、Data Contract 文件/JSON GitHub 路徑、實際命令與執行證據、Exit Codes、Tests、Commit ID/Commit SHA256 計算對象、遠端 Commit URL、GitHub Verify、Data Safety、Research Brain Review 與 blockers。
+
+**M2 CURRENT STATUS:** COMMAND_DISPATCHED to STUDENT-RESEARCH Brain via STUDENT relay; RELAY_STATUS=PENDING_STUDENT_RELAY; actual local data has NOT been accessed by MAIN; no M2 result has been claimed.
