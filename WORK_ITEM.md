@@ -65,7 +65,7 @@ MAIN → STUDENT-RESEARCH Brain-to-Brain 正式派工登錄（由 STUDENT 轉交
 | TO | STUDENT-RESEARCH Brain |
 | RETURN_TO | STUDENT-MAIN Brain |
 | AUTHORIZED_BY | STUDENT（已要求啟動 M1，並指示 MAIN 完成正式派工） |
-| STATUS | READY_FOR_REVIEW（AMENDMENT-001 / EVIDENCE_REMEDIATION；Worker 已完成 EVIDENCE_RERUN 並提交完整執行證據，待 Research Brain 與 MAIN 獨立審查；M1 尚未 PASS；M2 維持 BLOCKED） |
+| STATUS | BRAIN_REVIEWED（AMENDMENT-001 / EVIDENCE_RERUN_RESEARCH_ACCEPTED / READY_FOR_MAIN_REVIEW；待 STUDENT-MAIN 最終驗收，M1 尚未 PASS；M2 維持 BLOCKED） |
 | PREREQUISITE | WO-M0-001=PASS；不得提前啟動 M2 |
 | INPUT | **修訂後有效輸入**：本地專案根目錄 `C:\Users\z2324\Desktop\NTUST\115\115_1\115-1\20261123` 下之 **`synthetic_sensor.csv`**（完整路徑 `C:\Users\z2324\Desktop\NTUST\115\115_1\115-1\20261123\synthetic_sensor.csv`）；由 STUDENT 透過 Windows 檔案總管提供位置，尚待 Worker 在本地實際查核；預期六筆，實際筆數、內容及 SHA-256 均未驗證；來源類型 SYNTHETIC；READ_ONLY。原先 `data/intro/synthetic_sensor.csv` 為被取代的路徑，歷史保留於下方阻礙紀錄。 |
 | SCOPE | 由 Research Brain 負責安排及審查 Research Own Worker，使用指定 CSV 進行資料品質檢查、簡易數值顯示及 Sensor Trend；不得直接指派 Web Worker 或進入 M2。 |
@@ -131,3 +131,16 @@ TYPE=BRAIN_TO_BRAIN_RETURN；WORK_ITEM_ID=WO-M1-RESEARCH-001；FROM=STUDENT-RESE
 - **INTEGRITY:** SHA-256 before/after 均為 `cd536b46eb628909fdc986bbad956c24a2e50afb287968998374befc62204377`，亦與先前 Worker 報告一致；來源未修改。
 - **SCOPE:** 本輪僅更新 `reports/M1_EXECUTION_EVIDENCE.md` 與本 Worker 補證紀錄；未修改研究程式、測試、其他報告、`.gitignore`、CSV 或 NASA FD001 資料，未執行 M2。
 - **DELIVERY:** 補證提交 ID、GitHub URL、Push 與遠端可讀性驗證由 Worker Return 提供，避免提交自我引用。Worker 僅回報 `READY_FOR_REVIEW`，不宣告 M1 PASS。
+
+## WO-M1-RESEARCH-001 — RESEARCH EVIDENCE REMEDIATION REVIEW (2026-11-23)
+
+- **REVIEWER:** STUDENT-RESEARCH Brain
+- **TYPE:** INDEPENDENT_GITHUB_REVIEW
+- **REVIEW_STATUS:** `RESEARCH_ACCEPTED / READY_FOR_MAIN_REVIEW` (非 M1 最終 PASS)
+- **GITHUB_BASELINE:** `526641bc83b58f18c4c83a90ae8ac50eb2ff1c2f`
+- **WORKER_EVIDENCE_COMMIT:** `3e655fd0c370152a2e55cbde5cbe6859722ac516`
+- **INDEPENDENT_CHECK:** 已從 GitHub `main` 讀取最新 `AGENTS.md`、`WORK_ITEM.md`、`reports/M1_EXECUTION_EVIDENCE.md`、Worker Commit/Compare 與遞迴 Git tree。核對本次僅修改 `WORK_ITEM.md` 及 `reports/M1_EXECUTION_EVIDENCE.md`，且 Commit 以 MAIN 審查提交為親代；GitHub `main` 原始資料檔 `synthetic_sensor.csv` 及 NASA FD001 檔均未公開。兩個 M1 研究程式的 Git Blob ID 維持不變，原研究成果未遭修改。
+- **EVIDENCE_REVIEW:** 已確認新報告明確標示 `EVIDENCE_RERUN`，保留前次歷史；具完整 PowerShell CSV 預檢 here-string / `python -c $preflight`、本次 Profile/Trend/Unittest 命令、各步驟起迄時間與 Exit Code；完整列示 Profile/Trend stdout（Profile 的本地使用者絕對路徑已明示遮蔽）、stderr 空值，以及 unittest stdout 空值、七項 verbose stderr、結果 7 passed / 0 failed / 0 errors。PowerShell 7.6.9、Python 3.12.7 及工作目錄均有記錄。
+- **REPORTED_MEASUREMENTS:** rows=6；columns=4；column_names=[timestamp,load_pct,coolant_out_c,oil_pressure_bar]；duplicates=1；missing=1，missing_by_column=0/0/0/1；Row Index × load_pct 的 6 個 trend 點可回查；預檢、Profile、Trend、Unittest 的 Exit Code 均為 0；輸入 SHA-256 before/after 均為 `cd536b46eb628909fdc986bbad956c24a2e50afb287968998374befc62204377`，且與先前 Worker 回報一致。
+- **LIMITATION:** 原始 CSV 留在學生本地且未上傳，Research Brain 不可獨立重算輸入檔 SHA-256、資料數值或在學生端重跑；GitHub 提供的是 Worker 公開保存的本地執行紀錄，並非第三方執行環境的自動簽章逐位元組紀錄。Worker 所報 Commit SHA-256 未由 Research Brain 獨立重算；所有地方均未將此驗證層級冒稱為直接本地驗證。
+- **DECISION:** 本次 MAIN 指定之執行證據缺口已依補證報告形式補齊，Research Brain 接受補證並提交 STUDENT-MAIN 獨立最終驗收；`M1_FINAL_PASS=PENDING_MAIN`；`M2=BLOCKED`。
