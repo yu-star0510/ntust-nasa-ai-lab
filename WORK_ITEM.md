@@ -65,7 +65,7 @@ MAIN → STUDENT-RESEARCH Brain-to-Brain 正式派工登錄（由 STUDENT 轉交
 | TO | STUDENT-RESEARCH Brain |
 | RETURN_TO | STUDENT-MAIN Brain |
 | AUTHORIZED_BY | STUDENT（已要求啟動 M1，並指示 MAIN 完成正式派工） |
-| STATUS | COMMAND_DISPATCHED（RELAY_STATUS=PENDING_STUDENT_RELAY，Own Worker 尚未開始） |
+| STATUS | BLOCKED（INPUT_NOT_FOUND；2026-11-23；等待 STUDENT-RESEARCH Brain 確認路徑及正式回報，M1 未通過） |
 | PREREQUISITE | WO-M0-001=PASS；不得提前啟動 M2 |
 | INPUT | 本地專案根目錄 C:\Users\z2324\Desktop\NTUST\115\115_1\115-1\20261123 下之 data/intro/synthetic_sensor.csv，預期六筆，實際須驗證；來源類型 SYNTHETIC；READ_ONLY |
 | SCOPE | 由 Research Brain 負責安排及審查 Research Own Worker，使用指定 CSV 進行資料品質檢查、簡易數值顯示及 Sensor Trend；不得直接指派 Web Worker 或進入 M2。 |
@@ -76,7 +76,7 @@ MAIN → STUDENT-RESEARCH Brain-to-Brain 正式派工登錄（由 STUDENT 轉交
 | STOP_IF | 找不到或無法安全讀取 CSV、列數不是 6、缺少可用欄位而無法合法呈現趨勢、欄位或數值錯配、原始檔 hash 改變、缺真實執行證據、GitHub push/驗證失敗、需公開原始資料或敏感資訊、AGENTS.md 衝突、其他未完工作衝突或任務擴權；遇 STOP_IF 回報 BLOCKED。 |
 | GOVERNANCE | STUDENT-RESEARCH Brain 派工前與 Research Own Worker 開工前各自讀取 GitHub main 最新 AGENTS.md 並遵守；單一 main 分支循序執行，檢查 staged files；不得 force push；Worker 完成 Commit/Push 後 Research Brain 從遠端審查；只有 MAIN 可決定最終 PASS。 |
 | WORKER_REPORT | **BLOCKED（2026-11-23 17:24:45 +08:00）**：Research Own Worker 已接收正式派工，於乾淨的本地 `main` 以 `git pull --ff-only origin main` 快轉同步至 GitHub `main` 提交 `238b48fe9adfde38bc98ee57052c54bebb75b366`。依指定路徑檢查 `data/intro/synthetic_sensor.csv` 時，`Test-Path -LiteralPath data/intro/synthetic_sensor.csv -PathType Leaf` 判定檔案不存在；明確阻礙檢查回傳 Exit Code `2`，stderr 為 `BLOCKED: required input file not found: data/intro/synthetic_sensor.csv`。因此觸發 STOP_IF「找不到或無法安全讀取 CSV」，未讀取或分析資料、未計算輸入 SHA-256、未建立程式／測試／報告、未執行 M1 分析，亦未讀取 NASA FD001 原始資料。等待 STUDENT-RESEARCH Brain 處理缺少的唯讀輸入檔並重新派工。 |
-| BRAIN_REVIEW | PENDING；Research Brain 必須先審查，再由 MAIN 獨立審查。 |
+| BRAIN_REVIEW | **MAIN 阻礙核查（非 M1 PASS）**：2026-11-23，MAIN 已從 GitHub main 實際讀取 AGENTS.md、WORK_ITEM.md、提交 c58aec1c7c451001dedf06c5df0299bd3506d18e 及遠端檔案樹，確認 Worker 的 BLOCKED 紀錄已推送且僅更動 WORK_ITEM.md。依回報，指定相對路徑 data/intro/synthetic_sensor.csv 在 Worker 當時工作目錄下不存在，觸發 STOP_IF；CSV 數值、行列數、SHA-256、趨勢與測試均未產出。**限制**：MAIN 無法直接查核學生本地檔案是否存在於其他路徑，亦未取得獨立原始 PowerShell 執行紀錄，Test-Path 的 Exit Code 2 應由 Research Brain 確認來源。STUDENT-RESEARCH Brain 審查與正式 Brain-to-Brain Return 仍 PENDING；須先釐清與獲准修正輸入路徑或補足原輸入，才可由 Research Brain 重新派工。M2 持續 BLOCKED。 |
 | STUDENT_APPROVAL | 已授權啟動 M1；M2 尚未獲執行授權。 |
 
 ### RETURN FORMAT
