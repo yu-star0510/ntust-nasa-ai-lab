@@ -428,3 +428,77 @@ Must include: used local file relative paths, before/after SHA-256, selected spl
 - **PRIVACY:** GitHub tree excludes raw FD001 and synthetic CSV; historical WORK_ITEM.md contains pre-existing Windows private absolute paths, not introduced by this supplement. No history rewrite/force push authorized.
 - **NEXT_GATE:** Supplement PASS, original M2 PASS remains. This acceptance does NOT start Web/M3 or M4; any next milestone or data-contract metadata synchronization requires a separately authorized task and latest AGENTS.md review.
 - **RETURN_TO:** STUDENT
+
+
+## WO-M3-WEB-001 — M3-A FD001 Local Read-only API
+
+| FIELD | VALUE |
+| --- | --- |
+| TYPE | BRAIN_TO_BRAIN_WORK_ORDER |
+| WORK_ITEM_ID | WO-M3-WEB-001 |
+| MILESTONE | M3-A, API-first stage of Interactive Analysis Website; NOT entire M3 completion |
+| FROM | STUDENT-MAIN Brain |
+| TO | STUDENT-WEB Brain |
+| RETURN_TO | STUDENT-MAIN Brain |
+| AUTHORIZED_BY | STUDENT (2026-11-24: explicitly requested MAIN -> Web Brain M3 readonly API work order after M2 acceptance) |
+| STATUS | COMMAND_DISPATCHED to Web Brain via STUDENT relay / RELAY_STATUS=PENDING_STUDENT_RELAY / WEB_OWN_WORKER=NOT_STARTED |
+| PRECONDITIONS | M0=PASS, M1=PASS, M2 original WO-M2-RESEARCH-001=MAIN_PASS, evidence supplement WO-M2-RESEARCH-002=MAIN_PASS; this user request grants only M3-A Web API work, not M4 nor entire M3 approval. |
+| GOVERNANCE | GitHub main AGENTS.md read at dispatch, baseline 9607b18f513d20ef7b4b34918cf7834d9bb2155f; Web Brain must independently reread latest AGENTS.md and WORK_ITEM.md before dispatching Web Own Worker; Web Own Worker must reread before work. Only Web Brain directs Web Own Worker; MAIN does not bypass hierarchy. |
+| INPUT | Student's existing local workspace FD001/train_FD001.txt, FD001/test_FD001.txt, FD001/RUL_FD001.txt; read-only verified FD001 parser, Data Contract v1.0.1, M2 source hashes and provenance. Do not redownload, change or Git upload raw datasets. |
+| CONTRACT_HANDOFF_GATE | Research Data Contract version 1.0.1 is MAIN_ACCEPTED per authoritative M2 MAIN FINAL ACCEPTANCE in WORK_ITEM.md, but contract JSON and Markdown still say main_acceptance=PENDING. Web Brain MUST identify this discrepancy before instructing Worker, request governed Research/MAIN synchronization with corresponding M2 compatibility tests, and independently verify final version and approval state. No Web Own Worker execution until reconciled; Web Brain must not itself modify Research contract or validator. If not resolved, return BLOCKED/HANDOFF_CONTRACT_STATE. |
+| SCOPE | Implement and locally execute secure readonly HTTP API covering /api/health, /api/catalog, /api/units and /api/history. Define and test stable success/error JSON, provenance on individual history records, null-vs-unknown semantics and actual raw-source-row API crosschecks. No frontend/UI, Evidence Prompt generation, RUL prediction, fault classification, model training or M4 work. |
+| ALLOWED_NEW_FILES | web/api.py, web/requirements.txt (only if needed and version-pinned), web/README.md, tests/test_m3_api.py, contracts/M3_API_CONTRACT.md, reports/M3_API_EXECUTION_EVIDENCE.md, reports/M3_API_SOURCE_CROSSCHECK.md; equivalently named minimal Web-owned files require MAIN approval before change. |
+| ALLOWED_EXISTING_CHANGES | Minimal .gitignore allowlisting Web code/tests/reports/API contract while excluding raw data, plus M3 entries only in WORK_ITEM.md. Research M2 code/tests/contracts/reports are READ_ONLY; existing M0/M1/M2 accomplishments unchanged. No other file edits without MAIN authorization. |
+| READ_ONLY | FD001 raw data, synthetic_sensor.csv, all M2 Research artifacts and Data Contract, historic M0/M1 files and any student private files. No persisting raw data exports, rewriting datasets, publishing complete sensor histories or leak of local absolute paths. |
+| SOURCE_OF_TRUTH | FD001_DATA_CONTRACT v1.0.1, original input hashes and M2 API interfaces; dataset split-local Unit and Cycle IDs; RUL label is ground-truth only at final observed Test Cycle, not a predicted or per-cycle Test label. |
+| ACCEPTANCE_AUTHORITY | Web Own Worker may return READY_FOR_REVIEW only; Web Brain independently reads GitHub main and returns BRAIN_TO_BRAIN_RETURN to MAIN; MAIN alone records PASS/FAIL/BLOCKED after independent GitHub verification. |
+
+### Phase 0 — Contract Handoff / Safety Gate
+
+1. Web Brain reads GitHub latest AGENTS.md, WORK_ITEM.md, ROADMAP.md, accepted M2 Data Contract JSON/Markdown and relevant approved M2 source interfaces before dispatching. Notice version 1.0.1 is accepted in WORK_ITEM, but contract-file main_acceptance=PENDING is a stale review snapshot.
+2. STOP_IF HANDOFF_CONTRACT_STATE until an authorized, controlled Research/MAIN action synchronizes that metadata and reruns compatible M2 contract/data tests, or MAIN explicitly records a tested, versioned alternative handoff resolution. Do not silently coerce PENDING to ACCEPTED; do not have Web Own Worker edit M2 contract; do not start Web Own Worker before preflight is satisfied.
+3. Check one active work item at a time, no forced Git history rewrites, no local private paths published, no raw datasets or all records pushed to public GitHub. API must bind loopback (127.0.0.1) by default and be read-only to the filesystem.
+
+### HTTP API minimum contract (GET only)
+
+Use one stable success wrapper (example shape): {"status":"ok","data":{...},"meta":{"schema_version":"1.0","source":"FD001_DATA_CONTRACT v1.0.1"}}. Use a stable error wrapper: {"status":"error","error":{"code":"ERROR_CODE","message":"safe public message","details":{...}}}; never include traceback, absolute path or raw source file in error.
+
+- GET /api/health: HTTP 200 only when verified local sources can be read and integrity and accepted contract gate pass, with service/status/contract_version, source_type=TRUSTED_LOCAL_FILES and per-file hash_verified=true/false metadata without disclosing raw data or private absolute paths. For missing files, contract mismatch, unreadable file, invalid source hashes or unsafe path, fail closed: HTTP 503 with code DATA_NOT_READY / SOURCE_INTEGRITY_ERROR / CONTRACT_NOT_ACCEPTED as appropriate. Health is a real readiness check, not an unverified static OK.
+- GET /api/catalog: HTTP 200; publish splits train,test; 21 sensors sensor_1..sensor_21, integer sensor selectors 1..21, operational settings 1..3, column-index mapping, contract version and safe dataset metadata (unit counts, cycle ranges if validated). No fabricated physical sensor units, fault labels, thresholds, healthy statuses or prediction fields. Do not disclose full raw records or complete RUL mapping.
+- GET /api/units?split=train (also split=test): HTTP 200; list only actual unit IDs from the selected split, sorted ascending, with data source/provenance summary; unit_id values scoped to split. Require and validate split; do not mix Train/Test units.
+- GET /api/history?split=train&unit=1&sensor=7&start=1&end=20: HTTP 200; interpret sensor=7 EXACTLY as sensor_7 (source column 12, as source columns 6..26 represent sensors 1..21). Query uses required split=train|test; positive integer unit, sensor in 1..21, inclusive positive integer cycle start/end, start<=end. Validate source Unit exists in selected split; return only actual observed cycles in requested inclusive window, numeric ascending; each point carries cycle, value (number or JSON null only if genuinely source-missing and allowed by policy), and provenance reference including dataset_split, source_file project-relative, source_sha256, physical_line_number (1-based), data_row_index (0-based), source_column_index (1-based), original_value or original token, reread_matches. Include selected unit/sensor/start/end and record count. No filling, resampling, interpolation or synthetic points.
+- Health/catalog/units/history must be GET/read-only. Reject mutating HTTP methods (405 or documented equivalent) and unrecognized endpoints (404). Use explicit bounded query windows; reject unbounded/oversized windows or unsupported values without loading/exporting the entire raw dataset.
+
+### Success, error, null and semantic rules
+
+1. Document and test the chosen JSON envelopes and content types; unknown query parameter, malformed integer, missing required parameter, invalid split/sensor, start>end -> HTTP 400 or 422 with specific stable error codes. Unknown split-local Unit or missing endpoint -> HTTP 404 with safe code. Empty but valid in-range observation window -> 200 and [] with count=0, NEVER fake points or null measurements.
+2. JSON null represents only an observed missing datum when the approved validated source allows it; current approved FD001 has zero missing and structural missing values are validation errors, so do not synthesize nulls on not found, invalid requests, unknown diagnosis, or absent cycles. If a future nullable field is introduced, explicitly distinguish it from UNKNOWN and document its provenance.
+3. Network access: local 127.0.0.1 only, no external hosting, no raw dataset path parameter accepting arbitrary filesystem locations, no write methods or file modifications. If safe startup cannot be achieved, STOP_IF.
+4. If the contract layer already exposes get_units, get_cycles, get_sensor_series, get_raw_reference, reuse them instead of independently parsing FD001. Sensor index to name and source column mapping must be tested exactly; no new threshold/health model. RUL is not part of requested /api/history values.
+
+### Actual-source-row verification (mandatory)
+
+1. In the student local workspace with exact verified FD001 sources, run the required history query and independently open the selected Train text file READ_ONLY. For at least 3 distinct returned points, calculate the original source physical line and token column from the actual file, compare token-to-number, Unit ID, Cycle, sensor 7 -> source column 12, data_row_index, source SHA-256 and entire provenance payload. Do not infer physical_line_number=cycle for arbitrary Units. Test a unit other than Unit 1 and at least one Test split query as independent crosschecks. Do not rely solely on the API's provenance assertion; actual text lines must be reread in the local test.
+2. Record exact request/response (public-safe bounded samples only), HTTP status/JSON shape, crosscheck results, command, real Exit Code, timestamp, tests, before/after hashes and no data mutation. Verify output is taken from actual source; if FD001 does not match accepted hashes, STOP_IF, no fake JSON and no readiness success.
+3. Test valid train/test/edge cycles and negative cases: invalid sensor=0, 22, invalid unit, reversed range, malformed/missing params, missing files, hash mismatch, empty window, incorrect paths, unsafe methods, data not ready. Confirm /api/health reflects readiness. No need to fabricate missing values to test null behavior; synthetic fixtures must be explicitly separated and marked synthetic.
+
+### Deliverables, evidence and governance
+
+- Allowed code, pinned dependencies if necessary, local run instructions, API response/error contract and OpenAPI-like request/response examples explicitly labeled illustrative unless captured from actual local API.
+- reports/M3_API_SOURCE_CROSSCHECK.md contains original-line/column verified small bounded examples; reports/M3_API_EXECUTION_EVIDENCE.md contains actual commands, local timestamps/time zone, versions, complete public-safe stdout/stderr, Exit Code, HTTP requests and status codes, unit tests, accepted original SHA-256 before/after, local service only. No absolute private paths, credentials, complete raw source rows, full per-Unit trends, or raw dataset uploads to GitHub.
+- Worker on one main branch only, Git staged scope verified, Commit + Push, report concrete Commit ID and URL. Web Brain separately fetches and reviews actual GitHub main code, tests, outputs and tree, returns RESEARCH-FREE WEB BRAIN REVIEW to MAIN. MAIN independently reviews GitHub and decides M3-A PASS/FAIL/BLOCKED.
+- Passing M3-A API does NOT imply whole M3 Website PASS. Separate follow-on authorized work order is needed for interactive selectors/trend UI and later M4 Evidence Prompt.
+
+### STOP_IF
+
+Prior M2 PASS absent; contract metadata handoff unresolved; unavailable or changed local trusted FD001 file; source SHA-256 mismatch; failure to verify raw source line; incorrect sensor mapping, cycle/unit/split mismatch, unsupported null coercion, invented values or baseline; endpoint returns data while not ready; path traversal, unsafe file reads, mutation, raw dataset disclosure, complete series uploads, secrets or private absolute paths in GitHub; lack of real execution evidence; Git conflict, other active item, latest AGENTS.md conflict, unavailable GitHub review. Return BLOCKED with precise cause, never bypass handoff gate or force push.
+
+### RETURN_TO STUDENT-MAIN
+
+TYPE: BRAIN_TO_BRAIN_RETURN
+WORK_ITEM_ID: WO-M3-WEB-001
+FROM: STUDENT-WEB Brain
+RETURN_TO: STUDENT-MAIN Brain
+STATUS: READY_FOR_MAIN_REVIEW / FAIL / BLOCKED
+WEB_BRAIN_REVIEW: WEB_ACCEPTED / FAIL / BLOCKED
+Include: contract handoff resolution reference and tested schema version; endpoints and request/response codes; local raw-line comparisons including sensor 7->column 12 and non-first Unit/Test; null/error handling; source SHA256 before/after; actual launch commands and API requests; complete safe stdout/stderr/Exit Codes; tests; Git commit/URL, changed files, remote tree/GitHub verification and blockers.
