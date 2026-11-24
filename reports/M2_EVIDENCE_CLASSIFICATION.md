@@ -63,6 +63,10 @@ derived_train_RUL = final_observed_train_cycle - current_cycle
 
 Train Unit 1 ends at Cycle 192, so selected Cycles 1–5 yield `191, 190, 189, 188, 187`. These are `DERIVED` under the documented convention, not measured original columns and not model predictions.
 
+The classifier does not hard-code the final Cycle's source position. It obtains the actual Unit 1 cycle list from `FD001Repository.get_cycles("train", 1)`, selects its maximum as Cycle 192, and then calls the approved `get_raw_reference("train", 1, 192, "cycle")`. The resulting final-input reference is `FD001/train_FD001.txt`, physical line 192, zero-based data row 191, one-based source column 2, original token/value `192`, with `reread_matches=true`. Its reread behavior is correctly described as the existing approved linecache-backed lookup, not a fresh disk reopen.
+
+The published DERIVED record contains six bounded Cycle-column references: selected Cycles 1–5 tagged `DERIVED_CURRENT_CYCLE_INPUT`, plus Cycle 192 tagged `DERIVED_FINAL_OBSERVED_CYCLE_INPUT`. Thus both operands of `final_observed_train_cycle - current_cycle` are source-traceable without publishing a complete Train sensor series.
+
 ## UNKNOWN
 
 The classifier returns `UNKNOWN` with a precise reason for each of the following:

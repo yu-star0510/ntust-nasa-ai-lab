@@ -129,6 +129,38 @@ def _rul_reference(
     }
 
 
+def _train_cycle_reference(
+    repository: FD001Repository, unit_id: int, cycle: int, provenance_role: str
+) -> dict[str, Any]:
+    """Return one approved, linecache-backed Train Cycle-column reference."""
+
+    raw = repository.get_raw_reference("train", unit_id, cycle, "cycle")
+    if not raw["reread_matches"]:
+        raise RuntimeError("Train Cycle source token reread mismatch")
+    original_cycle = int(raw["original_value"])
+    if original_cycle != cycle:
+        raise RuntimeError("Train Cycle source token does not match the selected cycle")
+    return {
+        "dataset_split": raw["dataset_split"],
+        "unit_id": raw["unit_id"],
+        "cycle": raw["cycle"],
+        "sensor_name": None,
+        "sensor_name_applicability": "NOT_APPLICABLE_CYCLE_COLUMN",
+        "field_name": "cycle",
+        "provenance_role": provenance_role,
+        "raw_value": original_cycle,
+        "original_value": original_cycle,
+        "original_token": raw["original_value"],
+        "source_file": raw["source_file"],
+        "source_sha256": raw["source_sha256"],
+        "physical_line_number": raw["physical_line_number"],
+        "data_row_index": raw["data_row_index"],
+        "source_column_index": raw["source_column_index"],
+        "reread_matches": raw["reread_matches"],
+        "reread_method": "existing approved linecache-backed raw-reference lookup",
+    }
+
+
 def _sensor_observations(
     references: list[dict[str, Any]], split: str, unit_id: int, sensor_name: str
 ) -> list[dict[str, Any]]:
@@ -194,18 +226,32 @@ def _train_derived_rul(
     references: list[dict[str, Any]],
 ) -> dict[str, Any]:
     final_cycle = max(repository.get_cycles("train", unit_id))
-    derived = [final_cycle - reference["cycle"] for reference in references]
+    selected_cycles = [reference["cycle"] for reference in references]
+    derived = [final_cycle - cycle for cycle in selected_cycles]
+    cycle_references = [
+        _train_cycle_reference(
+            repository, unit_id, cycle, "DERIVED_CURRENT_CYCLE_INPUT"
+        )
+        for cycle in selected_cycles
+    ]
+    final_cycle_reference = _train_cycle_reference(
+        repository, unit_id, final_cycle, "DERIVED_FINAL_OBSERVED_CYCLE_INPUT"
+    )
     return _record(
         "INFERENCE",
         "Train-cycle RUL values shown here are derived under the run-to-failure convention; they are not original columns.",
-        references,
+        [*cycle_references, final_cycle_reference],
         {
             "classification": "DERIVED",
             "assumption": "Train sequence is treated as run-to-failure and its final observed cycle as the failure endpoint convention.",
             "formula": "derived_train_RUL = final_observed_train_cycle - current_cycle",
             "final_observed_train_cycle": final_cycle,
-            "cycles": [reference["cycle"] for reference in references],
+            "cycles": selected_cycles,
             "derived_values": derived,
+            "source_input_roles": {
+                "current_cycles": "DERIVED_CURRENT_CYCLE_INPUT",
+                "final_cycle": "DERIVED_FINAL_OBSERVED_CYCLE_INPUT",
+            },
         },
         f"train Unit {unit_id}, selected cycles only",
         [
@@ -364,6 +410,12 @@ def verification_summary(input_dir: Path = DEFAULT_INPUT_DIR) -> dict[str, Any]:
         reference["source_file"]: reference["source_sha256"]
         for reference in references
     }
+    train_derived = samples["cases"][0]["inferences"][1]
+    final_cycle_reference = next(
+        reference
+        for reference in train_derived["source_references"]
+        if reference["provenance_role"] == "DERIVED_FINAL_OBSERVED_CYCLE_INPUT"
+    )
     return {
         "schema_version": SCHEMA_VERSION,
         "work_item_id": "WO-M2-RESEARCH-002",
@@ -386,6 +438,16 @@ def verification_summary(input_dir: Path = DEFAULT_INPUT_DIR) -> dict[str, Any]:
         "all_source_references_reread_match": all(
             reference["reread_matches"] for reference in references
         ),
+        "derived_train_rul_provenance": {
+            "source_reference_count": len(train_derived["source_references"]),
+            "selected_cycle_reference_count": sum(
+                reference["provenance_role"] == "DERIVED_CURRENT_CYCLE_INPUT"
+                for reference in train_derived["source_references"]
+            ),
+            "final_cycle_reference": final_cycle_reference,
+            "formula": train_derived["calculation_or_null"]["formula"],
+            "classification": train_derived["calculation_or_null"]["classification"],
+        },
         "rul_ground_truth": {
             "test_unit_id": 1,
             "last_observed_cycle": samples["cases"][1]["actual_selected_cycles"][-1],

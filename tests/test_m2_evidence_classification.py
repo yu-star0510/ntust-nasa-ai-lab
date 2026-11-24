@@ -110,6 +110,31 @@ class TestM2EvidenceClassification(unittest.TestCase):
         self.assertEqual(calculation["classification"], "DERIVED")
         self.assertEqual(calculation["derived_values"], [final_cycle - cycle for cycle in range(1, 6)])
         self.assertIn("not original columns", derived["statement"])
+        references = derived["source_references"]
+        self.assertEqual(len(references), 6)
+        self.assertEqual(
+            [reference["cycle"] for reference in references[:-1]],
+            [1, 2, 3, 4, 5],
+        )
+        self.assertTrue(
+            all(
+                reference["provenance_role"] == "DERIVED_CURRENT_CYCLE_INPUT"
+                for reference in references[:-1]
+            )
+        )
+        final_reference = references[-1]
+        self.assertEqual(
+            final_reference["provenance_role"],
+            "DERIVED_FINAL_OBSERVED_CYCLE_INPUT",
+        )
+        self.assertEqual(final_reference["cycle"], final_cycle)
+        approved = self.repository.get_raw_reference("train", 1, final_cycle, "cycle")
+        self.assertEqual(final_reference["physical_line_number"], approved["physical_line_number"])
+        self.assertEqual(final_reference["data_row_index"], approved["data_row_index"])
+        self.assertEqual(final_reference["source_column_index"], 2)
+        self.assertEqual(final_reference["original_token"], approved["original_value"])
+        self.assertTrue(final_reference["reread_matches"])
+        self.assertIn("linecache-backed", final_reference["reread_method"])
 
     def test_test_rul_label_is_freshly_reread_ground_truth_at_last_cycle(self) -> None:
         cycles = self.repository.get_cycles("test", 1)
@@ -191,6 +216,10 @@ class TestM2EvidenceClassification(unittest.TestCase):
             first["cases"][0]["inferences"][0]["calculation_or_null"]["endpoint_delta"],
         )
         self.assertEqual(
+            published["cases"][0]["inferences"][1]["source_references"],
+            first["cases"][0]["inferences"][1]["source_references"],
+        )
+        self.assertEqual(
             published["cases"][1]["observations"][-1]["source_references"][0]["original_value"],
             first["cases"][1]["observations"][-1]["source_references"][0]["original_value"],
         )
@@ -205,6 +234,17 @@ class TestM2EvidenceClassification(unittest.TestCase):
         self.assertEqual(summary["status"], "EVIDENCE_CLASSIFIED_NO_DIAGNOSIS")
         self.assertEqual(len(summary["cases"]), 2)
         self.assertTrue(summary["all_source_references_reread_match"])
+        self.assertEqual(
+            summary["derived_train_rul_provenance"]["source_reference_count"], 6
+        )
+        self.assertEqual(
+            summary["derived_train_rul_provenance"]["selected_cycle_reference_count"],
+            5,
+        )
+        self.assertEqual(
+            summary["derived_train_rul_provenance"]["final_cycle_reference"]["cycle"],
+            192,
+        )
         self.assertTrue(summary["rul_ground_truth"]["fresh_reread_verified"])
         self.assertEqual(summary["rul_ground_truth"]["classification"], "GROUND_TRUTH_LABEL_NOT_MODEL_PREDICTION")
         self.assertEqual(summary["diagnostic_conclusion"], "NOT_MADE")

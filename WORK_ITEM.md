@@ -293,7 +293,7 @@ TYPE=BRAIN_TO_BRAIN_RETURN; WORK_ITEM_ID=WO-M2-RESEARCH-001; FROM=STUDENT-RESEAR
 | TO | STUDENT-RESEARCH Brain |
 | RETURN_TO | STUDENT-MAIN Brain |
 | AUTHORIZED_BY | STUDENT (2026-11-24: 進行未完成的部分) |
-| STATUS | RESEARCH_REVIEW_FAIL / REMEDIATION_REQUIRED（2026-11-24，公開 DERIVED RUL 來源參考缺口與 SHA-256 補證命令/Exit Code/時間/PowerShell 版本不完整；原 WO-M2-RESEARCH-001 PASS 不變；M3/M4/Web NOT_STARTED） |
+| STATUS | REMEDIATION_OWN_WORKER_READY_FOR_REVIEW / RESEARCH_REREVIEW_PENDING / MAIN_REVIEW_PENDING（原 WO-M2-RESEARCH-001 PASS 不變；M3/M4/Web NOT_STARTED） |
 | PREREQUISITES | M2 MAIN PASS at ee27d43d4f72ff11d75d84125ca66326ae036069; accepted FD001_DATA_CONTRACT v1.0.1 per WORK_ITEM.md; no other active worker work item on GitHub main |
 | INPUT | Trusted local FD001/train_FD001.txt, FD001/test_FD001.txt, FD001/RUL_FD001.txt; existing M2 validated Python data interfaces; no external download or source lookup |
 | AUTHORITY | MAIN dispatches only to STUDENT-RESEARCH Brain. Research Brain must reread latest GitHub main AGENTS.md and WORK_ITEM.md and instruct only its own Research Own Worker. Worker must separately reread latest AGENTS.md before executing. MAIN never directly dispatches Own Worker. |
@@ -384,3 +384,15 @@ Must include: used local file relative paths, before/after SHA-256, selected spl
 - **EVIDENCE_LIMIT:** Research Brain 無法直接存取學生本地 FD001 原始資料或在其環境重跑測試；來源雜湊與測試實際 Exit Code 依 GitHub Worker 執行報告，並不冒稱已在學生電腦獨立重新計算。
 - **REMEDIATION_SCOPE:** 僅可改動本工作單五份新交付文件/程式及 WORK_ITEM.md 必要狀態；禁止改原始 FD001、先前 M2 程式/契約或 Web/M3/M4。Worker 補正後必須真正執行測試、完整記錄必要命令、三來源雜湊 before/after、Commit+Push main，再由 Research Brain 重新從 GitHub 獨立審查。
 - **NEXT_GATE:** `WO-M2-RESEARCH-002=NOT_ACCEPTED`，`RESEARCH_REMEDIATION_PENDING`，原 `WO-M2-RESEARCH-001=PASS`，M3/M4/Web 未經本工作單授權且不得啟動。
+
+## WO-M2-RESEARCH-002 — RESEARCH OWN WORKER REMEDIATION REPORT (2026-11-24)
+
+- **TYPE:** WORKER_REMEDIATION_EVIDENCE_RECORD
+- **EXECUTION_STATUS:** `READY_FOR_REVIEW` only; Research Brain rereview and MAIN review remain pending.
+- **REMEDIATION_BASELINE:** GitHub `main` commit `3b2d13644b55a058f2708c4e9f1707b01f14f249`; latest `AGENTS.md`, this work item, and Research Independent Review 001 were reread before remediation.
+- **FIX_A_DERIVED_RUL_PROVENANCE:** the classifier now obtains Unit 1's actual final Train Cycle through `FD001Repository.get_cycles`, then calls approved `get_raw_reference("train", 1, final_cycle, "cycle")`. The DERIVED record contains Cycle-column references for selected Cycles 1–5 and final Cycle 192; the final input resolves to physical line 192, zero-based data row 191, one-based source column 2, original token/value `192`, and `reread_matches=true`. Train references are explicitly linecache-backed, not fresh disk rereads.
+- **PUBLIC_JSON_CROSSCHECK:** `reports/M2_EVIDENCE_SAMPLES.json` contains the six bounded DERIVED source references and the test suite compares the published reference list exactly with the executable extraction result. No full Train series is published.
+- **FIX_B_EXECUTION_EVIDENCE:** `reports/M2_EVIDENCE_EXECUTION.md` records `EVIDENCE_TYPE: EVIDENCE_RERUN`, de-identified working directory, PowerShell 7.6.9, Python 3.12.7, per-source before/after hash commands, start/end timestamps, complete stdout/stderr, explicit child-process Exit Codes, and comparisons against accepted contract hashes. Hash commands use `ErrorActionPreference=Stop`, explicit output validation and `try/catch` exit; they do not use `$LASTEXITCODE`.
+- **RERUN_RESULTS:** `python research/m2_evidence_classification.py --verification-summary` Exit 0; `python -m unittest -v tests/test_m2_evidence_classification.py` 11/11 tests OK, Exit 0. Train/Test observations, endpoint delta/min/max, DERIVED RUL provenance, Test RUL fresh reread, 11 UNKNOWN topics, semantic separation, public safety and no-diagnosis limitations were revalidated.
+- **SOURCE_INTEGRITY:** Train before/after/contract `963b5e22825b34d8b21c69e1aeb4af3e647050eb672ee8834ba4b5d91d2de0f8`; Test `3cda7109ce17bafb5443f2ac926cfcf88154b941b8c4cf95eb55d1ddd6f52851`; RUL `a19c8ec94931949d0485bdc35118206e9c81c4547b422efb9cf86f4ceddbceca`; all unchanged and matched.
+- **SCOPE/SAFETY:** only the five authorized evidence-classification files and this `WORK_ITEM.md` evidence/status record were modified. `.gitignore`, accepted M2 code/tests/contracts, raw sources, M3/M4/Web and all other files were not modified. Commit/push identifiers are supplied after commit in the Worker return to avoid self-reference.
