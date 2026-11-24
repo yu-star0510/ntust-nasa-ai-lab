@@ -441,7 +441,7 @@ Must include: used local file relative paths, before/after SHA-256, selected spl
 | TO | STUDENT-WEB Brain |
 | RETURN_TO | STUDENT-MAIN Brain |
 | AUTHORIZED_BY | STUDENT (2026-11-24: explicitly requested MAIN -> Web Brain M3 readonly API work order after M2 acceptance) |
-| STATUS | COMMAND_DISPATCHED to Web Brain via STUDENT relay / RELAY_STATUS=PENDING_STUDENT_RELAY / WEB_OWN_WORKER=NOT_STARTED |
+| STATUS | BLOCKED / HANDOFF_CONTRACT_STATE（STUDENT-WEB Brain PRE-DISPATCH Gate；Web Own Worker NOT_STARTED；等待 WO-M3-HANDOFF-001 Research 專責補正與 MAIN 驗收後才可恢復） |
 | PRECONDITIONS | M0=PASS, M1=PASS, M2 original WO-M2-RESEARCH-001=MAIN_PASS, evidence supplement WO-M2-RESEARCH-002=MAIN_PASS; this user request grants only M3-A Web API work, not M4 nor entire M3 approval. |
 | GOVERNANCE | GitHub main AGENTS.md read at dispatch, baseline 9607b18f513d20ef7b4b34918cf7834d9bb2155f; Web Brain must independently reread latest AGENTS.md and WORK_ITEM.md before dispatching Web Own Worker; Web Own Worker must reread before work. Only Web Brain directs Web Own Worker; MAIN does not bypass hierarchy. |
 | INPUT | Student's existing local workspace FD001/train_FD001.txt, FD001/test_FD001.txt, FD001/RUL_FD001.txt; read-only verified FD001 parser, Data Contract v1.0.1, M2 source hashes and provenance. Do not redownload, change or Git upload raw datasets. |
@@ -502,3 +502,64 @@ RETURN_TO: STUDENT-MAIN Brain
 STATUS: READY_FOR_MAIN_REVIEW / FAIL / BLOCKED
 WEB_BRAIN_REVIEW: WEB_ACCEPTED / FAIL / BLOCKED
 Include: contract handoff resolution reference and tested schema version; endpoints and request/response codes; local raw-line comparisons including sensor 7->column 12 and non-first Unit/Test; null/error handling; source SHA256 before/after; actual launch commands and API requests; complete safe stdout/stderr/Exit Codes; tests; Git commit/URL, changed files, remote tree/GitHub verification and blockers.
+
+
+### WO-M3-WEB-001 — WEB BRAIN PRE-DISPATCH BLOCKER (2026-11-24)
+
+- TYPE: BRAIN_TO_BRAIN_BLOCKER_REVIEW
+- FROM: STUDENT-WEB Brain
+- RETURN_TO: STUDENT-MAIN Brain
+- WEB_DECISION: BLOCKED / HANDOFF_CONTRACT_STATE; WEB_OWN_WORKER=NOT_STARTED.
+- MAIN_VERIFICATION: MAIN reread GitHub main latest AGENTS.md, WORK_ITEM.md, FD001_DATA_CONTRACT.json and .md, research/m2_fd001_analysis.py and tests/test_m2_fd001.py. M2 MAIN acceptance is recorded in WORK_ITEM.md but both contract files still say main_acceptance=PENDING, and validate_contract checks acceptance against PENDING. Simply editing contract to ACCEPTED would fail the existing Phase B gate, so the Web Brain was correct to stop.
+- MAIN_DECISION: ACCEPTED_BLOCKER. The previously STUDENT-authorized M3-A included a mandatory Research/MAIN contract handoff; open only the narrowly scoped dependent correction WO-M3-HANDOFF-001. During this correction M3-A is BLOCKED and Web Own Worker is NOT_STARTED. Preserve original M2 PASS, do not start Web implementation until the gate is independently accepted by MAIN.
+- PRIOR_STATE_PRESERVED: Original M3-A work order remains valid but paused. All public GitHub historical evidence shall be retained; do not rewrite history.
+
+## WO-M3-HANDOFF-001 — Research-owned FD001 Data Contract State Synchronization
+
+| FIELD | VALUE |
+| --- | --- |
+| TYPE | BRAIN_TO_BRAIN_DEPENDENCY_REMEDIATION_WORK_ORDER |
+| WORK_ITEM_ID | WO-M3-HANDOFF-001 |
+| PARENT | WO-M3-WEB-001 (M3-A paused due to HANDOFF_CONTRACT_STATE) |
+| MILESTONE | M3-A Phase 0 pre-dispatch contract handoff only (NOT M3 Web implementation) |
+| FROM | STUDENT-MAIN Brain |
+| TO | STUDENT-RESEARCH Brain |
+| RETURN_TO | STUDENT-MAIN Brain |
+| AUTHORIZED_SCOPE | This dependency is specifically authorized as the controlled Research/MAIN handoff prerequisite in the STUDENT-approved M3-A order (D-M3-001); request for resolution was relayed by STUDENT from Web Brain. It is NOT approval of another project milestone or overlapping worker development. |
+| STATUS | COMMAND_DISPATCHED / RELAY_STATUS=PENDING_STUDENT_RELAY / RESEARCH_OWN_WORKER=NOT_STARTED |
+| PREREQUISITE | M2 original MAIN PASS and M2 evidence supplement MAIN PASS; WO-M3-WEB-001 BLOCKED with WEB_OWN_WORKER NOT_STARTED; latest AGENTS.md governs. |
+| SINGLE_ACTIVE_WORK | While this Research dependency is executing, parent M3-A remains paused: Web Brain must not dispatch Web Own Worker. Once this dependency is accepted by MAIN, Research work stops, then Web Brain rechecks the handoff before resuming its already authorized API work. |
+| INPUT | FD001_DATA_CONTRACT v1.0.1 (JSON + Markdown), research/m2_fd001_analysis.py validate_contract and run_phase_b, tests/test_m2_fd001.py, read-only trusted-local FD001 originals, WORK_ITEM.md original M2 MAIN acceptance. |
+| GOAL | Synchronize stale contract lifecycle metadata PENDING with the authoritative MAIN_ACCEPTED record without changing the semantic schema, six interface definitions, source hashes, dataset facts or source files; preserve reproducible Phase A/B tests. |
+| ALLOWED_EXISTING_CHANGES | contracts/FD001_DATA_CONTRACT.json; contracts/FD001_DATA_CONTRACT.md; research/m2_fd001_analysis.py (ONLY contract-validation logic and essential compatibility notes); tests/test_m2_fd001.py (ONLY contract compatibility/negative state tests); WORK_ITEM.md handoff execution/review; minimal .gitignore additions if necessary to allow reports only. |
+| ALLOWED_NEW_FILES | reports/M3_CONTRACT_HANDOFF.md; reports/M3_CONTRACT_HANDOFF_EVIDENCE.md (public-safe execution records, no raw records). |
+| READ_ONLY | train_FD001.txt/test_FD001.txt/RUL_FD001.txt, all M2 parsing/source-traceability semantics, Research v1.0.1 interface names/required fields, accepted dataset hashes, all unrelated source and tests, historical reports, any Web code, other student private files. |
+| OUT_OF_SCOPE | No Web API, HTTP endpoints, UI, M4, model training, prediction, baseline/fault threshold, raw dataset edit or publication, history rewrite or force push. |
+
+### REQUIRED CHANGE — state, compatibility and fail-closed behavior
+
+1. Contract state transition: Set main_acceptance=ACCEPTED in both FD001_DATA_CONTRACT.json and .md, with an accurate note that the authoritative approval occurred in original WO-M2-RESEARCH-001 MAIN FINAL ACCEPTANCE. Keep contract_name=FD001_DATA_CONTRACT, schema_version=1.0.1 (metadata-only lifecycle transition), validation_status=PASS, full source_files sha256, required_fields, all six interfaces, data types/semantics, RUL mapping and disclosure boundary unchanged. Record a distinct handoff work-item ID in WORK_ITEM.md rather than inventing a new data schema.
+2. Contract validator: Modify only the acceptance-state check in research/m2_fd001_analysis.py to validate EXACTLY ACCEPTED for the current published approved contract. Do not accept PENDING, malformed or unsupported states as Web-ready. Choose clear check naming such as main_acceptance_accepted (do not silently reinterpret a check named main_acceptance_pending). Preserve validation for name/version/required interfaces/required fields/validation_status. run_phase_b must remain PASS with actual trusted FD001 after transition and BLOCKED for unaccepted contract.
+3. Tests: Update current compatibility tests to require ACCEPTED in both JSON and Markdown. Add or adapt negative tests for temporary contract fixtures with PENDING, garbage state, wrong name/version/interface/field and ensure validate_contract().valid=false. Do not change dataset quality or numerical semantics; preserve existing M2 test coverage and Research Evidence classification tests. Avoid tests relying on original PENDING forever.
+4. Data integrity: Re-validate all three local trusted-original SHA-256 against the prior accepted M2 hashes before/after, with explicit path and SHA-256 checks; no source edits. Phase A and Phase B execute and pass (20/20 or actual count as tests evolve) plus M2 evidence classification tests (11/11 or actual count as tests evolve). Only the declared approved metadata/validator/tests/reports may change. RUL remains ground truth, not prediction.
+5. Execution evidence: Record real commands, working directory with private portions redacted, Python/PowerShell versions, local timestamps and timezone, complete public-safe stdout/stderr, Exit Codes for validation, Phase A, Phase B, two test suites and six hash commands; compare contract canonical content before/after (excluding only approved lifecycle metadata) and explain any differences. If output too large, use a bounded real diagnostic command with no invented summaries, but all actual executed commands must be faithfully logged. No raw data dump.
+6. Git safety: Single main sequential development only. Worker rereads latest AGENTS.md before work, checks git staged scope and secret/raw files, commits and pushes approved files to main, returns exact Commit SHA + URL. Research Brain independently fetches GitHub source, both contract files, tests, evidence, commits and tree, then returns research review. MAIN independently reviews and decides handoff PASS/FAIL/BLOCKED before Web resumes.
+
+### ACCEPTANCE CHECKLIST
+
+- M2 prior MAIN acceptance authority confirmed and preserved; parent M3-A still BLOCKED during execution.
+- Contract JSON and Markdown agree on schema 1.0.1, main_acceptance=ACCEPTED; validation_status PASS, original hashes/interface/semantics unchanged.
+- validate_contract passes only approved ACCEPTED contract and rejects PENDING or invalid state; Phase B now PASS on accepted contract. No actual data behavior or numerical changes.
+- Both M2 test suites are reexecuted with real input and pass; original dataset hashes stable before/after.
+- Complete authentic command, stdout/stderr/exit-code/timestamp evidence; no fake results or unapproved dataset publication.
+- Only authorized scope committed and pushed, Research Brain independently inspects GitHub main, MAIN independently accepts.
+- Once MAIN grants handoff PASS, send actual GitHub Commit SHA, accepted version, tests and clear permission to Web Brain to re-check latest AGENTS and proceed with its existing M3-A work. Do NOT declare full M3 PASS.
+
+### STOP_IF
+
+Unapproved scope/contract schema change, file missing, invalid M2 source hashes, incompatible Phase A/B, altered RUL semantics, inability to reject PENDING/invalid states, missing evidence, external downloads, any raw data Git upload or private path disclosure, simultaneous Web Own Worker execution, GitHub Push/GitHub review failure, governance conflict. Return BLOCKED, preserve work and notify MAIN.
+
+### RETURN_TO MAIN
+
+TYPE=BRAIN_TO_BRAIN_RETURN; WORK_ITEM_ID=WO-M3-HANDOFF-001; FROM=STUDENT-RESEARCH Brain; RETURN_TO=STUDENT-MAIN Brain; STATUS=READY_FOR_MAIN_REVIEW/FAIL/BLOCKED; RESEARCH_BRAIN_REVIEW=RESEARCH_ACCEPTED/FAIL/BLOCKED.
+Include: original M2 approval reference, source hashes before/after, contract version and exact metadata change, positive/negative validator checks and Phase A/B, all executed test suites, full public-safe stdout/stderr/Exit Codes/timestamps, changed files, Worker Commit+GitHub URL, Research Brain independent remote inspection, acceptance checklist and blockers. Main final approval PENDING until GitHub independent review.
