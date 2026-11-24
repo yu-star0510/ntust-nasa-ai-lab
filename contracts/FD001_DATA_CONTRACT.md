@@ -3,7 +3,7 @@
 | Metadata | Value |
 | --- | --- |
 | `contract_name` | `FD001_DATA_CONTRACT` |
-| `schema_version` | `1.0.0` |
+| `schema_version` | `1.0.1` |
 | `dataset` | `NASA_CMAPSS_FD001` |
 | `source_type` | `TRUSTED_LOCAL_FILES` |
 | `validation_status` | `PASS` |
@@ -13,7 +13,7 @@ This Research contract was produced only after the M2 Phase A gate passed. `PEND
 
 ## Dataset and provenance
 
-Train and Test rows contain 26 whitespace-delimited finite numeric fields: split-local positive `unit_id`, positive `cycle`, `setting_1..setting_3`, and `sensor_1..sensor_21`. Row provenance includes repository-relative `source_file`, lowercase SHA-256, 1-based `physical_line_number`, 0-based `data_row_index`, and 1-based `source_column_index`.
+Train and Test rows contain 26 whitespace-delimited finite numeric fields: split-local positive `unit_id`, positive `cycle`, `setting_1..setting_3`, and `sensor_1..sensor_21`. Row provenance includes project-relative `source_file`, lowercase SHA-256, 1-based `physical_line_number`, 0-based `data_row_index`, and 1-based `source_column_index`. Relative and absolute input-directory arguments are normalized against the authorized project root; paths outside that root are rejected.
 
 | Source | Relative path | SHA-256 |
 | --- | --- | --- |
@@ -35,7 +35,7 @@ Train and Test rows contain 26 whitespace-delimited finite numeric fields: split
 - `dataset_split`: enum `train | test`
 - `unit_id`, `cycle`: positive integers
 - `setting_1..setting_3`, `sensor_1..sensor_21`: finite numbers
-- `source_file`: repository-relative string
+- `source_file`: project-relative POSIX-style string; never an absolute private path
 - `source_sha256`: 64-character lowercase hexadecimal
 - `physical_line_number`: 1-based positive integer
 - `data_row_index`: 0-based non-negative integer
@@ -72,8 +72,9 @@ Train and Test rows contain 26 whitespace-delimited finite numeric fields: split
 ### `get_test_rul_label(unit_id)`
 
 - Input: valid positive Test Unit ID.
-- Output: `{test_unit_id, rul_physical_line_number, rul_data_row_index, last_observed_cycle, rul_label, rul_raw_value}`.
-- Errors: `KeyError` for unknown Test Unit.
+- Output: `{test_unit_id, rul_physical_line_number, rul_data_row_index, last_observed_cycle, rul_label, rul_raw_value, rul_raw_reference}`. The nested reference contains project-relative `source_file`, `source_sha256`, physical line, 0-based row index, source column 1, original token, freshly reread token, parsed label, and `reread_matches`.
+- Errors: `KeyError` for unknown Test Unit; `ValidationError` for a changed source hash, unavailable physical line, or mismatched reread token/value.
+- Provenance: every call freshly reopens the RUL file and verifies the recorded physical line, source token, parsed label, and SHA-256 before returning.
 - Semantics: applies only at the last observed Test Cycle and is not a prediction.
 
 ### `get_quality_summary(split)`

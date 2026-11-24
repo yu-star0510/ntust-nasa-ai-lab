@@ -2,7 +2,7 @@
 
 Work item: `WO-M2-RESEARCH-001`
 
-Validation date: 2026-11-23 (Asia/Taipei)
+Validation date: 2026-11-24 remediation `EVIDENCE_RERUN` (Asia/Taipei)
 
 Result: **PHASE A PASS**
 
@@ -16,7 +16,7 @@ The three inputs were found only in the trusted local `FD001/` directory and wer
 | `FD001/test_FD001.txt` | 2,228,855 | `3cda7109ce17bafb5443f2ac926cfcf88154b941b8c4cf95eb55d1ddd6f52851` | same |
 | `FD001/RUL_FD001.txt` | 429 | `a19c8ec94931949d0485bdc35118206e9c81c4547b422efb9cf86f4ceddbceca` | same |
 
-The final after-hash observation was at `2026-11-23T18:30:05.955+08:00`, after both final analysis and test execution.
+The final remediation before-hash observation was at `2026-11-24T15:25:51.425+08:00`; the final after-hash observation was at `2026-11-24T15:27:21.811+08:00`, after Phase A, Phase B, and the complete test suite for the final implementation. All values remained identical.
 
 ## Schema and semantics
 
@@ -59,10 +59,10 @@ Test unit first-appearance order was measured as 1 through 100 and independently
 
 ## Raw-index traceability
 
-Every Train/Test value retains `split`, source-relative path, file SHA-256, 1-based physical line, explicit 0-based data-row index, unit, cycle, 1-based source-column index, contract column name, parsed value, and original token. Lookup re-reads the identified physical line and checks the token before declaring a match. RUL references retain physical line, mapped Test unit, last observed cycle, label, source path, and hash.
+Every Train/Test value retains `split`, project-relative path, file SHA-256, 1-based physical line, explicit 0-based data-row index, unit, cycle, 1-based source-column index, contract column name, parsed value, and original token. Lookup re-reads the identified physical line and checks the token before declaring a match. Default, relative, and absolute in-project input-directory arguments all publish the same `FD001/...` paths; directories outside the authorized project root are rejected before loading.
 
-Six representative Train/Test sensor references and three RUL references were re-read successfully. Tests also cover blank-line-aware physical addressing, source-column correctness, malformed input rejection, duplicate keys, cycle gaps, and unsafe RUL ordering.
+For RUL, every mapping entry freshly reopens `FD001/RUL_FD001.txt`, verifies that the file SHA-256 is unchanged, rereads the recorded physical line and source column 1, parses the token, and compares both token and numeric label with the validated row. All 100 RUL references passed. Tests explicitly cover valid fresh rereads, unavailable physical lines, mismatched stored values, project-relative path consistency, blank-line-aware addressing, source-column correctness, malformed input rejection, duplicate keys, cycle gaps, and unsafe RUL ordering.
 
 ## Phase A gate
 
-All ten Phase A gate checks passed: both sequence schemas, RUL schema, Train/Test unit-cycle integrity, stable RUL mapping, Train/Test raw-reference re-read, RUL raw-reference re-read, and the 3-setting/21-sensor mapping. Phase B was therefore permitted to run.
+All eleven Phase A gate checks passed: three files loaded, hashes recorded, both sequence schemas, RUL schema, Train/Test semantic separation, stable RUL mapping, Train/Test unit-cycle integrity, Train/Test raw-reference reread, fresh RUL raw-reference reread, and the 3-setting/21-sensor mapping. Phase B was therefore permitted to run.

@@ -28,6 +28,37 @@ class ValidationError(ValueError):
     """Raised when a trusted source does not satisfy the M2 Phase A contract."""
 
 
+def resolve_input_dir(input_dir: Path = DEFAULT_INPUT_DIR) -> Path:
+    """Resolve an authorized input directory without permitting project-root escape."""
+
+    candidate = Path(input_dir)
+    if not candidate.is_absolute():
+        candidate = PROJECT_ROOT / candidate
+    try:
+        resolved = candidate.resolve(strict=True)
+    except OSError as exc:
+        raise ValidationError(
+            "Input directory is unavailable inside the authorized project root"
+        ) from exc
+    project_root = PROJECT_ROOT.resolve(strict=True)
+    if not resolved.is_relative_to(project_root):
+        raise ValidationError("Input directory must remain inside the authorized project root")
+    if not resolved.is_dir():
+        raise ValidationError("Input path is not an authorized project directory")
+    return resolved
+
+
+def source_relative_path(path: Path) -> str:
+    """Return a stable project-relative source path or reject the reference."""
+
+    resolved = path.resolve(strict=True)
+    project_root = PROJECT_ROOT.resolve(strict=True)
+    try:
+        return resolved.relative_to(project_root).as_posix()
+    except ValueError as exc:
+        raise ValidationError("Source path is outside the authorized project root") from exc
+
+
 @dataclass(frozen=True)
 class SourceRow:
     physical_line_number: int
@@ -227,7 +258,7 @@ def profile_sequence(dataset: SequenceDataset) -> dict[str, Any]:
 
     return {
         "split": dataset.split,
-        "source_file": dataset.path.as_posix(),
+        "source_file": source_relative_path(dataset.path),
         "source_sha256": dataset.source_sha256,
         "rows": len(dataset.rows),
         "columns": len(COLUMN_NAMES),
@@ -288,6 +319,7 @@ def build_rul_mapping(test: SequenceDataset, rul: RulDataset) -> dict[str, Any]:
             "last_observed_cycle": last_cycles[unit_id],
             "rul_label": rul_row.value,
             "rul_raw_value": rul_row.raw_value,
+            "rul_raw_reference": get_rul_raw_reference(rul, rul_row),
         }
         for unit_id, rul_row in zip(sorted_units, rul.rows, strict=True)
     ]
@@ -315,6 +347,57 @@ def _reread_token(path: Path, physical_line_number: int, source_column_index: in
     return tokens[source_column_index - 1]
 
 
+def _fresh_reread_token(
+    path: Path, physical_line_number: int, source_column_index: int
+) -> str:
+    """Read a token from disk without using an in-memory or linecache copy."""
+
+    with path.open("r", encoding="utf-8", newline="") as stream:
+        for current_line_number, line in enumerate(stream, start=1):
+            if current_line_number != physical_line_number:
+                continue
+            tokens = line.split()
+            if source_column_index < 1 or source_column_index > len(tokens):
+                raise ValidationError(
+                    f"{path.name}:{physical_line_number}: source column is unavailable"
+                )
+            return tokens[source_column_index - 1]
+    raise ValidationError(f"{path.name}:{physical_line_number}: physical line is unavailable")
+
+
+def get_rul_raw_reference(rul: RulDataset, row: RulRow) -> dict[str, Any]:
+    """Freshly verify one RUL source token and return its safe provenance."""
+
+    current_sha256 = sha256_file(rul.path)
+    if current_sha256 != rul.source_sha256:
+        raise ValidationError("RUL source SHA-256 changed after initial parsing")
+    reread_value = _fresh_reread_token(rul.path, row.physical_line_number, 1)
+    reread_label = _parse_finite(
+        reread_value,
+        path=rul.path,
+        line_number=row.physical_line_number,
+        column=1,
+    )
+    if reread_value != row.raw_value or reread_label != row.value:
+        raise ValidationError(
+            f"{rul.path.name}:{row.physical_line_number}: reread RUL value does not "
+            "match the validated label"
+        )
+    return {
+        "source_file": source_relative_path(rul.path),
+        "source_sha256": rul.source_sha256,
+        "physical_line_number": row.physical_line_number,
+        "data_row_index": row.data_row_index,
+        "data_row_index_base": 0,
+        "column_name": "rul_label",
+        "source_column_index": 1,
+        "original_value": row.raw_value,
+        "reread_value": reread_value,
+        "rul_label": row.value,
+        "reread_matches": True,
+    }
+
+
 def get_raw_reference(
     dataset: SequenceDataset, unit_id: int, cycle: int, column_name: str
 ) -> dict[str, Any]:
@@ -334,7 +417,7 @@ def get_raw_reference(
     )
     return {
         "dataset_split": dataset.split,
-        "source_file": dataset.path.as_posix(),
+        "source_file": source_relative_path(dataset.path),
         "source_sha256": dataset.source_sha256,
         "physical_line_number": row.physical_line_number,
         "data_row_index": row.data_row_index,
@@ -350,6 +433,7 @@ def get_raw_reference(
 
 
 def load_sources(input_dir: Path = DEFAULT_INPUT_DIR) -> tuple[SequenceDataset, SequenceDataset, RulDataset]:
+    input_dir = resolve_input_dir(input_dir)
     train = parse_sequence_file(input_dir / TRAIN_FILE, "train")
     test = parse_sequence_file(input_dir / TEST_FILE, "test")
     rul = parse_rul_file(input_dir / RUL_FILE)
@@ -388,6 +472,10 @@ def run_phase_a(input_dir: Path = DEFAULT_INPUT_DIR) -> dict[str, Any]:
         "raw_index_traceability_verified": all(
             reference["reread_matches"] for reference in sample_references
         ),
+        "rul_raw_reference_verified": all(
+            entry["rul_raw_reference"]["reread_matches"]
+            for entry in mapping["entries"]
+        ),
         "settings_and_sensors_mapped": len(SETTING_NAMES) == 3
         and len(SENSOR_NAMES) == 21
         and len(COLUMN_NAMES) == 26,
@@ -402,7 +490,7 @@ def run_phase_a(input_dir: Path = DEFAULT_INPUT_DIR) -> dict[str, Any]:
         "train": train_profile,
         "test": test_profile,
         "rul": {
-            "source_file": rul.path.as_posix(),
+            "source_file": source_relative_path(rul.path),
             "source_sha256": rul.source_sha256,
             "rows": len(rul.rows),
             "columns": 1,
@@ -481,7 +569,13 @@ def main() -> int:
     except (OSError, ValidationError) as exc:
         print(json.dumps({"phase_a_status": "BLOCKED", "error": str(exc)}, indent=2))
         return 2
-    print(json.dumps(public_phase_a_summary(result), ensure_ascii=False, indent=2))
+    print(
+        json.dumps(
+            public_phase_a_summary(result),
+            ensure_ascii=False,
+            separators=(",", ":"),
+        )
+    )
     return 0 if result["phase_a_status"] == "PASS" else 2
 
 

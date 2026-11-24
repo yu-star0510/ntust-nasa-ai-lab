@@ -17,6 +17,7 @@ from m2_fd001_validate import (
     SequenceDataset,
     build_rul_mapping,
     get_raw_reference,
+    get_rul_raw_reference,
     load_sources,
     profile_sequence,
     run_phase_a,
@@ -157,9 +158,12 @@ class FD001Repository:
 
     def get_test_rul_label(self, unit_id: int) -> dict[str, Any]:
         try:
-            return dict(self.rul_by_unit[unit_id])
+            result = dict(self.rul_by_unit[unit_id])
         except KeyError as exc:
             raise KeyError(f"Unknown Test unit_id={unit_id}") from exc
+        row = self.rul.rows[result["rul_data_row_index"]]
+        result["rul_raw_reference"] = get_rul_raw_reference(self.rul, row)
+        return result
 
     def get_quality_summary(self, split: str) -> dict[str, Any]:
         return quality_summary(self._dataset(split))
@@ -255,7 +259,7 @@ def validate_contract(contract_path: Path = CONTRACT_JSON) -> dict[str, Any]:
     actual_fields = set(contract["required_fields"])
     checks = {
         "contract_name": contract["contract_name"] == "FD001_DATA_CONTRACT",
-        "schema_version": contract["schema_version"] == "1.0.0",
+        "schema_version": contract["schema_version"] == "1.0.1",
         "required_interfaces": required_interfaces == actual_interfaces,
         "required_fields": required_fields == actual_fields,
         "validation_status": contract["validation_status"] == "PASS",
@@ -293,7 +297,7 @@ def main() -> int:
     except (OSError, ValueError, KeyError, RuntimeError) as exc:
         print(json.dumps({"phase_b_status": "BLOCKED", "error": str(exc)}, indent=2))
         return 2
-    print(json.dumps(result, ensure_ascii=False, indent=2))
+    print(json.dumps(result, ensure_ascii=False, separators=(",", ":")))
     return 0 if result["phase_b_status"] == "PASS" else 2
 
 

@@ -90,4 +90,4 @@ All points reference `FD001/train_FD001.txt` with SHA-256 `963b5e22825b34d8b21c6
 
 ## Data contract gate
 
-`contracts/FD001_DATA_CONTRACT.md` and `contracts/FD001_DATA_CONTRACT.json` define the schema, provenance, missing-value and error rules, ordering, RUL distinction, version, and all six required interfaces. Their declared contract name is `FD001_DATA_CONTRACT`, version is `1.0.0`, validation status is `PASS`, and MAIN acceptance remains `PENDING` until independent Brain review.
+`contracts/FD001_DATA_CONTRACT.md` and `contracts/FD001_DATA_CONTRACT.json` define the schema, provenance, missing-value and error rules, ordering, RUL distinction, version, and all six required interfaces. Their declared contract name is `FD001_DATA_CONTRACT`, remediation version is `1.0.1`, validation status is `PASS`, and MAIN acceptance remains `PENDING` until independent Brain review.

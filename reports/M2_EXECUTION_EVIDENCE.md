@@ -1,108 +1,76 @@
-# M2 Execution Evidence
+# M2 Remediation Execution Evidence
 
 Work item: `WO-M2-RESEARCH-001`
 
-Worker result: `READY_FOR_REVIEW` after successful push and remote verification
+Evidence type: `EVIDENCE_RERUN`
 
-Public working directory notation: `<PROJECT_ROOT>`
+Execution date: 2026-11-24 (Asia/Taipei)
 
-This record contains the actual commands, timestamps, exit codes, and complete public-safe console results used for the M2 gate. Absolute private paths are replaced by `<PROJECT_ROOT>`. No source data row or full sensor series is published.
+Baseline GitHub `main`: `35a929d0bf68d34c88b4cffc250de6939b31cefa`. Working directory is published only as `<PROJECT_ROOT>`. PowerShell version: `7.6.9`. Python version: `3.12.7`.
 
-## Environment and governance baseline
+The 2026-11-23 evidence used normalized summaries and is superseded for completeness by this rerun. The outputs below are the complete actual bounded public-safe stdout/stderr; they are not reconstructed summaries. The validators intentionally emit complete compact JSON so no full FD001 record, full sensor series, or private absolute path is published.
 
-The Worker read the latest GitHub `main` governance before execution, confirmed M1 `PASS`, the STUDENT-approved M2 work item, and starting commit `79392158d20b9fcf657e2329ead6aaf2921ebdc9`. PowerShell was `7.6.9`; Python was `3.12.7`. The local branch was clean, on `main`, and fast-forwarded to that starting commit.
-
-## Trusted local input discovery and before hashes
-
-Command (PowerShell, read-only):
-
-```powershell
-Get-ChildItem -LiteralPath FD001 -File
-Get-FileHash -Algorithm SHA256 -LiteralPath FD001/train_FD001.txt,FD001/test_FD001.txt,FD001/RUL_FD001.txt
-```
-
-Start `2026-11-23T18:14:09.049+08:00`; end `2026-11-23T18:14:09.225+08:00`; exit code `0`; stderr empty.
-
-Complete public-safe stdout:
-
-```text
-FD001/train_FD001.txt|3515356|963b5e22825b34d8b21c69e1aeb4af3e647050eb672ee8834ba4b5d91d2de0f8
-FD001/test_FD001.txt|2228855|3cda7109ce17bafb5443f2ac926cfcf88154b941b8c4cf95eb55d1ddd6f52851
-FD001/RUL_FD001.txt|429|a19c8ec94931949d0485bdc35118206e9c81c4547b422efb9cf86f4ceddbceca
-COUNT_train_FD001.txt=1
-COUNT_test_FD001.txt=1
-COUNT_RUL_FD001.txt=1
-```
-
-## Phase A validation
+## Input SHA-256 before
 
 Command:
 
 ```powershell
-python research/m2_fd001_validate.py --input-dir FD001
+foreach($p in 'FD001/train_FD001.txt','FD001/test_FD001.txt','FD001/RUL_FD001.txt') { Get-Item -LiteralPath $p; Get-FileHash -Algorithm SHA256 -LiteralPath $p }
 ```
 
-Final run start `2026-11-23T18:27:51.642+08:00`; end `2026-11-23T18:27:52.102+08:00`; exit code `0`; stderr empty. The command's stdout was a valid JSON object. The complete public-safe result is recorded below in a normalized, lossless gate summary; complete per-unit counts are in `M2_FD001_VALIDATION.md`.
+Start `2026-11-24T15:25:51.425+08:00`; end `2026-11-24T15:25:51.483+08:00`; exit code `0`; stderr empty. Complete stdout:
 
 ```text
-phase_a_status=PASS
-data_row_index_base=0
-column_mapping=1:unit_id,2:cycle,3-5:setting_1..setting_3,6-26:sensor_1..sensor_21
-train=source:FD001/train_FD001.txt,sha256:963b5e22825b34d8b21c69e1aeb4af3e647050eb672ee8834ba4b5d91d2de0f8,rows:20631,columns:26,units:100,unit_ids:1..100,cycle_min:1,cycle_max:362,length_min:128,length_max:362,length_mean:206.31,length_median:199
-test=source:FD001/test_FD001.txt,sha256:3cda7109ce17bafb5443f2ac926cfcf88154b941b8c4cf95eb55d1ddd6f52851,rows:13096,columns:26,units:100,unit_ids:1..100,cycle_min:1,cycle_max:303,length_min:31,length_max:303,length_mean:130.96,length_median:133.5
-rul=source:FD001/RUL_FD001.txt,sha256:a19c8ec94931949d0485bdc35118206e9c81c4547b422efb9cf86f4ceddbceca,rows:100,columns:1,label_min:7,label_max:145,unit_id:N/A,cycle:N/A
-train_integrity=missing:0,duplicates:0,duplicate_keys:0,gaps:0,order_errors:0,parse_errors:0,nonfinite:0,blank_lines:0
-test_integrity=missing:0,duplicates:0,duplicate_keys:0,gaps:0,order_errors:0,parse_errors:0,nonfinite:0,blank_lines:0
-rul_integrity=invalid:0,parse_errors:0,blank_lines:0
-rul_mapping=orders_match:true,row_count_matches:true,entries:100
-rul_samples=unit1:line1:last_cycle31:label112;unit51:line51:last_cycle144:label114;unit100:line100:last_cycle198:label20
-raw_reference_samples=6;all_reread_matches=true
-gate_checks=three_files_loaded:true,sha256_recorded:true,train_schema_valid:true,test_schema_valid:true,rul_schema_valid:true,train_test_semantics_separated:true,rul_mapping_verified:true,unit_cycle_integrity_verified:true,raw_index_traceability_verified:true,settings_and_sensors_mapped:true
+EVIDENCE_RERUN=INPUT_SHA256_BEFORE
+START=2026-11-24T15:25:51.425+08:00
+WORKING_DIRECTORY=<PROJECT_ROOT>
+POWERSHELL_VERSION=7.6.9
+Python 3.12.7
+FD001\train_FD001.txt|3515356|963b5e22825b34d8b21c69e1aeb4af3e647050eb672ee8834ba4b5d91d2de0f8
+FD001\test_FD001.txt|2228855|3cda7109ce17bafb5443f2ac926cfcf88154b941b8c4cf95eb55d1ddd6f52851
+FD001\RUL_FD001.txt|429|a19c8ec94931949d0485bdc35118206e9c81c4547b422efb9cf86f4ceddbceca
+END=2026-11-24T15:25:51.483+08:00
+EXIT_CODE=0
+STDERR=<EMPTY>
 ```
 
-An earlier dedicated Phase A suite ran from `2026-11-23T18:17:12.887+08:00` to `2026-11-23T18:17:13.810+08:00`, exit code `0`, with 7/7 tests passing. Phase B was not started until this gate passed.
+## Phase A gate
 
-## Phase B quality, trend, and contract validation
+Command: `python research/m2_fd001_validate.py --input-dir FD001`
 
-Command:
+Start `2026-11-24T15:25:57.917+08:00`; end `2026-11-24T15:25:58.496+08:00`; exit code `0`; stderr empty. Complete stdout (one JSON line exactly as emitted):
 
-```powershell
-python research/m2_fd001_analysis.py --input-dir FD001
+```json
+{"phase_a_status":"PASS","data_row_index_base":0,"column_mapping":{"1":"unit_id","2":"cycle","3":"setting_1","4":"setting_2","5":"setting_3","6":"sensor_1","7":"sensor_2","8":"sensor_3","9":"sensor_4","10":"sensor_5","11":"sensor_6","12":"sensor_7","13":"sensor_8","14":"sensor_9","15":"sensor_10","16":"sensor_11","17":"sensor_12","18":"sensor_13","19":"sensor_14","20":"sensor_15","21":"sensor_16","22":"sensor_17","23":"sensor_18","24":"sensor_19","25":"sensor_20","26":"sensor_21"},"train":{"split":"train","source_file":"FD001/train_FD001.txt","source_sha256":"963b5e22825b34d8b21c69e1aeb4af3e647050eb672ee8834ba4b5d91d2de0f8","rows":20631,"columns":26,"column_names":["unit_id","cycle","setting_1","setting_2","setting_3","sensor_1","sensor_2","sensor_3","sensor_4","sensor_5","sensor_6","sensor_7","sensor_8","sensor_9","sensor_10","sensor_11","sensor_12","sensor_13","sensor_14","sensor_15","sensor_16","sensor_17","sensor_18","sensor_19","sensor_20","sensor_21"],"unit_count":100,"unit_order_matches_sorted":true,"cycle_min":1,"cycle_max":362,"cycle_length_distribution":{"min":128,"max":362,"mean":206.31,"median":199.0},"cycle_gaps":{},"out_of_order_units":[],"non_starting_at_one_units":[],"exact_duplicate_rows":0,"duplicate_unit_cycle_keys":0,"missing_total":0,"missing_by_column":{"unit_id":0,"cycle":0,"setting_1":0,"setting_2":0,"setting_3":0,"sensor_1":0,"sensor_2":0,"sensor_3":0,"sensor_4":0,"sensor_5":0,"sensor_6":0,"sensor_7":0,"sensor_8":0,"sensor_9":0,"sensor_10":0,"sensor_11":0,"sensor_12":0,"sensor_13":0,"sensor_14":0,"sensor_15":0,"sensor_16":0,"sensor_17":0,"sensor_18":0,"sensor_19":0,"sensor_20":0,"sensor_21":0},"parsing_errors":0,"non_finite_values":0,"blank_line_numbers":[],"schema_valid":true,"unit_cycle_integrity_valid":true,"unit_ids_summary":{"count":100,"min":1,"max":100,"contiguous":true},"unit_first_appearance_order_summary":{"count":100,"min":1,"max":100,"matches_sorted":true},"cycle_counts_summary":{"unit_entries":100,"total_cycles":20631,"minimum":128,"maximum":362,"complete_counts_recorded_in_validation_report":true}},"test":{"split":"test","source_file":"FD001/test_FD001.txt","source_sha256":"3cda7109ce17bafb5443f2ac926cfcf88154b941b8c4cf95eb55d1ddd6f52851","rows":13096,"columns":26,"column_names":["unit_id","cycle","setting_1","setting_2","setting_3","sensor_1","sensor_2","sensor_3","sensor_4","sensor_5","sensor_6","sensor_7","sensor_8","sensor_9","sensor_10","sensor_11","sensor_12","sensor_13","sensor_14","sensor_15","sensor_16","sensor_17","sensor_18","sensor_19","sensor_20","sensor_21"],"unit_count":100,"unit_order_matches_sorted":true,"cycle_min":1,"cycle_max":303,"cycle_length_distribution":{"min":31,"max":303,"mean":130.96,"median":133.5},"cycle_gaps":{},"out_of_order_units":[],"non_starting_at_one_units":[],"exact_duplicate_rows":0,"duplicate_unit_cycle_keys":0,"missing_total":0,"missing_by_column":{"unit_id":0,"cycle":0,"setting_1":0,"setting_2":0,"setting_3":0,"sensor_1":0,"sensor_2":0,"sensor_3":0,"sensor_4":0,"sensor_5":0,"sensor_6":0,"sensor_7":0,"sensor_8":0,"sensor_9":0,"sensor_10":0,"sensor_11":0,"sensor_12":0,"sensor_13":0,"sensor_14":0,"sensor_15":0,"sensor_16":0,"sensor_17":0,"sensor_18":0,"sensor_19":0,"sensor_20":0,"sensor_21":0},"parsing_errors":0,"non_finite_values":0,"blank_line_numbers":[],"schema_valid":true,"unit_cycle_integrity_valid":true,"unit_ids_summary":{"count":100,"min":1,"max":100,"contiguous":true},"unit_first_appearance_order_summary":{"count":100,"min":1,"max":100,"matches_sorted":true},"cycle_counts_summary":{"unit_entries":100,"total_cycles":13096,"minimum":31,"maximum":303,"complete_counts_recorded_in_validation_report":true}},"rul":{"source_file":"FD001/RUL_FD001.txt","source_sha256":"a19c8ec94931949d0485bdc35118206e9c81c4547b422efb9cf86f4ceddbceca","rows":100,"columns":1,"unit_id":"N/A","cycle":"N/A","unit_cycle_key":"N/A","blank_line_numbers":[],"parsing_errors":0,"missing_or_invalid_values":0,"label_min":7.0,"label_max":145.0,"schema_valid":true},"rul_mapping":{"mapping_rule":"RUL rows map in file order to Test Units after verifying that Test Unit first-appearance order equals ascending Unit ID order. The RUL file itself contains no Unit ID.","orders_match":true,"rul_rows_match_test_units":true,"test_unit_order_summary":{"count":100,"min":1,"max":100,"first_appearance_equals_sorted":true},"entry_count":100,"sample_entries":[{"test_unit_id":1,"rul_physical_line_number":1,"rul_data_row_index":0,"last_observed_cycle":31,"rul_label":112.0,"rul_raw_value":"112","rul_raw_reference":{"source_file":"FD001/RUL_FD001.txt","source_sha256":"a19c8ec94931949d0485bdc35118206e9c81c4547b422efb9cf86f4ceddbceca","physical_line_number":1,"data_row_index":0,"data_row_index_base":0,"column_name":"rul_label","source_column_index":1,"original_value":"112","reread_value":"112","rul_label":112.0,"reread_matches":true}},{"test_unit_id":51,"rul_physical_line_number":51,"rul_data_row_index":50,"last_observed_cycle":144,"rul_label":114.0,"rul_raw_value":"114","rul_raw_reference":{"source_file":"FD001/RUL_FD001.txt","source_sha256":"a19c8ec94931949d0485bdc35118206e9c81c4547b422efb9cf86f4ceddbceca","physical_line_number":51,"data_row_index":50,"data_row_index_base":0,"column_name":"rul_label","source_column_index":1,"original_value":"114","reread_value":"114","rul_label":114.0,"reread_matches":true}},{"test_unit_id":100,"rul_physical_line_number":100,"rul_data_row_index":99,"last_observed_cycle":198,"rul_label":20.0,"rul_raw_value":"20","rul_raw_reference":{"source_file":"FD001/RUL_FD001.txt","source_sha256":"a19c8ec94931949d0485bdc35118206e9c81c4547b422efb9cf86f4ceddbceca","physical_line_number":100,"data_row_index":99,"data_row_index_base":0,"column_name":"rul_label","source_column_index":1,"original_value":"20","reread_value":"20","rul_label":20.0,"reread_matches":true}}],"disclosure_note":"Only three mapping examples are emitted publicly; the complete mapping remains available to local read-only functions and tests."},"raw_reference_samples":[{"dataset_split":"train","source_file":"FD001/train_FD001.txt","source_sha256":"963b5e22825b34d8b21c69e1aeb4af3e647050eb672ee8834ba4b5d91d2de0f8","physical_line_number":1,"data_row_index":0,"data_row_index_base":0,"unit_id":1,"cycle":1,"column_name":"sensor_1","source_column_index":6,"original_value":"518.67","reread_value":"518.67","reread_matches":true},{"dataset_split":"train","source_file":"FD001/train_FD001.txt","source_sha256":"963b5e22825b34d8b21c69e1aeb4af3e647050eb672ee8834ba4b5d91d2de0f8","physical_line_number":10316,"data_row_index":10315,"data_row_index_base":0,"unit_id":52,"cycle":194,"column_name":"sensor_1","source_column_index":6,"original_value":"518.67","reread_value":"518.67","reread_matches":true},{"dataset_split":"train","source_file":"FD001/train_FD001.txt","source_sha256":"963b5e22825b34d8b21c69e1aeb4af3e647050eb672ee8834ba4b5d91d2de0f8","physical_line_number":20631,"data_row_index":20630,"data_row_index_base":0,"unit_id":100,"cycle":200,"column_name":"sensor_1","source_column_index":6,"original_value":"518.67","reread_value":"518.67","reread_matches":true},{"dataset_split":"test","source_file":"FD001/test_FD001.txt","source_sha256":"3cda7109ce17bafb5443f2ac926cfcf88154b941b8c4cf95eb55d1ddd6f52851","physical_line_number":1,"data_row_index":0,"data_row_index_base":0,"unit_id":1,"cycle":1,"column_name":"sensor_1","source_column_index":6,"original_value":"518.67","reread_value":"518.67","reread_matches":true},{"dataset_split":"test","source_file":"FD001/test_FD001.txt","source_sha256":"3cda7109ce17bafb5443f2ac926cfcf88154b941b8c4cf95eb55d1ddd6f52851","physical_line_number":6549,"data_row_index":6548,"data_row_index_base":0,"unit_id":52,"cycle":66,"column_name":"sensor_1","source_column_index":6,"original_value":"518.67","reread_value":"518.67","reread_matches":true},{"dataset_split":"test","source_file":"FD001/test_FD001.txt","source_sha256":"3cda7109ce17bafb5443f2ac926cfcf88154b941b8c4cf95eb55d1ddd6f52851","physical_line_number":13096,"data_row_index":13095,"data_row_index_base":0,"unit_id":100,"cycle":198,"column_name":"sensor_1","source_column_index":6,"original_value":"518.67","reread_value":"518.67","reread_matches":true}],"gate_checks":{"three_files_loaded":true,"sha256_recorded":true,"train_schema_valid":true,"test_schema_valid":true,"rul_schema_valid":true,"train_test_semantics_separated":true,"rul_mapping_verified":true,"unit_cycle_integrity_verified":true,"raw_index_traceability_verified":true,"rul_raw_reference_verified":true,"settings_and_sensors_mapped":true}}
 ```
 
-Final run start `2026-11-23T18:27:52.104+08:00`; end `2026-11-23T18:27:58.103+08:00`; exit code `0`; stderr empty. The complete stdout was valid JSON; every column statistic is preserved in `M2_FD001_QUALITY_TRENDS.md`. Complete public-safe gate stdout:
+Phase A returned `PASS`; only then was Phase B executed.
+
+## Phase B
+
+Command: `python research/m2_fd001_analysis.py --input-dir FD001`
+
+Start `2026-11-24T15:26:26.485+08:00`; end `2026-11-24T15:26:39.544+08:00`; exit code `0`; stderr empty. Complete stdout (one JSON line exactly as emitted):
+
+```json
+{"phase_a_status":"PASS","phase_b_status":"PASS","train_quality":{"split":"train","rows":20631,"columns":26,"unit_count":100,"cycle_length_distribution":{"min":128,"max":362,"mean":206.31,"median":199.0},"missing_total":0,"missing_by_column":{"unit_id":0,"cycle":0,"setting_1":0,"setting_2":0,"setting_3":0,"sensor_1":0,"sensor_2":0,"sensor_3":0,"sensor_4":0,"sensor_5":0,"sensor_6":0,"sensor_7":0,"sensor_8":0,"sensor_9":0,"sensor_10":0,"sensor_11":0,"sensor_12":0,"sensor_13":0,"sensor_14":0,"sensor_15":0,"sensor_16":0,"sensor_17":0,"sensor_18":0,"sensor_19":0,"sensor_20":0,"sensor_21":0},"exact_duplicate_rows":0,"duplicate_unit_cycle_keys":0,"parsing_errors":0,"non_finite_values":0,"statistics_formula":"Population standard deviation (statistics.pstdev, ddof=0).","near_constant_rule":"Non-constant column with range <= max(1e-12, abs(mean) * 1e-4).","column_statistics":{"setting_1":{"min":-0.0087,"max":0.0087,"mean":-8.870146866366146e-06,"population_std":0.0021872604380133807,"constant":false,"near_constant":false},"setting_2":{"min":-0.0006,"max":0.0006,"mean":2.3508312733265476e-06,"population_std":0.0002930550220098974,"constant":false,"near_constant":false},"setting_3":{"min":100.0,"max":100.0,"mean":100.0,"population_std":0.0,"constant":true,"near_constant":false},"sensor_1":{"min":518.67,"max":518.67,"mean":518.67,"population_std":0.0,"constant":true,"near_constant":false},"sensor_2":{"min":641.21,"max":644.53,"mean":642.6809335466046,"population_std":0.50004115093577,"constant":false,"near_constant":false},"sensor_3":{"min":1571.04,"max":1616.91,"mean":1590.5231186079202,"population_std":6.131000927188836,"constant":false,"near_constant":false},"sensor_4":{"min":1382.25,"max":1441.49,"mean":1408.9337816877514,"population_std":9.000386644877734,"constant":false,"near_constant":false},"sensor_5":{"min":14.62,"max":14.62,"mean":14.62,"population_std":0.0,"constant":true,"near_constant":false},"sensor_6":{"min":21.6,"max":21.61,"mean":21.60980320876351,"population_std":0.001388951249730616,"constant":false,"near_constant":false},"sensor_7":{"min":549.85,"max":556.06,"mean":553.367711211284,"population_std":0.8850708068616236,"constant":false,"near_constant":false},"sensor_8":{"min":2387.9,"max":2388.56,"mean":2388.0966516407348,"population_std":0.07098375851045081,"constant":false,"near_constant":false},"sensor_9":{"min":9021.73,"max":9244.59,"mean":9065.242940720276,"population_std":22.082344331737623,"constant":false,"near_constant":false},"sensor_10":{"min":1.3,"max":1.3,"mean":1.3,"population_std":0.0,"constant":true,"near_constant":false},"sensor_11":{"min":46.85,"max":48.53,"mean":47.54116814502448,"population_std":0.26708092559826174,"constant":false,"near_constant":false},"sensor_12":{"min":518.69,"max":523.38,"mean":521.4134700208425,"population_std":0.7375355171108342,"constant":false,"near_constant":false},"sensor_13":{"min":2387.88,"max":2388.56,"mean":2388.0961523920314,"population_std":0.07191717269564055,"constant":false,"near_constant":false},"sensor_14":{"min":8099.94,"max":8293.72,"mean":8143.752722117202,"population_std":19.075713652092396,"constant":false,"near_constant":false},"sensor_15":{"min":8.3249,"max":8.5848,"mean":8.442145581891328,"population_std":0.037504128992332054,"constant":false,"near_constant":false},"sensor_16":{"min":0.03,"max":0.03,"mean":0.03,"population_std":0.0,"constant":true,"near_constant":false},"sensor_17":{"min":388.0,"max":400.0,"mean":393.2106538703892,"population_std":1.548725489308388,"constant":false,"near_constant":false},"sensor_18":{"min":2388.0,"max":2388.0,"mean":2388.0,"population_std":0.0,"constant":true,"near_constant":false},"sensor_19":{"min":100.0,"max":100.0,"mean":100.0,"population_std":0.0,"constant":true,"near_constant":false},"sensor_20":{"min":38.14,"max":39.43,"mean":38.81627066065629,"population_std":0.18074204736330857,"constant":false,"near_constant":false},"sensor_21":{"min":22.8942,"max":23.6184,"mean":23.289705360864716,"population_std":0.10824825121269076,"constant":false,"near_constant":false}},"constant_columns":["setting_3","sensor_1","sensor_5","sensor_10","sensor_16","sensor_18","sensor_19"],"near_constant_columns":[],"quality_warnings":["Constant columns are present; values are reported without removal."],"cycle_counts_summary":{"unit_entries":100,"total_cycles":20631,"minimum":128,"maximum":362,"complete_counts_recorded_in_quality_report":true}},"test_quality":{"split":"test","rows":13096,"columns":26,"unit_count":100,"cycle_length_distribution":{"min":31,"max":303,"mean":130.96,"median":133.5},"missing_total":0,"missing_by_column":{"unit_id":0,"cycle":0,"setting_1":0,"setting_2":0,"setting_3":0,"sensor_1":0,"sensor_2":0,"sensor_3":0,"sensor_4":0,"sensor_5":0,"sensor_6":0,"sensor_7":0,"sensor_8":0,"sensor_9":0,"sensor_10":0,"sensor_11":0,"sensor_12":0,"sensor_13":0,"sensor_14":0,"sensor_15":0,"sensor_16":0,"sensor_17":0,"sensor_18":0,"sensor_19":0,"sensor_20":0,"sensor_21":0},"exact_duplicate_rows":0,"duplicate_unit_cycle_keys":0,"parsing_errors":0,"non_finite_values":0,"statistics_formula":"Population standard deviation (statistics.pstdev, ddof=0).","near_constant_rule":"Non-constant column with range <= max(1e-12, abs(mean) * 1e-4).","column_statistics":{"setting_1":{"min":-0.0082,"max":0.0078,"mean":-1.117898594990837e-05,"population_std":0.002202600981573831,"constant":false,"near_constant":false},"setting_2":{"min":-0.0006,"max":0.0007,"mean":4.2379352474037876e-06,"population_std":0.00029401934091301393,"constant":false,"near_constant":false},"setting_3":{"min":100.0,"max":100.0,"mean":100.0,"population_std":0.0,"constant":true,"near_constant":false},"sensor_1":{"min":518.67,"max":518.67,"mean":518.67,"population_std":0.0,"constant":true,"near_constant":false},"sensor_2":{"min":641.13,"max":644.3,"mean":642.4750878130727,"population_std":0.40088403560655406,"constant":false,"near_constant":false},"sensor_3":{"min":1569.04,"max":1607.55,"mean":1588.099204337202,"population_std":5.003082903489313,"constant":false,"near_constant":false},"sensor_4":{"min":1384.39,"max":1433.36,"mean":1404.735361942578,"population_std":6.688053931091294,"constant":false,"near_constant":false},"sensor_5":{"min":14.62,"max":14.62,"mean":14.62,"population_std":0.0,"constant":true,"near_constant":false},"sensor_6":{"min":21.6,"max":21.61,"mean":21.609700671960905,"population_std":0.0017040196935390493,"constant":false,"near_constant":false},"sensor_7":{"min":550.88,"max":555.84,"mean":553.757522907758,"population_std":0.6812600978682368,"constant":false,"near_constant":false},"sensor_8":{"min":2387.89,"max":2388.3,"mean":2388.070964416616,"population_std":0.05743959099863069,"constant":false,"near_constant":false},"sensor_9":{"min":9024.53,"max":9155.03,"mean":9058.407363317043,"population_std":11.435823881196022,"constant":false,"near_constant":false},"sensor_10":{"min":1.3,"max":1.3,"mean":1.3,"population_std":0.0,"constant":true,"near_constant":false},"sensor_11":{"min":46.8,"max":48.26,"mean":47.41620418448381,"population_std":0.19590976512899858,"constant":false,"near_constant":false},"sensor_12":{"min":519.38,"max":523.76,"mean":521.7477237324374,"population_std":0.5596053869476156,"constant":false,"near_constant":false},"sensor_13":{"min":2387.89,"max":2388.32,"mean":2388.0710247403786,"population_std":0.05693213655110635,"constant":false,"near_constant":false},"sensor_14":{"min":8108.5,"max":8220.48,"mean":8138.9478168906535,"population_std":10.188215975736007,"constant":false,"near_constant":false},"sensor_15":{"min":8.3328,"max":8.5414,"mean":8.425843967623702,"population_std":0.029008219959997146,"constant":false,"near_constant":false},"sensor_16":{"min":0.03,"max":0.03,"mean":0.03,"population_std":0.0,"constant":true,"near_constant":false},"sensor_17":{"min":389.0,"max":397.0,"mean":392.5716249236408,"population_std":1.2335297272825934,"constant":false,"near_constant":false},"sensor_18":{"min":2388.0,"max":2388.0,"mean":2388.0,"population_std":0.0,"constant":true,"near_constant":false},"sensor_19":{"min":100.0,"max":100.0,"mean":100.0,"population_std":0.0,"constant":true,"near_constant":false},"sensor_20":{"min":38.31,"max":39.41,"mean":38.892501527183875,"population_std":0.1416753458875796,"constant":false,"near_constant":false},"sensor_21":{"min":22.9354,"max":23.6419,"mean":23.335742692425168,"population_std":0.08411706841592928,"constant":false,"near_constant":false}},"constant_columns":["setting_3","sensor_1","sensor_5","sensor_10","sensor_16","sensor_18","sensor_19"],"near_constant_columns":[],"quality_warnings":["Constant columns are present; values are reported without removal."],"cycle_counts_summary":{"unit_entries":100,"total_cycles":13096,"minimum":31,"maximum":303,"complete_counts_recorded_in_quality_report":true}},"sensor_trend":{"split":"train","unit_id":1,"sensor_name":"sensor_2","x_axis":"cycle","y_axis":"original sensor value","point_count":192,"transformations":"NONE","sample_points":[{"cycle":1,"value":641.82,"raw_reference":{"dataset_split":"train","source_file":"FD001/train_FD001.txt","source_sha256":"963b5e22825b34d8b21c69e1aeb4af3e647050eb672ee8834ba4b5d91d2de0f8","physical_line_number":1,"data_row_index":0,"data_row_index_base":0,"unit_id":1,"cycle":1,"column_name":"sensor_2","source_column_index":7,"original_value":"641.82","reread_value":"641.82","reread_matches":true}},{"cycle":2,"value":642.15,"raw_reference":{"dataset_split":"train","source_file":"FD001/train_FD001.txt","source_sha256":"963b5e22825b34d8b21c69e1aeb4af3e647050eb672ee8834ba4b5d91d2de0f8","physical_line_number":2,"data_row_index":1,"data_row_index_base":0,"unit_id":1,"cycle":2,"column_name":"sensor_2","source_column_index":7,"original_value":"642.15","reread_value":"642.15","reread_matches":true}},{"cycle":3,"value":642.35,"raw_reference":{"dataset_split":"train","source_file":"FD001/train_FD001.txt","source_sha256":"963b5e22825b34d8b21c69e1aeb4af3e647050eb672ee8834ba4b5d91d2de0f8","physical_line_number":3,"data_row_index":2,"data_row_index_base":0,"unit_id":1,"cycle":3,"column_name":"sensor_2","source_column_index":7,"original_value":"642.35","reread_value":"642.35","reread_matches":true}},{"cycle":97,"value":642.07,"raw_reference":{"dataset_split":"train","source_file":"FD001/train_FD001.txt","source_sha256":"963b5e22825b34d8b21c69e1aeb4af3e647050eb672ee8834ba4b5d91d2de0f8","physical_line_number":97,"data_row_index":96,"data_row_index_base":0,"unit_id":1,"cycle":97,"column_name":"sensor_2","source_column_index":7,"original_value":"642.07","reread_value":"642.07","reread_matches":true}},{"cycle":190,"value":643.64,"raw_reference":{"dataset_split":"train","source_file":"FD001/train_FD001.txt","source_sha256":"963b5e22825b34d8b21c69e1aeb4af3e647050eb672ee8834ba4b5d91d2de0f8","physical_line_number":190,"data_row_index":189,"data_row_index_base":0,"unit_id":1,"cycle":190,"column_name":"sensor_2","source_column_index":7,"original_value":"643.64","reread_value":"643.64","reread_matches":true}},{"cycle":191,"value":643.34,"raw_reference":{"dataset_split":"train","source_file":"FD001/train_FD001.txt","source_sha256":"963b5e22825b34d8b21c69e1aeb4af3e647050eb672ee8834ba4b5d91d2de0f8","physical_line_number":191,"data_row_index":190,"data_row_index_base":0,"unit_id":1,"cycle":191,"column_name":"sensor_2","source_column_index":7,"original_value":"643.34","reread_value":"643.34","reread_matches":true}},{"cycle":192,"value":643.54,"raw_reference":{"dataset_split":"train","source_file":"FD001/train_FD001.txt","source_sha256":"963b5e22825b34d8b21c69e1aeb4af3e647050eb672ee8834ba4b5d91d2de0f8","physical_line_number":192,"data_row_index":191,"data_row_index_base":0,"unit_id":1,"cycle":192,"column_name":"sensor_2","source_column_index":7,"original_value":"643.54","reread_value":"643.54","reread_matches":true}}],"sample_point_count":7,"disclosure_note":"Only selected traceability points are emitted publicly; the complete local series remains available through get_sensor_series."},"contract_validation":{"checks":{"contract_name":true,"schema_version":true,"required_interfaces":true,"required_fields":true,"validation_status":true,"main_acceptance_pending":true},"valid":true}}
+```
+
+## Complete unittest output
+
+Command: `python -m unittest -v tests/test_m2_fd001.py`
+
+Start `2026-11-24T15:26:45.730+08:00`; end `2026-11-24T15:27:14.950+08:00`; exit code `0`. Python stdout was empty. Complete Python stderr:
 
 ```text
-phase_a_status=PASS
-phase_b_status=PASS
-statistics_formula=population standard deviation,ddof=0
-near_constant_rule=nonconstant range<=max(1e-12,abs(mean)*1e-4)
-train_quality=rows:20631,columns:26,units:100,missing:0,duplicates:0,duplicate_keys:0,parse_errors:0,nonfinite:0
-test_quality=rows:13096,columns:26,units:100,missing:0,duplicates:0,duplicate_keys:0,parse_errors:0,nonfinite:0
-train_constant_columns=setting_3,sensor_1,sensor_5,sensor_10,sensor_16,sensor_18,sensor_19
-test_constant_columns=setting_3,sensor_1,sensor_5,sensor_10,sensor_16,sensor_18,sensor_19
-train_near_constant_columns=[]
-test_near_constant_columns=[]
-trend=split:train,unit_id:1,sensor_name:sensor_2,cycles:1..192,point_count:192,transformations:NONE
-trend_samples=cycle1:value641.82:line1:row0:column7:match;cycle2:value642.15:line2:row1:column7:match;cycle3:value642.35:line3:row2:column7:match;cycle97:value642.07:line97:row96:column7:match;cycle190:value643.64:line190:row189:column7:match;cycle191:value643.34:line191:row190:column7:match;cycle192:value643.54:line192:row191:column7:match
-contract_checks=contract_name:true,schema_version:true,required_interfaces:true,required_fields:true,validation_status:true,main_acceptance_pending:true
-contract_valid=true
-```
-
-## Final test suite
-
-Command:
-
-```powershell
-python -m unittest -v tests/test_m2_fd001.py
-```
-
-Start `2026-11-23T18:27:58.104+08:00`; end `2026-11-23T18:28:10.990+08:00`; exit code `0`; stdout empty. Complete stderr:
-
-```text
+test_input_directory_outside_project_is_rejected (tests.test_m2_fd001.TestM2PhaseA.test_input_directory_outside_project_is_rejected) ... ok
 test_phase_a_gate_is_computed_from_validation_results (tests.test_m2_fd001.TestM2PhaseA.test_phase_a_gate_is_computed_from_validation_results) ... ok
 test_raw_reference_rereads_actual_source_positions (tests.test_m2_fd001.TestM2PhaseA.test_raw_reference_rereads_actual_source_positions) ... ok
 test_rul_has_one_nonnegative_finite_value_per_row (tests.test_m2_fd001.TestM2PhaseA.test_rul_has_one_nonnegative_finite_value_per_row) ... ok
+test_rul_reference_freshly_rereads_source (tests.test_m2_fd001.TestM2PhaseA.test_rul_reference_freshly_rereads_source) ... ok
+test_rul_reference_rejects_incorrect_physical_line (tests.test_m2_fd001.TestM2PhaseA.test_rul_reference_rejects_incorrect_physical_line) ... ok
+test_rul_reference_rejects_mismatched_value (tests.test_m2_fd001.TestM2PhaseA.test_rul_reference_rejects_mismatched_value) ... ok
+test_source_paths_are_project_relative_for_default_and_explicit_inputs (tests.test_m2_fd001.TestM2PhaseA.test_source_paths_are_project_relative_for_default_and_explicit_inputs) ... ok
 test_sources_exist_readable_and_hashes_use_actual_bytes (tests.test_m2_fd001.TestM2PhaseA.test_sources_exist_readable_and_hashes_use_actual_bytes) ... ok
 test_test_units_map_to_rul_rows_by_verified_order (tests.test_m2_fd001.TestM2PhaseA.test_test_units_map_to_rul_rows_by_verified_order) ... ok
 test_train_and_test_have_26_mapped_columns (tests.test_m2_fd001.TestM2PhaseA.test_train_and_test_have_26_mapped_columns) ... ok
@@ -111,36 +79,40 @@ test_contract_json_and_markdown_are_consistent (tests.test_m2_fd001.TestM2PhaseB
 test_interface_error_behavior (tests.test_m2_fd001.TestM2PhaseB.test_interface_error_behavior) ... ok
 test_phase_b_gate_uses_phase_a_and_contract_validation (tests.test_m2_fd001.TestM2PhaseB.test_phase_b_gate_uses_phase_a_and_contract_validation) ... ok
 test_quality_statistics_recompute_from_actual_values (tests.test_m2_fd001.TestM2PhaseB.test_quality_statistics_recompute_from_actual_values) ... ok
+test_repository_source_paths_match_for_default_and_explicit_inputs (tests.test_m2_fd001.TestM2PhaseB.test_repository_source_paths_match_for_default_and_explicit_inputs) ... ok
 test_rul_label_mapping_matches_local_rul_row (tests.test_m2_fd001.TestM2PhaseB.test_rul_label_mapping_matches_local_rul_row) ... ok
 test_sensor_trend_is_sorted_and_source_traceable (tests.test_m2_fd001.TestM2PhaseB.test_sensor_trend_is_sorted_and_source_traceable) ... ok
 test_train_test_and_unit_isolation (tests.test_m2_fd001.TestM2PhaseB.test_train_test_and_unit_isolation) ... ok
 
 ----------------------------------------------------------------------
-Ran 14 tests in 12.629s
+Ran 20 tests in 28.960s
 
 OK
 ```
 
-## After hashes
+## Input SHA-256 after
 
-Command:
-
-```powershell
-Get-FileHash -Algorithm SHA256 -LiteralPath FD001/train_FD001.txt,FD001/test_FD001.txt,FD001/RUL_FD001.txt
-```
-
-Observed `2026-11-23T18:30:05.955+08:00`, after the final Phase A, Phase B, and test commands; exit code `0`; stderr empty. Complete stdout:
+Command is identical to the before-hash command. This final measurement followed Phase A, Phase B, and the complete test suite for the final implementation. Start `2026-11-24T15:27:21.811+08:00`; end `2026-11-24T15:27:21.854+08:00`; exit code `0`; stderr empty. Complete stdout:
 
 ```text
-FD001/train_FD001.txt|963b5e22825b34d8b21c69e1aeb4af3e647050eb672ee8834ba4b5d91d2de0f8
-FD001/test_FD001.txt|3cda7109ce17bafb5443f2ac926cfcf88154b941b8c4cf95eb55d1ddd6f52851
-FD001/RUL_FD001.txt|a19c8ec94931949d0485bdc35118206e9c81c4547b422efb9cf86f4ceddbceca
+EVIDENCE_RERUN=INPUT_SHA256_AFTER
+START=2026-11-24T15:27:21.811+08:00
+WORKING_DIRECTORY=<PROJECT_ROOT>
+FD001\train_FD001.txt|3515356|963b5e22825b34d8b21c69e1aeb4af3e647050eb672ee8834ba4b5d91d2de0f8
+FD001\test_FD001.txt|2228855|3cda7109ce17bafb5443f2ac926cfcf88154b941b8c4cf95eb55d1ddd6f52851
+FD001\RUL_FD001.txt|429|a19c8ec94931949d0485bdc35118206e9c81c4547b422efb9cf86f4ceddbceca
+END=2026-11-24T15:27:21.854+08:00
+EXIT_CODE=0
+STDERR=<EMPTY>
 ```
 
-All after hashes match their before hashes.
+All three after hashes exactly match the before hashes.
 
-## Data safety and Git evidence boundary
+## Remediation and data-safety result
 
-The implementation reads the three inputs without writing them. `.gitignore` continues to exclude `FD001/`, common dataset directories, CSV data, environment files, credentials, and keys; it only adds exact allow-list exceptions for the authorized M2 deliverables. Public outputs contain aggregate metrics and small traceability examples, never a dataset copy, full source rows, full sensor series, secrets, or private absolute paths. No M3 or Web work was performed.
-
-The exact staged file list, staged diff, raw-data exclusion check, commit ID, commit-object SHA-256, push result, remote `main` equality, and GitHub URLs are necessarily produced after this report is frozen into its own commit. They are supplied in the Worker return rather than self-referentially embedded here.
+- Source paths are normalized to project-relative POSIX paths for default and explicit inputs; directories outside the authorized project root are rejected.
+- Each RUL lookup freshly opens the source, verifies current SHA-256, rereads the recorded physical line and token, parses the label, and raises `ValidationError` on line/value/hash mismatch.
+- Phase A and Phase B actual complete bounded JSON stdout, empty stderr, timestamps, and exit codes are recorded above.
+- Original FD001 files were not modified or staged. `.gitignore` continues to exclude `FD001/`.
+- No private absolute path, full source row, full sensor series, M3 work, or Web work is included.
+- Commit ID, commit-object SHA-256, push output, remote equality, GitHub URL, and final changed-file list are reported after the evidence file is frozen into the commit, avoiding self-reference.

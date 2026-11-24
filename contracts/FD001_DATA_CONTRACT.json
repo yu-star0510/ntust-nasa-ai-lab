@@ -1,6 +1,6 @@
 {
   "contract_name": "FD001_DATA_CONTRACT",
-  "schema_version": "1.0.0",
+  "schema_version": "1.0.1",
   "dataset": "NASA_CMAPSS_FD001",
   "source_type": "TRUSTED_LOCAL_FILES",
   "validation_status": "PASS",
@@ -74,7 +74,7 @@
     "missing_policy": "Do not fill, interpolate, delete, or rewrite. Structural missing values fail validation; quality issues are reported.",
     "cycle_sorting": "Ascending numeric cycle within one split and one unit.",
     "unit_ordering": "Ascending Unit ID for public interface results.",
-    "source_traceability": "References identify source file SHA-256, physical line, 0-based data row, and 1-based source column.",
+    "source_traceability": "References identify a project-relative source file, source SHA-256, physical line, 0-based data row, and 1-based source column. Input directories outside the authorized project root are rejected.",
     "validation_errors": "Invalid width, numeric type, non-finite values, invalid keys, ambiguous RUL mapping, or source hash changes block validated use."
   },
   "interfaces": {
@@ -104,9 +104,9 @@
     },
     "get_test_rul_label": {
       "input": {"unit_id": "positive integer Test Unit"},
-      "output": "{test_unit_id,rul_physical_line_number,rul_data_row_index,last_observed_cycle,rul_label,rul_raw_value}",
-      "errors": ["KeyError for unknown Test Unit"],
-      "provenance": "RUL source row mapped by the verified Test Unit order convention; label applies only at the last observed Test cycle."
+      "output": "{test_unit_id,rul_physical_line_number,rul_data_row_index,last_observed_cycle,rul_label,rul_raw_value,rul_raw_reference:RulRawReference}",
+      "errors": ["KeyError for unknown Test Unit", "ValidationError for changed source hash, unavailable physical line, or mismatched reread value"],
+      "provenance": "RUL source row mapped by the verified Test Unit order convention. Each call freshly reopens the RUL source, rereads the recorded physical line, verifies the token and file SHA-256, and returns a project-relative source reference. The label applies only at the last observed Test cycle."
     },
     "get_quality_summary": {
       "input": {"split": "enum(train,test)"},

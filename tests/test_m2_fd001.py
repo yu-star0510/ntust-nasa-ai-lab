@@ -5,6 +5,7 @@ import json
 import statistics
 import sys
 import unittest
+from dataclasses import replace
 from pathlib import Path
 
 
@@ -15,13 +16,16 @@ sys.path.insert(0, str(RESEARCH_DIR))
 from m2_fd001_validate import (  # noqa: E402
     COLUMN_NAMES,
     DEFAULT_INPUT_DIR,
+    PROJECT_ROOT,
     RUL_FILE,
     SENSOR_NAMES,
     SETTING_NAMES,
     TEST_FILE,
     TRAIN_FILE,
+    ValidationError,
     build_rul_mapping,
     get_raw_reference,
+    get_rul_raw_reference,
     load_sources,
     profile_sequence,
     run_phase_a,
@@ -105,6 +109,54 @@ class TestM2PhaseA(unittest.TestCase):
         self.assertEqual(result["phase_a_status"], "PASS")
         self.assertTrue(all(result["gate_checks"].values()))
 
+    def test_source_paths_are_project_relative_for_default_and_explicit_inputs(self) -> None:
+        expected = {
+            "train": "FD001/train_FD001.txt",
+            "test": "FD001/test_FD001.txt",
+            "rul": "FD001/RUL_FD001.txt",
+        }
+        for input_dir in (DEFAULT_INPUT_DIR, Path("FD001")):
+            result = run_phase_a(input_dir)
+            for split, expected_path in expected.items():
+                source_file = result[split]["source_file"]
+                self.assertEqual(source_file, expected_path)
+                self.assertFalse(Path(source_file).is_absolute())
+            for reference in result["raw_reference_samples"]:
+                self.assertFalse(Path(reference["source_file"]).is_absolute())
+            for entry in result["rul_mapping"]["entries"]:
+                reference = entry["rul_raw_reference"]
+                self.assertEqual(reference["source_file"], expected["rul"])
+                self.assertFalse(Path(reference["source_file"]).is_absolute())
+
+    def test_input_directory_outside_project_is_rejected(self) -> None:
+        with self.assertRaisesRegex(ValidationError, "authorized project root"):
+            load_sources(PROJECT_ROOT.parent)
+
+    def test_rul_reference_freshly_rereads_source(self) -> None:
+        for row in (self.rul.rows[0], self.rul.rows[len(self.rul.rows) // 2], self.rul.rows[-1]):
+            reference = get_rul_raw_reference(self.rul, row)
+            self.assertTrue(reference["reread_matches"])
+            self.assertEqual(reference["reread_value"], row.raw_value)
+            self.assertEqual(reference["rul_label"], row.value)
+            self.assertEqual(reference["source_file"], "FD001/RUL_FD001.txt")
+
+    def test_rul_reference_rejects_incorrect_physical_line(self) -> None:
+        bad_row = replace(
+            self.rul.rows[0], physical_line_number=len(self.rul.rows) + 1000
+        )
+        with self.assertRaisesRegex(ValidationError, "physical line is unavailable"):
+            get_rul_raw_reference(self.rul, bad_row)
+
+    def test_rul_reference_rejects_mismatched_value(self) -> None:
+        original = self.rul.rows[0]
+        bad_row = replace(
+            original,
+            raw_value=str(original.value + 1),
+            value=original.value + 1,
+        )
+        with self.assertRaisesRegex(ValidationError, "does not match"):
+            get_rul_raw_reference(self.rul, bad_row)
+
 
 class TestM2PhaseB(unittest.TestCase):
     @classmethod
@@ -145,6 +197,7 @@ class TestM2PhaseB(unittest.TestCase):
             self.assertTrue(point["raw_reference"]["reread_matches"])
             self.assertEqual(point["raw_reference"]["dataset_split"], trend["split"])
             self.assertEqual(point["raw_reference"]["unit_id"], trend["unit_id"])
+            self.assertFalse(Path(point["raw_reference"]["source_file"]).is_absolute())
 
     def test_train_test_and_unit_isolation(self) -> None:
         for split in ("train", "test"):
@@ -159,6 +212,26 @@ class TestM2PhaseB(unittest.TestCase):
                 all(point["raw_reference"]["unit_id"] == selected for point in series)
             )
 
+    def test_repository_source_paths_match_for_default_and_explicit_inputs(self) -> None:
+        repositories = (FD001Repository(), FD001Repository(Path("FD001")))
+        for repository in repositories:
+            train_reference = repository.get_raw_reference("train", 1, 1, "sensor_1")
+            self.assertEqual(train_reference["source_file"], "FD001/train_FD001.txt")
+            test_series = repository.get_sensor_series("test", 1, "sensor_1")
+            self.assertTrue(test_series)
+            self.assertTrue(
+                all(
+                    point["raw_reference"]["source_file"]
+                    == "FD001/test_FD001.txt"
+                    for point in test_series
+                )
+            )
+            rul_label = repository.get_test_rul_label(1)
+            self.assertEqual(
+                rul_label["rul_raw_reference"]["source_file"],
+                "FD001/RUL_FD001.txt",
+            )
+
     def test_rul_label_mapping_matches_local_rul_row(self) -> None:
         units = self.repository.get_units("test")
         for unit_id in (units[0], units[len(units) // 2], units[-1]):
@@ -166,6 +239,11 @@ class TestM2PhaseB(unittest.TestCase):
             source_row = self.repository.rul.rows[label["rul_data_row_index"]]
             self.assertEqual(label["rul_raw_value"], source_row.raw_value)
             self.assertEqual(label["rul_label"], source_row.value)
+            self.assertTrue(label["rul_raw_reference"]["reread_matches"])
+            self.assertEqual(
+                label["rul_raw_reference"]["source_file"],
+                "FD001/RUL_FD001.txt",
+            )
             self.assertEqual(
                 label["last_observed_cycle"],
                 max(self.repository.get_cycles("test", unit_id)),

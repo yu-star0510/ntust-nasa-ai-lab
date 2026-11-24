@@ -176,7 +176,7 @@ TYPE=BRAIN_TO_BRAIN_RETURN；WORK_ITEM_ID=WO-M1-RESEARCH-001；FROM=STUDENT-RESE
 | TO | STUDENT-RESEARCH Brain |
 | RETURN_TO | STUDENT-MAIN Brain |
 | AUTHORIZED_BY | STUDENT（2026-11-23 本對話正式指示「進行M2」） |
-| STATUS | RESEARCH_REVIEW_FAIL / REMEDIATION_REQUIRED（Worker 已完成 Commit/Push；Research Brain GitHub 靜態審查發現 source_file 相對路徑契約不一致、RUL 來源重讀未獲實作/證明，以及 Phase A/B stdout 不完整；M2 尚未 PASS，M3 持續 BLOCKED） |
+| STATUS | WORKER_REMEDIATION_COMPLETE / READY_FOR_REVIEW（`RESEARCH_INDEPENDENT_REVIEW_001` 三項缺失已補正並完成 EVIDENCE_RERUN；等待 Research Brain 重新從 GitHub 審查。M2 尚未 PASS，M3 持續 BLOCKED） |
 | PREREQUISITE | WO-M0-001=PASS；WO-M1-RESEARCH-001=PASS，MAIN final acceptance commit 661df6e9741b2d17c86e022776adfba91caa36d4 |
 | GOVERNANCE_BASELINE | GitHub main AGENTS.md，派工前已由 MAIN 從 661df6e9741b2d17c86e022776adfba91caa36d4 讀取；Research Brain 與 Own Worker 開工前仍各自重讀最新版本 |
 | PROJECT_ROOT | C:\Users\z2324\Desktop\NTUST\115\115_1\115-1\20261123（僅作定位，不需公開私人絕對路徑） |
@@ -218,7 +218,7 @@ TYPE=BRAIN_TO_BRAIN_RETURN；WORK_ITEM_ID=WO-M1-RESEARCH-001；FROM=STUDENT-RESE
 TYPE=BRAIN_TO_BRAIN_RETURN; WORK_ITEM_ID=WO-M2-RESEARCH-001; FROM=STUDENT-RESEARCH Brain; RETURN_TO=STUDENT-MAIN Brain; STATUS=READY_FOR_MAIN_REVIEW/FAIL/BLOCKED。
 須附 Phase A PASS/FAIL/BLOCKED、Phase B PASS/FAIL/BLOCKED/NOT_STARTED、三檔實際相對路徑、三組 SHA-256 before/after、Train/Test/RUL rows/columns、Train/Test Unit/Cycle 驗證、RUL mapping、Raw Index 檢查結果、Missing/Duplicates/Quality、Trend 與來源核對、Data Contract 文件/JSON GitHub 路徑、實際命令與執行證據、Exit Codes、Tests、Commit ID/Commit SHA256 計算對象、遠端 Commit URL、GitHub Verify、Data Safety、Research Brain Review 與 blockers。
 
-**M2 CURRENT STATUS:** Research Own Worker execution complete; Phase A=`PASS`, Phase B=`PASS`, tests=14/14; pending commit/push verification and independent Research Brain/Main review. Worker does not claim final M2 acceptance and does not authorize M3/Web.
+**M2 CURRENT STATUS:** Research Own Worker remediation complete; Phase A=`PASS`, Phase B=`PASS`, tests=20/20; pending remediation commit/push verification and independent Research Brain/Main review. Worker does not claim final M2 acceptance and does not authorize M3/Web.
 
 ## WO-M2-RESEARCH-001 — RESEARCH INDEPENDENT REVIEW 001 (2026-11-24)
 
@@ -232,3 +232,16 @@ TYPE=BRAIN_TO_BRAIN_RETURN; WORK_ITEM_ID=WO-M2-RESEARCH-001; FROM=STUDENT-RESEAR
 - **FINDING 3 — EVIDENCE_INCOMPLETE:** `reports/M2_EXECUTION_EVIDENCE.md` 記錄 Phase A/Phase B 指令、時間及 Exit Code，但明言原始 stdout 是 JSON，公開處只提供格式化 gate summary，沒有完整的實際 public-safe JSON stdout；完整性與對應關係無法單憑現有摘要復核。須將新的完整公開安全命令/stdout/stderr/exit code 保存，若重跑需標記 `EVIDENCE_RERUN`，不可冒充舊執行。
 - **RESEARCH_DECISION:** `FAIL / REMEDIATION_REQUIRED`（可在原 `WO-M2-RESEARCH-001` 授權檔案範圍內修正，非 MAIN 最終驗收）。待 Worker 修復、重新檢驗 Phase A → Phase B Gate、重跑測試、記錄三份 CSV 原始來源 SHA-256 before/after、Commit+Push，再由 Research Brain 從 GitHub 獨立審查；若新 Gate 未 PASS，Phase B 必須 NOT_STARTED 並回報 BLOCKED。
 - **CURRENT_GATE:** M2=NOT_ACCEPTED；Data Contract `main_acceptance=PENDING`；M3/Web=BLOCKED。不得移交 STUDENT-WEB Brain。
+
+## WO-M2-RESEARCH-001 — REMEDIATION WORKER RECORD (2026-11-24)
+
+- **TYPE:** `WORKER_TO_RESEARCH_BRAIN_RETURN` preparation; successful delivery status is `READY_FOR_REVIEW`, not final M2 PASS.
+- **BASELINE:** GitHub `main` review commit `35a929d0bf68d34c88b4cffc250de6939b31cefa`; local `main` was clean and fast-forward synchronized before remediation.
+- **FIX_1_SOURCE_PATH:** Complete. All public `source_file` values are project-relative POSIX paths (`FD001/...`) for default, relative, and absolute in-project inputs. Inputs resolving outside the authorized project root raise `ValidationError`. Automated tests cover Train, Test, RUL, raw references, and sensor series.
+- **FIX_2_RUL_REREAD:** Complete. Each RUL reference freshly reopens the source file, verifies current SHA-256, rereads recorded physical line/column 1, reparses the token, and compares raw and numeric values. Hash/line/value mismatch raises `ValidationError`. Tests cover valid reread, unavailable physical line, and mismatched value.
+- **FIX_3_EXECUTION_EVIDENCE:** Complete. `reports/M2_EXECUTION_EVIDENCE.md` is explicitly `EVIDENCE_RERUN` and records complete actual bounded compact-JSON stdout, empty stderr, commands, environment, timestamps, exit codes, complete unittest verbose output, and before/after hashes. A separate comparison confirmed both saved JSON lines exactly equal fresh live CLI output.
+- **PHASE_GATE:** Phase A=`PASS` with 11/11 gate checks; only then Phase B=`PASS`. Data Contract `FD001_DATA_CONTRACT` version `1.0.1` validates successfully; `main_acceptance=PENDING` remains unchanged.
+- **TESTS:** `python -m unittest -v tests/test_m2_fd001.py`; 20/20 passed, exit code 0, runtime 28.960s.
+- **SOURCE_INTEGRITY:** Before/after hashes remained identical: Train `963b5e22825b34d8b21c69e1aeb4af3e647050eb672ee8834ba4b5d91d2de0f8`; Test `3cda7109ce17bafb5443f2ac926cfcf88154b941b8c4cf95eb55d1ddd6f52851`; RUL `a19c8ec94931949d0485bdc35118206e9c81c4547b422efb9cf86f4ceddbceca`.
+- **SCOPE/SAFETY:** Only existing M2-authorized files were modified. `.gitignore`, raw FD001 inputs, M0/M1 artifacts, and unrelated files were not modified. No raw dataset, private absolute path, M3, or Web work is included.
+- **DELIVERY:** Commit ID, commit-object SHA-256, push result, GitHub URL, remote equality, and final changed-file list are provided in the Worker return after commit, avoiding self-reference.
