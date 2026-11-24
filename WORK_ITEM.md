@@ -279,3 +279,84 @@ TYPE=BRAIN_TO_BRAIN_RETURN; WORK_ITEM_ID=WO-M2-RESEARCH-001; FROM=STUDENT-RESEAR
 - **PRIVACY_NOTICE:** 歷史 `WORK_ITEM.md` 曾含學生 Windows 絕對路徑文字；此為已存在的公開治理資訊，不是 M2 Worker 新增。MAIN 不擅自改寫 Git 歷史、不 force push；可在 STUDENT 明確授權後另外進行目前文件的去識別化與歷史風險治理。此項獨立列為公開資訊治理議題，不構成 M2 來源資料上傳。
 - **NEXT_GATE:** M2 PASS；`M3_NOT_AUTHORIZED`。在 STUDENT 批准 M3 前，不得由 MAIN、Research Brain、Web Brain 或任何 Own Worker 開始網站工作；Data Contract 實際 Web 交接要先確認元資料版本同步與受控 handoff；每次派工前重讀 GitHub 最新 AGENTS.md。
 - **RETURN_TO:** STUDENT
+
+
+## WO-M2-RESEARCH-002 — FD001 Evidence Classification Supplement
+
+| FIELD | VALUE |
+| --- | --- |
+| TYPE | BRAIN_TO_BRAIN_WORK_ORDER |
+| WORK_ITEM_ID | WO-M2-RESEARCH-002 |
+| MILESTONE | M2_POST_ACCEPTANCE_RESEARCH_SUPPLEMENT (existing M2 PASS remains intact) |
+| TASK | Research evidence: Unit/Cycle/Sensor trends; OBSERVATION / INFERENCE / UNKNOWN; labels and RUL limitations |
+| FROM | STUDENT-MAIN Brain |
+| TO | STUDENT-RESEARCH Brain |
+| RETURN_TO | STUDENT-MAIN Brain |
+| AUTHORIZED_BY | STUDENT (2026-11-24: 進行未完成的部分) |
+| STATUS | COMMAND_DISPATCHED / RELAY_STATUS=PENDING_STUDENT_RELAY / WORKER_NOT_STARTED |
+| PREREQUISITES | M2 MAIN PASS at ee27d43d4f72ff11d75d84125ca66326ae036069; accepted FD001_DATA_CONTRACT v1.0.1 per WORK_ITEM.md; no other active worker work item on GitHub main |
+| INPUT | Trusted local FD001/train_FD001.txt, FD001/test_FD001.txt, FD001/RUL_FD001.txt; existing M2 validated Python data interfaces; no external download or source lookup |
+| AUTHORITY | MAIN dispatches only to STUDENT-RESEARCH Brain. Research Brain must reread latest GitHub main AGENTS.md and WORK_ITEM.md and instruct only its own Research Own Worker. Worker must separately reread latest AGENTS.md before executing. MAIN never directly dispatches Own Worker. |
+| SCOPE | Complete only the not-yet-delivered formal epistemic classification, reusing M2-approved source and API; deliver auditable selected real trends, label/RUL semantics, clear limits on diagnostic conclusions. No training or model prediction, fault detection, arbitrary baseline thresholds, Web/API/UI, M3 or M4. |
+| ALLOWED_FILES | research/m2_evidence_classification.py; tests/test_m2_evidence_classification.py; reports/M2_EVIDENCE_CLASSIFICATION.md; reports/M2_EVIDENCE_EXECUTION.md; reports/M2_EVIDENCE_SAMPLES.json (small safe samples only); minimal .gitignore changes to permit exactly these while protecting raw data; WORK_ITEM.md status/evidence records. If different files are needed, ask MAIN approval before use. |
+| READ_ONLY | ALL raw FD001 files and synthetic CSV, prior M0/M1/M2 source, tests, reports and contract v1.0.1, other student files. No source overwrite, rewriting source files, contract state edits or Git upload of raw/full sensor series. |
+| OUTPUT | Reproducible parameterized evidence extractor/classifier, public-safe small sample JSON, human-readable evidence report and Train/Test/RUL label matrix, full real local execution evidence, tests, Research Brain GitHub independent review. |
+| NOT_YET_DELIVERED | No new evidence classification results; Own Worker not started; Research Brain review and MAIN review pending; M3/Web must not execute concurrently. |
+
+### INPUT and source provenance
+
+1. Only read validated local FD001 sources through approved M2 interfaces such as FD001Repository.get_sensor_series and get_raw_reference, get_test_rul_label. Verify SHA-256 before and after. Do not invent or substitute source data.
+2. Support train/test split, unit_id, actual cycle start/end and sensor_1..sensor_21 (an integer selector is acceptable only when documented and mapped exactly). Select at least one Train and one Test case and multiple actual cycles; strictly isolate split and unit. Complete series may remain only in local workspace; GitHub contains only small checked samples.
+3. For each published OBSERVATION record include split, unit_id, cycle, sensor_name, raw value and original token, project-relative source_file, source_sha256, 1-based physical_line_number, 0-based data_row_index, 1-based source_column_index, and reread_matches. Do not infer physical sensor units or actual wall-clock timestamps from unspecified FD001 fields. If no source record exists, report absence with explicit uncertainty rather than inventing a value.
+4. Explicitly distinguish original observed sensor data versus derived descriptive calculations versus labels. Where raw-reference code is cache-backed, describe it accurately rather than claiming a fresh disk reopening without proof.
+
+### REQUIRED OBSERVATION / INFERENCE / UNKNOWN report
+
+Use a documented schema for each record: category, statement, source_references, calculation_or_null, evidence_scope, limitations.
+
+OBSERVATION: Directly source-verifiable numbers, selected Engine Unit/Cycle/Sensor raw values, and verified actual RUL ground-truth label at Test last observed Cycle. Provide raw row and column evidence.
+
+INFERENCE: Only transparent bounded numerical descriptions such as end minus start, a selected-window min/max, and directional trend. Show exact formula, input cycles/values and source references. A rising/falling sensor value by itself CANNOT establish degradation, abnormality, failure, fault type, health score, failure timing or RUL prediction. Clearly label inferential status rather than observational fact.
+
+UNKNOWN: Without independently verified evidence, mark fault type, fault timing, severity, healthy-vs-failed status at an arbitrary observation, causal explanation, accepted diagnostic baseline, physical fault thresholds, model-derived RUL prediction, and any unvalidated sensor unit as unknown. Explain precisely why, instead of inventing a value or presenting false certainty. UNKNOWN is epistemic and distinct from missing/null values in the original data.
+
+No invented healthy/abnormal baseline, no prognostic thresholds, no anomaly classification. Existing M2 constant/near-constant quality rule is NOT a fault-diagnosis baseline.
+
+### LABELS / RUL requirements
+
+Train: Sequence represents run-to-failure convention; original 26 data columns contain no direct fault type class, fault-time field, or measured per-cycle RUL label. If discussing train-cycle RUL via final_observed_train_cycle minus current_cycle, explicitly label as DERIVED under run-to-failure assumption, not an observed original column.
+
+Test: Partial sequence. Last observed Test Cycle is not the failure point; Test raw rows have no original per-cycle RUL column.
+
+RUL_FD001.txt: Exactly one ground truth RUL label per mapped Test Unit at last observed Test Cycle. Re-verify original file/physical row/label with M2 approved fresh reread. Ground-truth label is NOT a predictive model output and cannot be passed off as a raw per-cycle sensor value. No extrapolated per-cycle Test RUL without an explicitly authorized separate derivation.
+
+Fault-mode labels, physical normal/abnormal thresholds or official failure classification columns are NOT established by FD001 raw 26-column structure; mark UNKNOWN where not verifiable.
+
+### ACCEPTANCE
+
+- Confirm latest GitHub main AGENTS.md and prior M2 PASS; real original source SHA-256 before/after identical.
+- Parameterized unit, cycle window and sensor selection functional and verified for both splits; deterministic small real examples.
+- Each OBSERVATION sampled point backed by actual source row/column/token and safe project-relative provenance.
+- At least one INFERENCE with exact, reproducible arithmetic and source points; do not diagnose faults.
+- UNKNOWN covers fault-mode labels, physical baseline, thresholds, health/fault state, cause, predicted RUL; distinguish unknown from missing data.
+- Train/Test/RUL semantic matrix accurate; RUL source line/value reread tested; no observed/derived/predicted conflation.
+- Document that sensor trends are not evidence of fault on their own. Do not create baselines or model outputs.
+- Actual commands, timestamps, execution environment, stdout, stderr, Exit Codes, repeatable tests, source SHA-256 before/after documented without fabrication.
+- Only approved code, tests, safe summary JSON/Markdown and minimal allowlist tracked; no source dataset / full trace / full RUL mapping / private absolute paths uploaded.
+- Research Own Worker Commit + Push to single main; Research Brain independently read GitHub source, tests, reports, staged scope and latest main and return RESEARCH_ACCEPTED/FAIL/BLOCKED. MAIN final PASS only after own independent GitHub review.
+- Existing M2 acceptance remains PASS; M3/M4 remains NOT_STARTED under this work order.
+
+### STOP_IF
+
+Raw file absent/unreadable/hash mismatch; RUL order/source invalid; source row mismatch; unable to verify actual samples or calculations; mistaken fault conclusion or fabricated baseline/threshold/label; unsafe disclosure; evidence cannot be produced; GitHub push/verification unavailable; AGENTS.md conflict; collision with other work item; unauthorized changes to M2 or Web files. Stop and report BLOCKED with exact cause/evidence; never change existing accepted source data or expand scope.
+
+### RETURN_TO STUDENT-MAIN Brain
+
+TYPE: BRAIN_TO_BRAIN_RETURN
+WORK_ITEM_ID: WO-M2-RESEARCH-002
+FROM: STUDENT-RESEARCH Brain
+RETURN_TO: STUDENT-MAIN Brain
+STATUS: READY_FOR_MAIN_REVIEW / FAIL / BLOCKED
+RESEARCH_BRAIN_REVIEW: RESEARCH_ACCEPTED / FAIL / BLOCKED
+
+Must include: used local file relative paths, before/after SHA-256, selected split/unit/sensor/cycle ranges, OBSERVATION/INFERENCE/UNKNOWN sample and links, label/RUL semantic matrix, raw row crosschecks, commands/timestamps/stdout/stderr/Exit Codes/tests, repository commit SHA and URL, actual changed paths, data safety, independent GitHub review, acceptance results and blockers.
