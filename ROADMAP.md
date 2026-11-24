@@ -2,7 +2,7 @@
 
 專案最終交付為本地端網站，支援選擇 Engine Unit、Cycle 和 Sensor，顯示真實數值與 Sensor Trend，可查閱 Source Evidence，並依據來源數據產生 Evidence Prompt。
 
-依 M0 至 M5 循序執行。每個里程碑均須先驗收，再由 STUDENT 正式批准下一階段。截至 2026-11-24：M0、M1、M2 已由 STUDENT-MAIN Brain 正式驗收 PASS；M2 `WO-M2-RESEARCH-001` 的 Phase A/B 與 FD001_DATA_CONTRACT v1.0.1 已接受（以 `WORK_ITEM.md` 的 MAIN FINAL ACCEPTANCE 為權威紀錄）。截至 2026-11-24，STUDENT 已批准 M3-A 本地唯讀 FD001 API 工單 WO-M3-WEB-001，由 MAIN 正式向 STUDENT-WEB Brain 派工（等待 STUDENT 轉交）；Web Own Worker 尚未開始。啟動 Worker 前必須完成 Research Data Contract v1.0.1 的 main_acceptance 狀態受控交接與相容測試；若交接關卡未通過則 Web Brain 應回報 BLOCKED。M3-A 未驗收、M3 全站未完成，M4–M5 未授權。各階段具體範圍與驗收以 WORK_ITEM.md 最新工作單和 AGENTS.md 為準。
+依 M0 至 M5 循序執行。每個里程碑均須先驗收，再由 STUDENT 正式批准下一階段。截至 2026-11-24：M0、M1、M2 已由 STUDENT-MAIN Brain 正式驗收 PASS；M2 `WO-M2-RESEARCH-001` 的 Phase A/B 與 FD001_DATA_CONTRACT v1.0.1 已接受（以 `WORK_ITEM.md` 的 MAIN FINAL ACCEPTANCE 為權威紀錄）。截至 2026-11-24，STUDENT 已批准 M3-A 本地唯讀 FD001 API 工單 WO-M3-WEB-001，由 MAIN 正式向 STUDENT-WEB Brain 派工（等待 STUDENT 轉交）；Web Own Worker 尚未開始。STUDENT-WEB Brain 已回報 BLOCKED / HANDOFF_CONTRACT_STATE，Web Own Worker 未開始；MAIN 已依 M3-A 已批准前置交接範圍註冊 WO-M3-HANDOFF-001 交由 STUDENT-RESEARCH Brain 依序補正並兩級驗收。受控同步 Data Contract v1.0.1 的 main_acceptance 狀態及重跑相容測試完成且 MAIN 接受之前，M3-A 持續 BLOCKED。M3-A 未驗收、M3 全站未完成，M4–M5 未授權。各階段具體範圍與驗收以 WORK_ITEM.md 最新工作單和 AGENTS.md 為準。
 
 ## M0 — Governance Initialization
 
