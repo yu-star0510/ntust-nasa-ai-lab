@@ -4,6 +4,7 @@ import hashlib
 import json
 import statistics
 import sys
+import tempfile
 import unittest
 from dataclasses import replace
 from pathlib import Path
@@ -254,12 +255,94 @@ class TestM2PhaseB(unittest.TestCase):
         markdown = CONTRACT_JSON.with_suffix(".md").read_text(encoding="utf-8")
         validation = validate_contract(CONTRACT_JSON)
         self.assertTrue(validation["valid"])
+        self.assertEqual(contract["contract_name"], "FD001_DATA_CONTRACT")
+        self.assertEqual(contract["schema_version"], "1.0.1")
+        self.assertEqual(contract["validation_status"], "PASS")
+        self.assertEqual(contract["main_acceptance"], "ACCEPTED")
+        self.assertTrue(validation["checks"]["main_acceptance_accepted"])
         self.assertIn(contract["contract_name"], markdown)
         self.assertIn(contract["schema_version"], markdown)
         self.assertIn(contract["validation_status"], markdown)
-        self.assertIn(contract["main_acceptance"], markdown)
+        self.assertIn("| `main_acceptance` | `ACCEPTED` |", markdown)
+        self.assertEqual(
+            set(contract["interfaces"]),
+            {
+                "get_units",
+                "get_cycles",
+                "get_sensor_series",
+                "get_raw_reference",
+                "get_test_rul_label",
+                "get_quality_summary",
+            },
+        )
+        self.assertEqual(set(contract["required_fields"]), set(COLUMN_NAMES) | {
+            "dataset_split",
+            "source_file",
+            "source_sha256",
+            "physical_line_number",
+            "data_row_index",
+            "source_column_index",
+        })
         for interface_name in contract["interfaces"]:
             self.assertIn(f"`{interface_name}", markdown)
+
+    def _validate_temporary_contract(self, contract: dict[str, object]) -> dict[str, object]:
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "FD001_DATA_CONTRACT.json"
+            path.write_text(json.dumps(contract), encoding="utf-8")
+            return validate_contract(path)
+
+    def test_contract_rejects_unaccepted_or_missing_acceptance_state(self) -> None:
+        accepted = json.loads(CONTRACT_JSON.read_text(encoding="utf-8"))
+        for state in ("PENDING", "REJECTED", "UNKNOWN", "accepted", "", None):
+            contract = json.loads(json.dumps(accepted))
+            contract["main_acceptance"] = state
+            with self.subTest(main_acceptance=state):
+                result = self._validate_temporary_contract(contract)
+                self.assertFalse(result["valid"])
+                self.assertFalse(result["checks"]["main_acceptance_accepted"])
+
+        missing = json.loads(json.dumps(accepted))
+        del missing["main_acceptance"]
+        result = self._validate_temporary_contract(missing)
+        self.assertFalse(result["valid"])
+        self.assertFalse(result["checks"]["main_acceptance_accepted"])
+
+    def test_contract_rejects_invalid_identity_structure_or_validation_status(self) -> None:
+        accepted = json.loads(CONTRACT_JSON.read_text(encoding="utf-8"))
+        cases: list[tuple[str, dict[str, object]]] = []
+
+        wrong_name = json.loads(json.dumps(accepted))
+        wrong_name["contract_name"] = "NOT_FD001_DATA_CONTRACT"
+        cases.append(("wrong_name", wrong_name))
+
+        wrong_version = json.loads(json.dumps(accepted))
+        wrong_version["schema_version"] = "1.0.2"
+        cases.append(("wrong_version", wrong_version))
+
+        missing_interface = json.loads(json.dumps(accepted))
+        del missing_interface["interfaces"]["get_quality_summary"]
+        cases.append(("missing_interface", missing_interface))
+
+        wrong_interface = json.loads(json.dumps(accepted))
+        wrong_interface["interfaces"]["unsupported_interface"] = {}
+        cases.append(("wrong_interface", wrong_interface))
+
+        missing_required_field = json.loads(json.dumps(accepted))
+        missing_required_field["required_fields"].remove("source_column_index")
+        cases.append(("missing_required_field", missing_required_field))
+
+        wrong_required_field = json.loads(json.dumps(accepted))
+        wrong_required_field["required_fields"].append("unsupported_field")
+        cases.append(("wrong_required_field", wrong_required_field))
+
+        non_pass = json.loads(json.dumps(accepted))
+        non_pass["validation_status"] = "FAIL"
+        cases.append(("non_pass_validation_status", non_pass))
+
+        for name, contract in cases:
+            with self.subTest(case=name):
+                self.assertFalse(self._validate_temporary_contract(contract)["valid"])
 
     def test_interface_error_behavior(self) -> None:
         with self.assertRaises(ValueError):

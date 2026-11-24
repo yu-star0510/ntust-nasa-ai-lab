@@ -263,7 +263,7 @@ def validate_contract(contract_path: Path = CONTRACT_JSON) -> dict[str, Any]:
         "required_interfaces": required_interfaces == actual_interfaces,
         "required_fields": required_fields == actual_fields,
         "validation_status": contract["validation_status"] == "PASS",
-        "main_acceptance_pending": contract["main_acceptance"] == "PENDING",
+        "main_acceptance_accepted": contract.get("main_acceptance") == "ACCEPTED",
     }
     return {"checks": checks, "valid": all(checks.values())}
 

@@ -4,7 +4,7 @@
   "dataset": "NASA_CMAPSS_FD001",
   "source_type": "TRUSTED_LOCAL_FILES",
   "validation_status": "PASS",
-  "main_acceptance": "PENDING",
+  "main_acceptance": "ACCEPTED",
   "splits": ["train", "test"],
   "source_files": {
     "train": {

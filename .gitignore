@@ -62,3 +62,7 @@ research/
 !/reports/M2_EVIDENCE_CLASSIFICATION.md
 !/reports/M2_EVIDENCE_EXECUTION.md
 !/reports/M2_EVIDENCE_SAMPLES.json
+
+# WO-M3-HANDOFF-001: allow only the authorized contract handoff reports.
+!/reports/M3_CONTRACT_HANDOFF.md
+!/reports/M3_CONTRACT_HANDOFF_EVIDENCE.md

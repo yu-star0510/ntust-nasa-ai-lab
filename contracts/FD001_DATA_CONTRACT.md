@@ -7,9 +7,9 @@
 | `dataset` | `NASA_CMAPSS_FD001` |
 | `source_type` | `TRUSTED_LOCAL_FILES` |
 | `validation_status` | `PASS` |
-| `main_acceptance` | `PENDING` |
+| `main_acceptance` | `ACCEPTED` |
 
-This Research contract was produced only after the M2 Phase A gate passed. `PENDING` means STUDENT-MAIN Brain has not yet accepted it for Web use.
+This Research contract was produced only after the M2 Phase A gate passed. Data Contract v1.0.1 was formally accepted by STUDENT-MAIN Brain in the original `WO-M2-RESEARCH-001 — MAIN FINAL ACCEPTANCE` record in `WORK_ITEM.md`. `WO-M3-HANDOFF-001` only synchronizes this lifecycle metadata from the stale `PENDING` value to `ACCEPTED`; it does not change the contract schema, version, interfaces, source hashes, or data semantics.
 
 ## Dataset and provenance
 

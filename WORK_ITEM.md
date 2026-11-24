@@ -526,7 +526,7 @@ Include: contract handoff resolution reference and tested schema version; endpoi
 | TO | STUDENT-RESEARCH Brain |
 | RETURN_TO | STUDENT-MAIN Brain |
 | AUTHORIZED_SCOPE | This dependency is specifically authorized as the controlled Research/MAIN handoff prerequisite in the STUDENT-approved M3-A order (D-M3-001); request for resolution was relayed by STUDENT from Web Brain. It is NOT approval of another project milestone or overlapping worker development. |
-| STATUS | COMMAND_DISPATCHED / RELAY_STATUS=PENDING_STUDENT_RELAY / RESEARCH_OWN_WORKER=NOT_STARTED |
+| STATUS | RESEARCH_OWN_WORKER_READY_FOR_REVIEW / RESEARCH_BRAIN_REVIEW_PENDING / MAIN_REVIEW_PENDING; parent M3-A remains BLOCKED and Web Own Worker remains NOT_STARTED |
 | PREREQUISITE | M2 original MAIN PASS and M2 evidence supplement MAIN PASS; WO-M3-WEB-001 BLOCKED with WEB_OWN_WORKER NOT_STARTED; latest AGENTS.md governs. |
 | SINGLE_ACTIVE_WORK | While this Research dependency is executing, parent M3-A remains paused: Web Brain must not dispatch Web Own Worker. Once this dependency is accepted by MAIN, Research work stops, then Web Brain rechecks the handoff before resuming its already authorized API work. |
 | INPUT | FD001_DATA_CONTRACT v1.0.1 (JSON + Markdown), research/m2_fd001_analysis.py validate_contract and run_phase_b, tests/test_m2_fd001.py, read-only trusted-local FD001 originals, WORK_ITEM.md original M2 MAIN acceptance. |
@@ -563,3 +563,16 @@ Unapproved scope/contract schema change, file missing, invalid M2 source hashes,
 
 TYPE=BRAIN_TO_BRAIN_RETURN; WORK_ITEM_ID=WO-M3-HANDOFF-001; FROM=STUDENT-RESEARCH Brain; RETURN_TO=STUDENT-MAIN Brain; STATUS=READY_FOR_MAIN_REVIEW/FAIL/BLOCKED; RESEARCH_BRAIN_REVIEW=RESEARCH_ACCEPTED/FAIL/BLOCKED.
 Include: original M2 approval reference, source hashes before/after, contract version and exact metadata change, positive/negative validator checks and Phase A/B, all executed test suites, full public-safe stdout/stderr/Exit Codes/timestamps, changed files, Worker Commit+GitHub URL, Research Brain independent remote inspection, acceptance checklist and blockers. Main final approval PENDING until GitHub independent review.
+
+### WO-M3-HANDOFF-001 — RESEARCH OWN WORKER EXECUTION RETURN (2026-11-24)
+
+- TYPE: WORKER_TO_RESEARCH_BRAIN_RETURN; EXECUTION_STATUS: READY_FOR_REVIEW only. Research Brain and MAIN acceptance remain pending.
+- GOVERNANCE_BASELINE: Began from GitHub `main` commit `243b06c6aeed9a022618384a0bbe2c3bda1c7c04` after rereading the governed files and confirming one active dependency item. Original `WO-M2-RESEARCH-001` MAIN acceptance remains the lifecycle authority; no M2 result was reopened.
+- CONTRACT_STATE: `FD001_DATA_CONTRACT` remains schema `1.0.1`; JSON and Markdown lifecycle metadata changed only from `PENDING` to `ACCEPTED`. A structured comparison reports all other JSON fields equal, including the six interfaces, required fields, source hashes and semantics.
+- VALIDATOR_COMPATIBILITY: `validate_contract()` now requires exact `ACCEPTED`. Positive coverage passes the published contract; negative temporary fixtures reject PENDING, REJECTED, UNKNOWN, lowercase accepted, empty, null, missing acceptance, wrong name/version, altered interface/field sets and non-PASS validation.
+- EXECUTION_RESULTS: Phase A PASS; Phase B PASS with `main_acceptance_accepted=true` and contract `valid=true`; `tests/test_m2_fd001.py` 22/22 OK; `tests/test_m2_evidence_classification.py` 11/11 OK. Real commands, UTC+08:00 timestamps, complete public-safe stdout/stderr and Exit Codes are recorded in `reports/M3_CONTRACT_HANDOFF_EVIDENCE.md`.
+- SOURCE_INTEGRITY: Train `963b5e22825b34d8b21c69e1aeb4af3e647050eb672ee8834ba4b5d91d2de0f8`; Test `3cda7109ce17bafb5443f2ac926cfcf88154b941b8c4cf95eb55d1ddd6f52851`; RUL `a19c8ec94931949d0485bdc35118206e9c81c4547b422efb9cf86f4ceddbceca`. Before and After match each other and the accepted contract.
+- AUTHORIZED_FILES: `.gitignore`; `WORK_ITEM.md`; `contracts/FD001_DATA_CONTRACT.json`; `contracts/FD001_DATA_CONTRACT.md`; `research/m2_fd001_analysis.py`; `tests/test_m2_fd001.py`; `reports/M3_CONTRACT_HANDOFF.md`; `reports/M3_CONTRACT_HANDOFF_EVIDENCE.md`.
+- DATA_SAFETY: No raw input, complete sensor history, full RUL mapping, private absolute path, credential, Web implementation, M4 work, prediction, threshold or fault classification is included. Raw FD001 files remain read-only and untracked.
+- REMAINING_GATE: Commit, Push and remote GitHub tree verification are reported out-of-band in the Worker return because the Commit ID cannot be embedded in its own commit. Parent `WO-M3-WEB-001` remains BLOCKED until Research Brain and MAIN independently review and accept this handoff.
+- BLOCKERS: none at Worker execution stage.
