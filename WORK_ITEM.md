@@ -293,7 +293,7 @@ TYPE=BRAIN_TO_BRAIN_RETURN; WORK_ITEM_ID=WO-M2-RESEARCH-001; FROM=STUDENT-RESEAR
 | TO | STUDENT-RESEARCH Brain |
 | RETURN_TO | STUDENT-MAIN Brain |
 | AUTHORIZED_BY | STUDENT (2026-11-24: 進行未完成的部分) |
-| STATUS | BRAIN_REVIEWED / RESEARCH_ACCEPTED / READY_FOR_MAIN_REVIEW（2026-11-24 補正重審通過；MAIN FINAL ACCEPTANCE=PENDING；原 WO-M2-RESEARCH-001 PASS 不變；M3/M4/Web NOT_STARTED） |
+| STATUS | PASS（2026-11-24；STUDENT-MAIN Brain 已獨立審查 GitHub 實際成果並接受 OBSERVATION / INFERENCE / UNKNOWN、衍生 RUL 溯源、標籤區分與 EVIDENCE_RERUN；原 WO-M2-RESEARCH-001 PASS 不變；本工單未授權 M3/M4/Web） |
 | PREREQUISITES | M2 MAIN PASS at ee27d43d4f72ff11d75d84125ca66326ae036069; accepted FD001_DATA_CONTRACT v1.0.1 per WORK_ITEM.md; no other active worker work item on GitHub main |
 | INPUT | Trusted local FD001/train_FD001.txt, FD001/test_FD001.txt, FD001/RUL_FD001.txt; existing M2 validated Python data interfaces; no external download or source lookup |
 | AUTHORITY | MAIN dispatches only to STUDENT-RESEARCH Brain. Research Brain must reread latest GitHub main AGENTS.md and WORK_ITEM.md and instruct only its own Research Own Worker. Worker must separately reread latest AGENTS.md before executing. MAIN never directly dispatches Own Worker. |
@@ -301,7 +301,7 @@ TYPE=BRAIN_TO_BRAIN_RETURN; WORK_ITEM_ID=WO-M2-RESEARCH-001; FROM=STUDENT-RESEAR
 | ALLOWED_FILES | research/m2_evidence_classification.py; tests/test_m2_evidence_classification.py; reports/M2_EVIDENCE_CLASSIFICATION.md; reports/M2_EVIDENCE_EXECUTION.md; reports/M2_EVIDENCE_SAMPLES.json (small safe samples only); minimal .gitignore changes to permit exactly these while protecting raw data; WORK_ITEM.md status/evidence records. If different files are needed, ask MAIN approval before use. |
 | READ_ONLY | ALL raw FD001 files and synthetic CSV, prior M0/M1/M2 source, tests, reports and contract v1.0.1, other student files. No source overwrite, rewriting source files, contract state edits or Git upload of raw/full sensor series. |
 | OUTPUT | Reproducible parameterized evidence extractor/classifier, public-safe small sample JSON, human-readable evidence report and Train/Test/RUL label matrix, full real local execution evidence, tests, Research Brain GitHub independent review. |
-| NOT_YET_DELIVERED | Research Own Worker implementation and evidence are delivered for review; Research Brain independent GitHub review and MAIN final review remain pending. Existing M2 PASS remains intact; M3/Web was not executed. |
+| DELIVERY_STATUS | Worker 成果及 EVIDENCE_RERUN 已交付；Research Brain `RESEARCH_ACCEPTED`（GitHub commit 5be17f37c1f95428570f9dc6423eb80e28de3689）；MAIN FINAL `PASS`（2026-11-24，見本工作單後附 MAIN FINAL ACCEPTANCE）；原 M2 PASS 不變；未執行 M3/M4/Web。 |
 
 ### INPUT and source provenance
 
@@ -408,3 +408,23 @@ Must include: used local file relative paths, before/after SHA-256, selected spl
 - **SOURCE_INTEGRITY (Worker rerun report):** Train SHA-256 before/after/contract `963b5e22825b34d8b21c69e1aeb4af3e647050eb672ee8834ba4b5d91d2de0f8`；Test `3cda7109ce17bafb5443f2ac926cfcf88154b941b8c4cf95eb55d1ddd6f52851`；RUL `a19c8ec94931949d0485bdc35118206e9c81c4547b422efb9cf86f4ceddbceca`。Research Brain 獨立核對報告文字/契約/JSON 三方相符；未直接存取學生 Windows FD001 原始檔重算雜湊或獨立重跑本地測試。
 - **PUBLIC_DISCLOSURE:** GitHub tree 不含三份 FD001 原始檔或完整 Sensor trace/RUL mapping；補正報告不含新的私人 Windows 絕對路徑，來源資料維持 READ_ONLY。既有治理文件歷史路徑去識別化議題不在本工作單授權。
 - **NEXT_GATE:** Research Brain 完成補正驗收，`STATUS=READY_FOR_MAIN_REVIEW`；`MAIN_FINAL_PASS=PENDING`；原 `WO-M2-RESEARCH-001=PASS`，M3/M4/Web 仍 NOT_STARTED、不得由本工作單啟動。
+
+## WO-M2-RESEARCH-002 — MAIN FINAL ACCEPTANCE (2026-11-24)
+
+- **TYPE:** MAIN_INDEPENDENT_GITHUB_ACCEPTANCE
+- **WORK_ITEM_ID:** WO-M2-RESEARCH-002
+- **REVIEWER:** STUDENT-MAIN Brain
+- **FINAL_DECISION:** PASS — supplemental Research evidence classification accepted; original WO-M2-RESEARCH-001 M2 PASS remains unaffected.
+- **REVIEW_BASELINE:** GitHub `main` commit `5be17f37c1f95428570f9dc6423eb80e28de3689`; Worker remediation commit `ea66ff6e0e4b9279e6edc3563e0371ee21ec3da5`; Research Brain independent review commit `5be17f37c1f95428570f9dc6423eb80e28de3689`.
+- **FILES_VERIFIED_FROM_GITHUB:** AGENTS.md, WORK_ITEM.md, FD001_DATA_CONTRACT v1.0.1 (unchanged), research/m2_evidence_classification.py, tests/test_m2_evidence_classification.py, reports/M2_EVIDENCE_CLASSIFICATION.md, reports/M2_EVIDENCE_EXECUTION.md, reports/M2_EVIDENCE_SAMPLES.json, Worker/Research commits and complete remote recursive tree. Worker changed exactly six permitted paths; Research Brain review only WORK_ITEM.md. Original FD001 datasets, M2 Research code and contracts not modified or published.
+- **OBSERVATIONS_VERIFIED_AGAINST_PUBLIC_SAFE_EVIDENCE:** Train split Unit 1 sensor_2 Cycles 1–5: 641.82, 642.15, 642.35, 642.35, 642.37; Test split Unit 1 sensor_2 Cycles 27–31: 642.08, 641.93, 641.95, 642.79, 642.58. Reports and published bounded JSON agree. Published observations carry project-relative file, accepted SHA-256, physical line, 0-based data row, source column 7, original token/value and `reread_matches=true`. Research code describes Train/Test lookup correctly as linecache-backed.
+- **INFERENCE_CHECK:** Recomputed from published values Train 642.37−641.82=+0.55 and Test 642.58−642.08=+0.50; window min/max match report. Endpoint direction is not represented as monotonicity, degradation, anomaly or failure diagnosis.
+- **DERIVED_RUL_PROVENANCE_FIX:** GitHub source/public JSON/test verified six Train Cycle-column source references: Cycles 1–5 source line 1–5, index 0–4, source column 2 and actual final Train Unit 1 Cycle 192 source physical line 192, data row index 191, source column 2, token/value `192`, reread_matches=true. Formula `derived_train_RUL = final_observed_train_cycle - current_cycle` yields 191,190,189,188,187; marked DERIVED under run-to-failure convention, not a measured raw RUL label or prediction.
+- **TEST_RUL_LABEL:** Test Unit 1 at final observed Cycle 31 maps to RUL_FD001.txt physical line 1, original token `112` / numeric ground truth 112.0, source column 1. Approved M2 RUL reference freshly reopens file, validates hash, physical line, token and value. Distinct from per-cycle Test sensor data and model-predicted RUL.
+- **UNKNOWN_AND_BASELINE:** All eleven required epistemic UNKNOWN topics appear, separated from missing/null data; no fabricated healthy/abnormal baseline, fault or alarm threshold, severity, diagnosis, health score, physical sensor unit, failure probability, causal claim or model-predicted RUL. M2 near-constant threshold is explicitly described as a data-quality rule only.
+- **EVIDENCE_RERUN_VERIFIED:** GitHub execution report includes explicit 2026-11-24 local window 16:37:46.5733353–16:37:55.6050322 UTC+08:00, PowerShell 7.6.9, Python 3.12.7, complete bounded verification stdout, complete unittest verbose stderr (11 tests, 0 failures, 0 errors), execution commands, each subprocess start/end/Exit Code=0, and six concrete `Get-FileHash` commands with before/after SHA-256. Published samples include all six derived RUL input references; test source verifies published versus dynamically extracted derived source references.
+- **SOURCE_HASHES_WORKER_EVIDENCE:** Train `963b5e22825b34d8b21c69e1aeb4af3e647050eb672ee8834ba4b5d91d2de0f8`; Test `3cda7109ce17bafb5443f2ac926cfcf88154b941b8c4cf95eb55d1ddd6f52851`; RUL `a19c8ec94931949d0485bdc35118206e9c81c4547b422efb9cf86f4ceddbceca`. Before/after each match and match accepted M2 Contract.
+- **VERIFICATION_LIMITATION:** MAIN re-read GitHub source, tests, published safe JSON, evidence, commits, and tree, recomputed bounded arithmetic and reference counts, but could not access or re-run the student's local Windows FD001 originals; local hashes and exit codes derive from Worker execution evidence; commit-object SHA256 was not independently recalculated. Never claim third-party local reproduction.
+- **PRIVACY:** GitHub tree excludes raw FD001 and synthetic CSV; historical WORK_ITEM.md contains pre-existing Windows private absolute paths, not introduced by this supplement. No history rewrite/force push authorized.
+- **NEXT_GATE:** Supplement PASS, original M2 PASS remains. This acceptance does NOT start Web/M3 or M4; any next milestone or data-contract metadata synchronization requires a separately authorized task and latest AGENTS.md review.
+- **RETURN_TO:** STUDENT
