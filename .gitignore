@@ -55,3 +55,10 @@ research/
 /contracts/*
 !/contracts/FD001_DATA_CONTRACT.md
 !/contracts/FD001_DATA_CONTRACT.json
+
+# WO-M2-RESEARCH-002: allow only the authorized evidence-classification supplement.
+!/research/m2_evidence_classification.py
+!/tests/test_m2_evidence_classification.py
+!/reports/M2_EVIDENCE_CLASSIFICATION.md
+!/reports/M2_EVIDENCE_EXECUTION.md
+!/reports/M2_EVIDENCE_SAMPLES.json

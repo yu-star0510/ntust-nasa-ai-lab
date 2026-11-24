@@ -1,0 +1,103 @@
+{
+  "schema_version": "1.0.0",
+  "work_item_id": "WO-M2-RESEARCH-002",
+  "status": "EVIDENCE_CLASSIFIED_NO_DIAGNOSIS",
+  "published_sample_scope": "Bounded endpoint observations and calculations selected from deterministic five-cycle Train/Test cases; not full traces or a full RUL mapping.",
+  "cases": [
+    {
+      "selector": {"split": "train", "unit_id": 1, "cycle_start": 1, "cycle_end": 5, "sensor_name": "sensor_2"},
+      "actual_selected_cycles": [1, 2, 3, 4, 5],
+      "observations": [
+        {
+          "category": "OBSERVATION",
+          "statement": "Train Unit 1 Cycle 1 sensor_2 has original value 641.82 and token 641.82.",
+          "source_references": [{"dataset_split": "train", "unit_id": 1, "cycle": 1, "sensor_name": "sensor_2", "raw_value": 641.82, "original_value": 641.82, "original_token": "641.82", "source_file": "FD001/train_FD001.txt", "source_sha256": "963b5e22825b34d8b21c69e1aeb4af3e647050eb672ee8834ba4b5d91d2de0f8", "physical_line_number": 1, "data_row_index": 0, "source_column_index": 7, "reread_matches": true, "reread_method": "existing approved linecache-backed raw-reference lookup"}],
+          "calculation_or_null": null,
+          "evidence_scope": "train Unit 1, sensor_2, selected endpoint",
+          "limitations": ["Source-verifiable sensor value only; no fault/health label, physical unit, or wall-clock time is asserted."]
+        },
+        {
+          "category": "OBSERVATION",
+          "statement": "Train Unit 1 Cycle 5 sensor_2 has original value 642.37 and token 642.37.",
+          "source_references": [{"dataset_split": "train", "unit_id": 1, "cycle": 5, "sensor_name": "sensor_2", "raw_value": 642.37, "original_value": 642.37, "original_token": "642.37", "source_file": "FD001/train_FD001.txt", "source_sha256": "963b5e22825b34d8b21c69e1aeb4af3e647050eb672ee8834ba4b5d91d2de0f8", "physical_line_number": 5, "data_row_index": 4, "source_column_index": 7, "reread_matches": true, "reread_method": "existing approved linecache-backed raw-reference lookup"}],
+          "calculation_or_null": null,
+          "evidence_scope": "train Unit 1, sensor_2, selected endpoint",
+          "limitations": ["Source-verifiable sensor value only; no fault/health label, physical unit, or wall-clock time is asserted."]
+        }
+      ],
+      "inferences": [
+        {
+          "category": "INFERENCE",
+          "statement": "The selected Train endpoints show an endpoint increase; monotonicity and diagnosis are not asserted.",
+          "source_references": [{"dataset_split": "train", "unit_id": 1, "cycle": 1, "sensor_name": "sensor_2", "original_value": 641.82, "original_token": "641.82", "source_file": "FD001/train_FD001.txt", "source_sha256": "963b5e22825b34d8b21c69e1aeb4af3e647050eb672ee8834ba4b5d91d2de0f8", "physical_line_number": 1, "data_row_index": 0, "source_column_index": 7, "reread_matches": true}, {"dataset_split": "train", "unit_id": 1, "cycle": 5, "sensor_name": "sensor_2", "original_value": 642.37, "original_token": "642.37", "source_file": "FD001/train_FD001.txt", "source_sha256": "963b5e22825b34d8b21c69e1aeb4af3e647050eb672ee8834ba4b5d91d2de0f8", "physical_line_number": 5, "data_row_index": 4, "source_column_index": 7, "reread_matches": true}],
+          "calculation_or_null": {"formula": "endpoint_delta = end_original_value - start_original_value", "exact_endpoint_expression": "642.37 - 641.82 = 0.55", "input_cycles": [1, 2, 3, 4, 5], "input_values": [641.82, 642.15, 642.35, 642.35, 642.37], "endpoint_delta": 0.55, "selected_window_min": 641.82, "selected_window_max": 642.37, "endpoint_direction": "increase", "monotonicity_claim": "NOT_MADE"},
+          "evidence_scope": "train Unit 1 sensor_2 Cycles 1..5",
+          "limitations": ["Does not establish degradation, abnormality, failure, fault type, health score, failure timing, causality, or RUL prediction."]
+        },
+        {
+          "category": "INFERENCE",
+          "statement": "Train RUL is explicitly DERIVED under the run-to-failure convention and is not an original column.",
+          "source_references": [],
+          "calculation_or_null": {"classification": "DERIVED", "formula": "derived_train_RUL = final_observed_train_cycle - current_cycle", "final_observed_train_cycle": 192, "cycles": [1, 2, 3, 4, 5], "derived_values": [191, 190, 189, 188, 187]},
+          "evidence_scope": "train Unit 1 selected cycles",
+          "limitations": ["Not measured per-cycle RUL and not a model prediction."]
+        }
+      ]
+    },
+    {
+      "selector": {"split": "test", "unit_id": 1, "cycle_start": 27, "cycle_end": 31, "sensor_name": "sensor_2"},
+      "actual_selected_cycles": [27, 28, 29, 30, 31],
+      "observations": [
+        {
+          "category": "OBSERVATION",
+          "statement": "Test Unit 1 Cycle 27 sensor_2 has original value 642.08 and token 642.08.",
+          "source_references": [{"dataset_split": "test", "unit_id": 1, "cycle": 27, "sensor_name": "sensor_2", "raw_value": 642.08, "original_value": 642.08, "original_token": "642.08", "source_file": "FD001/test_FD001.txt", "source_sha256": "3cda7109ce17bafb5443f2ac926cfcf88154b941b8c4cf95eb55d1ddd6f52851", "physical_line_number": 27, "data_row_index": 26, "source_column_index": 7, "reread_matches": true, "reread_method": "existing approved linecache-backed raw-reference lookup"}],
+          "calculation_or_null": null,
+          "evidence_scope": "test Unit 1, sensor_2, selected endpoint",
+          "limitations": ["Source-verifiable sensor value only; no fault/health label, physical unit, or wall-clock time is asserted."]
+        },
+        {
+          "category": "OBSERVATION",
+          "statement": "Test Unit 1 Cycle 31 sensor_2 has original value 642.58 and token 642.58.",
+          "source_references": [{"dataset_split": "test", "unit_id": 1, "cycle": 31, "sensor_name": "sensor_2", "raw_value": 642.58, "original_value": 642.58, "original_token": "642.58", "source_file": "FD001/test_FD001.txt", "source_sha256": "3cda7109ce17bafb5443f2ac926cfcf88154b941b8c4cf95eb55d1ddd6f52851", "physical_line_number": 31, "data_row_index": 30, "source_column_index": 7, "reread_matches": true, "reread_method": "existing approved linecache-backed raw-reference lookup"}],
+          "calculation_or_null": null,
+          "evidence_scope": "test Unit 1, sensor_2, selected endpoint",
+          "limitations": ["Source-verifiable sensor value only; no fault/health label, physical unit, or wall-clock time is asserted."]
+        },
+        {
+          "category": "OBSERVATION",
+          "statement": "Test Unit 1 ground-truth RUL label is 112.0 at last observed Cycle 31.",
+          "source_references": [{"dataset_split": "test", "unit_id": 1, "cycle": 31, "sensor_name": null, "sensor_name_applicability": "NOT_APPLICABLE_RUL_LABEL", "field_name": "ground_truth_RUL_at_last_observed_test_cycle", "raw_value": 112.0, "original_value": 112.0, "original_token": "112", "source_file": "FD001/RUL_FD001.txt", "source_sha256": "a19c8ec94931949d0485bdc35118206e9c81c4547b422efb9cf86f4ceddbceca", "physical_line_number": 1, "data_row_index": 0, "source_column_index": 1, "reread_matches": true, "reread_method": "fresh disk reopen plus SHA-256, line, token, and numeric-value verification"}],
+          "calculation_or_null": null,
+          "evidence_scope": "RUL mapping for Test Unit 1 at last observed cycle",
+          "limitations": ["Ground truth, not a prediction; last observed Test cycle is not failure; not a raw per-cycle sensor value."]
+        }
+      ],
+      "inferences": [
+        {
+          "category": "INFERENCE",
+          "statement": "The selected Test endpoints show an endpoint increase; monotonicity and diagnosis are not asserted.",
+          "source_references": [{"dataset_split": "test", "unit_id": 1, "cycle": 27, "sensor_name": "sensor_2", "original_value": 642.08, "original_token": "642.08", "source_file": "FD001/test_FD001.txt", "source_sha256": "3cda7109ce17bafb5443f2ac926cfcf88154b941b8c4cf95eb55d1ddd6f52851", "physical_line_number": 27, "data_row_index": 26, "source_column_index": 7, "reread_matches": true}, {"dataset_split": "test", "unit_id": 1, "cycle": 31, "sensor_name": "sensor_2", "original_value": 642.58, "original_token": "642.58", "source_file": "FD001/test_FD001.txt", "source_sha256": "3cda7109ce17bafb5443f2ac926cfcf88154b941b8c4cf95eb55d1ddd6f52851", "physical_line_number": 31, "data_row_index": 30, "source_column_index": 7, "reread_matches": true}],
+          "calculation_or_null": {"formula": "endpoint_delta = end_original_value - start_original_value", "exact_endpoint_expression": "642.58 - 642.08 = 0.50", "input_cycles": [27, 28, 29, 30, 31], "input_values": [642.08, 641.93, 641.95, 642.79, 642.58], "endpoint_delta": 0.50, "selected_window_min": 641.93, "selected_window_max": 642.79, "endpoint_direction": "increase", "monotonicity_claim": "NOT_MADE"},
+          "evidence_scope": "test Unit 1 sensor_2 Cycles 27..31",
+          "limitations": ["Does not establish degradation, abnormality, failure, fault type, health score, failure timing, causality, or RUL prediction."]
+        }
+      ]
+    }
+  ],
+  "unknowns": [
+    {"category": "UNKNOWN", "statement": "Fault Type: UNKNOWN.", "source_references": [], "calculation_or_null": null, "evidence_scope": "verified FD001 sources", "limitations": ["No verified fault-mode label; epistemic unknown, not a data null."]},
+    {"category": "UNKNOWN", "statement": "Fault Severity: UNKNOWN.", "source_references": [], "calculation_or_null": null, "evidence_scope": "verified FD001 sources", "limitations": ["No verified severity field or scale; epistemic unknown, not a data null."]},
+    {"category": "UNKNOWN", "statement": "Fault Occurrence Time: UNKNOWN.", "source_references": [], "calculation_or_null": null, "evidence_scope": "verified FD001 sources", "limitations": ["Cycle is not verified fault time or wall-clock time; epistemic unknown, not a data null."]},
+    {"category": "UNKNOWN", "statement": "Health Status: UNKNOWN.", "source_references": [], "calculation_or_null": null, "evidence_scope": "verified FD001 sources", "limitations": ["No verified health-status column; epistemic unknown, not a data null."]},
+    {"category": "UNKNOWN", "statement": "Normal/Abnormal Baseline: UNKNOWN.", "source_references": [], "calculation_or_null": null, "evidence_scope": "verified FD001 sources", "limitations": ["No accepted diagnostic baseline; epistemic unknown, not a data null."]},
+    {"category": "UNKNOWN", "statement": "Diagnostic Threshold: UNKNOWN.", "source_references": [], "calculation_or_null": null, "evidence_scope": "verified FD001 sources", "limitations": ["No diagnostic threshold; epistemic unknown, not a data null."]},
+    {"category": "UNKNOWN", "statement": "Alarm Threshold: UNKNOWN.", "source_references": [], "calculation_or_null": null, "evidence_scope": "verified FD001 sources", "limitations": ["No alarm threshold; epistemic unknown, not a data null."]},
+    {"category": "UNKNOWN", "statement": "Failure Probability: UNKNOWN.", "source_references": [], "calculation_or_null": null, "evidence_scope": "non-modeling work item", "limitations": ["No probability model; epistemic unknown, not a data null."]},
+    {"category": "UNKNOWN", "statement": "Model-predicted RUL: UNKNOWN.", "source_references": [], "calculation_or_null": null, "evidence_scope": "non-modeling work item", "limitations": ["No predictive model; epistemic unknown, not a data null."]},
+    {"category": "UNKNOWN", "statement": "Unsupported Physical Sensor Units: UNKNOWN.", "source_references": [], "calculation_or_null": null, "evidence_scope": "approved raw schema", "limitations": ["No validated physical units; epistemic unknown, not a data null."]},
+    {"category": "UNKNOWN", "statement": "Unsupported Causal Interpretation: UNKNOWN.", "source_references": [], "calculation_or_null": null, "evidence_scope": "selected sensor evidence", "limitations": ["Sensor pattern alone cannot establish cause; epistemic unknown, not a data null."]}
+  ],
+  "semantic_classes": ["OBSERVED", "DERIVED", "GROUND_TRUTH_LABEL", "UNKNOWN", "MODEL_PREDICTION_NOT_AVAILABLE"],
+  "global_limitations": ["Sensor trends alone are not evidence of a fault.", "No baseline, diagnostic threshold, anomaly class, model output, physical unit, or causal conclusion is created."]
+}

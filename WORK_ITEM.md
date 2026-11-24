@@ -293,7 +293,7 @@ TYPE=BRAIN_TO_BRAIN_RETURN; WORK_ITEM_ID=WO-M2-RESEARCH-001; FROM=STUDENT-RESEAR
 | TO | STUDENT-RESEARCH Brain |
 | RETURN_TO | STUDENT-MAIN Brain |
 | AUTHORIZED_BY | STUDENT (2026-11-24: 進行未完成的部分) |
-| STATUS | COMMAND_DISPATCHED / RELAY_STATUS=PENDING_STUDENT_RELAY / WORKER_NOT_STARTED |
+| STATUS | RESEARCH_OWN_WORKER_READY_FOR_REVIEW / RESEARCH_BRAIN_REVIEW_PENDING / MAIN_REVIEW_PENDING |
 | PREREQUISITES | M2 MAIN PASS at ee27d43d4f72ff11d75d84125ca66326ae036069; accepted FD001_DATA_CONTRACT v1.0.1 per WORK_ITEM.md; no other active worker work item on GitHub main |
 | INPUT | Trusted local FD001/train_FD001.txt, FD001/test_FD001.txt, FD001/RUL_FD001.txt; existing M2 validated Python data interfaces; no external download or source lookup |
 | AUTHORITY | MAIN dispatches only to STUDENT-RESEARCH Brain. Research Brain must reread latest GitHub main AGENTS.md and WORK_ITEM.md and instruct only its own Research Own Worker. Worker must separately reread latest AGENTS.md before executing. MAIN never directly dispatches Own Worker. |
@@ -301,7 +301,7 @@ TYPE=BRAIN_TO_BRAIN_RETURN; WORK_ITEM_ID=WO-M2-RESEARCH-001; FROM=STUDENT-RESEAR
 | ALLOWED_FILES | research/m2_evidence_classification.py; tests/test_m2_evidence_classification.py; reports/M2_EVIDENCE_CLASSIFICATION.md; reports/M2_EVIDENCE_EXECUTION.md; reports/M2_EVIDENCE_SAMPLES.json (small safe samples only); minimal .gitignore changes to permit exactly these while protecting raw data; WORK_ITEM.md status/evidence records. If different files are needed, ask MAIN approval before use. |
 | READ_ONLY | ALL raw FD001 files and synthetic CSV, prior M0/M1/M2 source, tests, reports and contract v1.0.1, other student files. No source overwrite, rewriting source files, contract state edits or Git upload of raw/full sensor series. |
 | OUTPUT | Reproducible parameterized evidence extractor/classifier, public-safe small sample JSON, human-readable evidence report and Train/Test/RUL label matrix, full real local execution evidence, tests, Research Brain GitHub independent review. |
-| NOT_YET_DELIVERED | No new evidence classification results; Own Worker not started; Research Brain review and MAIN review pending; M3/Web must not execute concurrently. |
+| NOT_YET_DELIVERED | Research Own Worker implementation and evidence are delivered for review; Research Brain independent GitHub review and MAIN final review remain pending. Existing M2 PASS remains intact; M3/Web was not executed. |
 
 ### INPUT and source provenance
 
@@ -349,6 +349,18 @@ Fault-mode labels, physical normal/abnormal thresholds or official failure class
 ### STOP_IF
 
 Raw file absent/unreadable/hash mismatch; RUL order/source invalid; source row mismatch; unable to verify actual samples or calculations; mistaken fault conclusion or fabricated baseline/threshold/label; unsafe disclosure; evidence cannot be produced; GitHub push/verification unavailable; AGENTS.md conflict; collision with other work item; unauthorized changes to M2 or Web files. Stop and report BLOCKED with exact cause/evidence; never change existing accepted source data or expand scope.
+
+### RESEARCH OWN WORKER REPORT (2026-11-24)
+
+- **STATUS:** `READY_FOR_REVIEW` only; no Research Brain or MAIN acceptance is claimed.
+- **BASELINE:** synchronized GitHub `main` commit `d4c4537dd92785d35561561d5a0e0c6fadcac09a`; latest governance, this work order, accepted Data Contract v1.0.1, and prior M2 MAIN PASS were checked before execution.
+- **DELIVERED:** parameterized `research/m2_evidence_classification.py`; actual-data tests; classification report; bounded safe sample JSON; complete controlled execution record; minimal `.gitignore` allowlist. Existing accepted M2 files/contracts and all raw inputs were not modified.
+- **ACTUAL CASES:** Train Unit 1 / `sensor_2` / actual Cycles 1–5; Test Unit 1 / `sensor_2` / actual Cycles 27–31. Each source observation carries project-relative file, SHA-256, physical line, zero-based data row, one-based column, original token/value, and reread status.
+- **CLASSIFICATION:** Train/Test endpoint arithmetic is `INFERENCE`, never diagnosis or a monotonicity claim. Train RUL example `192 - cycle` is explicitly `DERIVED` under the run-to-failure convention. Test Unit 1 RUL `112.0` is a freshly reread `GROUND_TRUTH_LABEL` mapped at last observed Cycle 31, not a model prediction or per-cycle sensor value. Eleven required topics are classified `UNKNOWN`, distinct from missing/null data.
+- **SOURCE INTEGRITY:** SHA-256 before/after identical: Train `963b5e22825b34d8b21c69e1aeb4af3e647050eb672ee8834ba4b5d91d2de0f8`; Test `3cda7109ce17bafb5443f2ac926cfcf88154b941b8c4cf95eb55d1ddd6f52851`; RUL `a19c8ec94931949d0485bdc35118206e9c81c4547b422efb9cf86f4ceddbceca`.
+- **EXECUTION:** Python 3.12.7; `python research/m2_evidence_classification.py --verification-summary` Exit 0; `python -m unittest -v tests/test_m2_evidence_classification.py` 11/11 PASS, Exit 0; complete timestamps/stdout/stderr are in `reports/M2_EVIDENCE_EXECUTION.md`.
+- **SAFETY/SCOPE:** only small checked samples are published; no full trace/mapping, raw dataset, private absolute path, credential, baseline, diagnostic threshold, anomaly class, model output, physical unit, or causal/fault conclusion is included. No M3/M4/Web action occurred.
+- **GIT NOTE:** commit/push identifiers and GitHub links are supplied in the Worker return after the commit exists, avoiding a self-referential commit record. Research Brain must independently read GitHub `main`; its review remains pending.
 
 ### RETURN_TO STUDENT-MAIN Brain
 
