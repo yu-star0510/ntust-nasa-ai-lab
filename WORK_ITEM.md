@@ -176,7 +176,7 @@ TYPE=BRAIN_TO_BRAIN_RETURN；WORK_ITEM_ID=WO-M1-RESEARCH-001；FROM=STUDENT-RESE
 | TO | STUDENT-RESEARCH Brain |
 | RETURN_TO | STUDENT-MAIN Brain |
 | AUTHORIZED_BY | STUDENT（2026-11-23 本對話正式指示「進行M2」） |
-| STATUS | WORKER_EXECUTION_COMPLETE；等待 Commit/Push 遠端驗證後由 Worker 回報 `READY_FOR_REVIEW`，最終驗收仍為 `PENDING`。 |
+| STATUS | RESEARCH_REVIEW_FAIL / REMEDIATION_REQUIRED（Worker 已完成 Commit/Push；Research Brain GitHub 靜態審查發現 source_file 相對路徑契約不一致、RUL 來源重讀未獲實作/證明，以及 Phase A/B stdout 不完整；M2 尚未 PASS，M3 持續 BLOCKED） |
 | PREREQUISITE | WO-M0-001=PASS；WO-M1-RESEARCH-001=PASS，MAIN final acceptance commit 661df6e9741b2d17c86e022776adfba91caa36d4 |
 | GOVERNANCE_BASELINE | GitHub main AGENTS.md，派工前已由 MAIN 從 661df6e9741b2d17c86e022776adfba91caa36d4 讀取；Research Brain 與 Own Worker 開工前仍各自重讀最新版本 |
 | PROJECT_ROOT | C:\Users\z2324\Desktop\NTUST\115\115_1\115-1\20261123（僅作定位，不需公開私人絕對路徑） |
@@ -219,3 +219,16 @@ TYPE=BRAIN_TO_BRAIN_RETURN; WORK_ITEM_ID=WO-M2-RESEARCH-001; FROM=STUDENT-RESEAR
 須附 Phase A PASS/FAIL/BLOCKED、Phase B PASS/FAIL/BLOCKED/NOT_STARTED、三檔實際相對路徑、三組 SHA-256 before/after、Train/Test/RUL rows/columns、Train/Test Unit/Cycle 驗證、RUL mapping、Raw Index 檢查結果、Missing/Duplicates/Quality、Trend 與來源核對、Data Contract 文件/JSON GitHub 路徑、實際命令與執行證據、Exit Codes、Tests、Commit ID/Commit SHA256 計算對象、遠端 Commit URL、GitHub Verify、Data Safety、Research Brain Review 與 blockers。
 
 **M2 CURRENT STATUS:** Research Own Worker execution complete; Phase A=`PASS`, Phase B=`PASS`, tests=14/14; pending commit/push verification and independent Research Brain/Main review. Worker does not claim final M2 acceptance and does not authorize M3/Web.
+
+## WO-M2-RESEARCH-001 — RESEARCH INDEPENDENT REVIEW 001 (2026-11-24)
+
+- **TYPE:** RESEARCH_BRAIN_INDEPENDENT_GITHUB_REVIEW
+- **REVIEWED_COMMIT:** `6fbab1307e4188838a1c784f795641b0c9b3642a` (GitHub `main` HEAD at review).
+- **GOVERNANCE:** Research Brain 已讀取 GitHub main 最新 `AGENTS.md`、`WORK_ITEM.md`。M0/M1 已由 MAIN 記錄 PASS；M2 已獲 STUDENT 授權；M3/Web 尚未授權。
+- **VERIFIED_DELIVERY:** GitHub main 的提交與完整遞迴 Git tree 可讀取，提交包含恰好十個 M2 授權檔案，未包含 FD001 三份原始檔或合成 CSV；.gitignore 持續排除 FD001/。研究程式、測試、三份報告與兩份 Data Contract 已從 GitHub 實際讀取。
+- **REPORTED_LOCAL_RESULTS:** Worker 報告 Phase A=PASS、Phase B=PASS、14/14 tests (exit 0)、Train=20631×26 (100 units)、Test=13096×26 (100 units)、RUL=100×1，三檔 SHA-256 前後一致。Research Brain 獨立將 GitHub 驗證報告所列兩組各 100 Units 之 Cycle counts 加總，分別與 20631 / 13096 一致。未存取學生本地 FD001 檔或獨立重算來源 SHA-256。
+- **FINDING 1 — CONTRACT_PROVENANCE_MISMATCH (verified code defect):** Data Contract 明定 `source_file` 為 project/repository-relative 路徑，但 `research/m2_fd001_validate.py` 使用 `dataset.path.as_posix()` / `rul.path.as_posix()` 直接傳出路徑；`DEFAULT_INPUT_DIR = PROJECT_ROOT / "FD001"` 為絕對路徑，故預設 `FD001Repository()` 及 `run_phase_a()` 將可能回傳本地絕對路徑，與契約不符並有公開 Windows 私人路徑風險。現有測試沒有檢查 source_file 相對路徑保證。
+- **FINDING 2 — RUL_RAW_REREAD_UNPROVEN:** `reports/M2_FD001_VALIDATION.md` 宣稱 RUL references 重新從來源讀取，但 `get_test_rul_label()` 僅回傳已存記憶體之 mapping；`tests/test_m2_fd001.py` 的 RUL 測試只比對 `self.repository.rul.rows` 已解析資料，未重新開啟原始 RUL 檔並檢查相同 physical line/token/來源 hash。缺少可獨立復核之本地 RUL raw-reference reread 實作與測試證據；不能以此證明已完成。
+- **FINDING 3 — EVIDENCE_INCOMPLETE:** `reports/M2_EXECUTION_EVIDENCE.md` 記錄 Phase A/Phase B 指令、時間及 Exit Code，但明言原始 stdout 是 JSON，公開處只提供格式化 gate summary，沒有完整的實際 public-safe JSON stdout；完整性與對應關係無法單憑現有摘要復核。須將新的完整公開安全命令/stdout/stderr/exit code 保存，若重跑需標記 `EVIDENCE_RERUN`，不可冒充舊執行。
+- **RESEARCH_DECISION:** `FAIL / REMEDIATION_REQUIRED`（可在原 `WO-M2-RESEARCH-001` 授權檔案範圍內修正，非 MAIN 最終驗收）。待 Worker 修復、重新檢驗 Phase A → Phase B Gate、重跑測試、記錄三份 CSV 原始來源 SHA-256 before/after、Commit+Push，再由 Research Brain 從 GitHub 獨立審查；若新 Gate 未 PASS，Phase B 必須 NOT_STARTED 並回報 BLOCKED。
+- **CURRENT_GATE:** M2=NOT_ACCEPTED；Data Contract `main_acceptance=PENDING`；M3/Web=BLOCKED。不得移交 STUDENT-WEB Brain。
