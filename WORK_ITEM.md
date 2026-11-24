@@ -176,7 +176,7 @@ TYPE=BRAIN_TO_BRAIN_RETURN；WORK_ITEM_ID=WO-M1-RESEARCH-001；FROM=STUDENT-RESE
 | TO | STUDENT-RESEARCH Brain |
 | RETURN_TO | STUDENT-MAIN Brain |
 | AUTHORIZED_BY | STUDENT（2026-11-23 本對話正式指示「進行M2」） |
-| STATUS | WORKER_REMEDIATION_COMPLETE / READY_FOR_REVIEW（`RESEARCH_INDEPENDENT_REVIEW_001` 三項缺失已補正並完成 EVIDENCE_RERUN；等待 Research Brain 重新從 GitHub 審查。M2 尚未 PASS，M3 持續 BLOCKED） |
+| STATUS | BRAIN_REVIEWED / RESEARCH_ACCEPTED / READY_FOR_MAIN_REVIEW（2026-11-24，M2 修正後研究層級審查通過；MAIN 最終 PASS 與 Data Contract acceptance 均仍 PENDING；M3 持續 BLOCKED） |
 | PREREQUISITE | WO-M0-001=PASS；WO-M1-RESEARCH-001=PASS，MAIN final acceptance commit 661df6e9741b2d17c86e022776adfba91caa36d4 |
 | GOVERNANCE_BASELINE | GitHub main AGENTS.md，派工前已由 MAIN 從 661df6e9741b2d17c86e022776adfba91caa36d4 讀取；Research Brain 與 Own Worker 開工前仍各自重讀最新版本 |
 | PROJECT_ROOT | C:\Users\z2324\Desktop\NTUST\115\115_1\115-1\20261123（僅作定位，不需公開私人絕對路徑） |
@@ -245,3 +245,19 @@ TYPE=BRAIN_TO_BRAIN_RETURN; WORK_ITEM_ID=WO-M2-RESEARCH-001; FROM=STUDENT-RESEAR
 - **SOURCE_INTEGRITY:** Before/after hashes remained identical: Train `963b5e22825b34d8b21c69e1aeb4af3e647050eb672ee8834ba4b5d91d2de0f8`; Test `3cda7109ce17bafb5443f2ac926cfcf88154b941b8c4cf95eb55d1ddd6f52851`; RUL `a19c8ec94931949d0485bdc35118206e9c81c4547b422efb9cf86f4ceddbceca`.
 - **SCOPE/SAFETY:** Only existing M2-authorized files were modified. `.gitignore`, raw FD001 inputs, M0/M1 artifacts, and unrelated files were not modified. No raw dataset, private absolute path, M3, or Web work is included.
 - **DELIVERY:** Commit ID, commit-object SHA-256, push result, GitHub URL, remote equality, and final changed-file list are provided in the Worker return after commit, avoiding self-reference.
+
+## WO-M2-RESEARCH-001 — RESEARCH INDEPENDENT REVIEW 002 (2026-11-24)
+
+- **TYPE:** RESEARCH_BRAIN_INDEPENDENT_GITHUB_REVIEW
+- **RESEARCH_DECISION:** `RESEARCH_ACCEPTED / READY_FOR_MAIN_REVIEW` (不等於 MAIN 最終 PASS)
+- **PRIOR_REVIEW:** `35a929d0bf68d34c88b4cffc250de6939b31cefa` (`REMEDIATION_REQUIRED`；歷史紀錄保留)
+- **WORKER_REMEDIATION_COMMIT:** `5d3dd036d2c247a1c134d728d8ce3cde4a305f95`；GitHub `main` HEAD 經獨立讀取與該提交相同，GitHub compare 為 ahead 1 / behind 0，變更九個授權檔案；原始 FD001 資料、.gitignore、M0/M1 程式均未變動。
+- **GOVERNANCE:** Research Brain 已獨立讀取 GitHub `main/AGENTS.md` 與 `main/WORK_ITEM.md`、提交、Git Tree、兩支研究程式、測試、三份報告、兩份 Data Contract。M0/M1 已記錄 PASS，M2 工作單授權有效；M3/Web 不在授權範圍內。
+- **FIX_1 — SOURCE_PATH:** `resolve_input_dir()` 禁止解析至專案根目錄以外；`source_relative_path()` 將預設與明確指定之專案內來源正規化為 `FD001/...` 相對路徑；Train/Test/RUL profiles、Raw References 與 sensor series 使用此規則，增補相應測試。結果：ACCEPTED。
+- **FIX_2 — RUL_FRESH_REREAD:** `get_rul_raw_reference()` 重新計算 RUL 檔案 SHA-256、透過 `_fresh_reread_token()` 重新開啟本地原始檔，使用實際 physical line/column 重新讀取並比較字串與數值；缺行、值不一致、hash 變更會拒絕；新增實際及負面測試。RUL label 仍為 Test Unit 最後觀測 Cycle 的原始真值標籤，未當作預測值。結果：ACCEPTED。
+- **FIX_3 — EVIDENCE_RERUN:** `reports/M2_EXECUTION_EVIDENCE.md` 以 `EVIDENCE_RERUN` 標示；記載日期 2026-11-24（UTC+08:00）、PowerShell 7.6.9、Python 3.12.7、可重現命令、每條的起迄時間/Exit Code/公開安全 stdout/stderr。Research Brain 直接從該報告抽取兩份 Phase A/B 完整單行 compact JSON 並獨立解析成功：Phase A 的 11/11 checks 全為 true；Phase B、Data Contract checks 均 PASS；unittest 報告 20 run / 20 passed / 0 failed / 0 errors（Exit Code 0）。結果：ACCEPTED。
+- **DATA_MEASUREMENTS_FROM_WORKER_EVIDENCE:** Train `20631 × 26 / 100 Units`、Test `13096 × 26 / 100 Units`、RUL `100 × 1`；missing、duplicate keys 與 parse errors 均為零。Train/Test 各 100 Unit 的 Cycle-count 報告已由 Research Brain 加總核對為 20631 / 13096。Data Contract `FD001_DATA_CONTRACT v1.0.1`，`validation_status=PASS`，`main_acceptance=PENDING`。
+- **SOURCE_SHA256_BEFORE_AFTER (Worker evidence):** Train `963b5e22825b34d8b21c69e1aeb4af3e647050eb672ee8834ba4b5d91d2de0f8`；Test `3cda7109ce17bafb5443f2ac926cfcf88154b941b8c4cf95eb55d1ddd6f52851`；RUL `a19c8ec94931949d0485bdc35118206e9c81c4547b422efb9cf86f4ceddbceca`。三檔各自 before/after 相同，原始檔未納入遠端提交。
+- **DISCLOSURE CHECK:** 本次 Worker Commit 新增/修改的內容未新增 Windows 使用者絕對路徑；GitHub tree 未含原始 FD001 資料。但 `WORK_ITEM.md` 內仍可見先前 M1/M2 治理紀錄留下的 Windows 絕對路徑文字（**非此次 Worker 新增**）。因此不能宣稱整個公開儲存庫「完全不含私人絕對路徑」；請 MAIN 另依治理權限審視既有文件公開邊界與 Git 歷史（禁止擅自 force push/改寫歷史）。
+- **VERIFICATION_LIMITATION:** Research Brain 無法直接開啟學生本地 FD001 檔重算 SHA-256 或在學生環境獨立執行測試；實際本地成功/雜湊來自 Worker 記錄；Worker 報告的 commit-object SHA-256 未由 Research Brain 獨立重算。GitHub 原始程式/契約及報告內 JSON 則已由 Research Brain 直接審查。
+- **FINAL_GATE:** `PHASE_A_RESEARCH_REVIEW=ACCEPTED`、`PHASE_B_RESEARCH_REVIEW=ACCEPTED`、`M2_FINAL_PASS=PENDING_MAIN`、`DATA_CONTRACT_MAIN_ACCEPTANCE=PENDING`、`M3/WEB=BLOCKED`。
