@@ -176,18 +176,18 @@ TYPE=BRAIN_TO_BRAIN_RETURN；WORK_ITEM_ID=WO-M1-RESEARCH-001；FROM=STUDENT-RESE
 | TO | STUDENT-RESEARCH Brain |
 | RETURN_TO | STUDENT-MAIN Brain |
 | AUTHORIZED_BY | STUDENT（2026-11-23 本對話正式指示「進行M2」） |
-| STATUS | BRAIN_REVIEWED / RESEARCH_ACCEPTED / READY_FOR_MAIN_REVIEW（2026-11-24，M2 修正後研究層級審查通過；MAIN 最終 PASS 與 Data Contract acceptance 均仍 PENDING；M3 持續 BLOCKED） |
+| STATUS | PASS（2026-11-24；STUDENT-MAIN Brain 已獨立審查 GitHub 成果、接受 Phase A/B 與 FD001_DATA_CONTRACT v1.0.1；M3 尚未取得 STUDENT 授權） |
 | PREREQUISITE | WO-M0-001=PASS；WO-M1-RESEARCH-001=PASS，MAIN final acceptance commit 661df6e9741b2d17c86e022776adfba91caa36d4 |
 | GOVERNANCE_BASELINE | GitHub main AGENTS.md，派工前已由 MAIN 從 661df6e9741b2d17c86e022776adfba91caa36d4 讀取；Research Brain 與 Own Worker 開工前仍各自重讀最新版本 |
 | PROJECT_ROOT | C:\Users\z2324\Desktop\NTUST\115\115_1\115-1\20261123（僅作定位，不需公開私人絕對路徑） |
-| INPUT | 本地已信任的 train_FD001.txt、test_FD001.txt、RUL_FD001.txt；實際子目錄由 Research Brain 在本地確認後登錄，不可自行假設檔案位置；TRUSTED_LOCAL、READ_ONLY、NO_EXTERNAL_SOURCE_LOOKUP、NO_DOWNLOAD |
+| INPUT | 已依 Worker 實際執行證據確認本地專案相對路徑 FD001/train_FD001.txt、FD001/test_FD001.txt、FD001/RUL_FD001.txt；TRUSTED_LOCAL、READ_ONLY、NO_EXTERNAL_SOURCE_LOOKUP、NO_DOWNLOAD；原始資料未公開提交。 |
 | READ_ONLY_SCOPE | 三個 FD001 原始文字檔、synthetic_sensor.csv、其他學生原始資料、現有 M0/M1 程式及其結果；不得刪除、覆寫、重新保存、移動或公開 Git 上傳原始資料 |
 | ALLOWED_CHANGES | 僅限 M2 必要來源程式 research/m2_fd001_validate.py、research/m2_fd001_analysis.py、測試 tests/test_m2_fd001.py、報告 reports/M2_FD001_VALIDATION.md、reports/M2_FD001_QUALITY_TRENDS.md、reports/M2_EXECUTION_EVIDENCE.md、契約 contracts/FD001_DATA_CONTRACT.md、contracts/FD001_DATA_CONTRACT.json、最小限度安全修改 .gitignore 以放行上述成果並持續排除資料，以及 WORK_ITEM.md 的本工作單執行回報。變更檔名/範圍需先由 Research Brain 協調 MAIN 核准。 |
 | OUTPUT | Phase A 三檔來源／格式／RUL 語意與 Raw Index 驗證、Phase B 品質統計與可追溯趨勢、欄位定義及網站可使用的 Data Contract（Markdown + JSON）、可重現程式與測試、完整實際執行證據、Research Brain GitHub 獨立審查回報。 |
 | ACCEPTANCE | Phase A 全部通過才能 Phase B；行列/Unit/Cycle/3 Settings/21 Sensors/Train-Test-RUL mapping/Raw Index 實際檢查；趨勢和品質結果可回查；Data Contract schema/interface/error handling/provenance 完整；GitHub main 只有獲准程式與非原始資料摘要；Worker Commit+Push、Research Brain 審查、MAIN 再獨立驗收。 |
 | STOP_IF | M1 未 PASS、三檔不存在或不可讀、原始 SHA-256 異常變化、schema/Unit-Cycle/RUL 映射不可可靠驗證、Raw Index 無法回查、Phase A 未 PASS、無真實執行證據、需要下載或上網重新查核來源、原始資料公開風險、GitHub 無法 Commit/Push/驗證、與最新 AGENTS.md 衝突、越權觸及 Web/M3。立即 BLOCKED 並回報。 |
 | WORKER_REPORT | **2026-11-23 Research Own Worker 執行完成**：開工前從 GitHub `main` 核對治理與 M1 PASS，起始提交 `79392158d20b9fcf657e2329ead6aaf2921ebdc9`。以 READ_ONLY 方式確認 `FD001/train_FD001.txt`、`FD001/test_FD001.txt`、`FD001/RUL_FD001.txt`；before/after SHA-256 分別為 `963b5e22825b34d8b21c69e1aeb4af3e647050eb672ee8834ba4b5d91d2de0f8`、`3cda7109ce17bafb5443f2ac926cfcf88154b941b8c4cf95eb55d1ddd6f52851`、`a19c8ec94931949d0485bdc35118206e9c81c4547b422efb9cf86f4ceddbceca`，前後一致。Phase A PASS：Train=20,631×26、Test=13,096×26、RUL=100×1；Train/Test 各 100 Units，Unit/Cycle/schema/RUL order mapping/Raw Index 全部可驗證，missing/duplicate key/parse/non-finite/cycle gap/order error 均為 0。Phase B PASS：完成 3 settings+21 sensors 的 split-wise min/max/mean/population std、constant/near-constant 規則、可回查的 Train Unit 1 Sensor 2 共 192 點趨勢，以及 `FD001_DATA_CONTRACT` v1.0.0 Markdown/JSON 與六個介面。`python -m unittest -v tests/test_m2_fd001.py` 實際 14/14 通過，Exit Code 0。僅新增/修改工作單授權的程式、測試、三份 M2 報告、兩份契約、最小 `.gitignore` 與本欄；原始資料持續排除，未執行 M3/Web。Commit ID、Commit SHA-256、GitHub URL 與遠端驗證由 Worker Return 提供，避免提交自我引用。 |
-| BRAIN_REVIEW | PENDING；Research Brain 必須先獨立從 GitHub 審查成果，再回 MAIN 審查。 |
+| BRAIN_REVIEW | STUDENT-RESEARCH Brain：RESEARCH_ACCEPTED（Commit b739d3ea96306e2136f0f2e6faa9815aa7be01b1）；STUDENT-MAIN Brain：PASS（2026-11-24，見下方 MAIN FINAL ACCEPTANCE）。本地來源數值與雜湊依公開之 Worker EVIDENCE_RERUN 紀錄，非 MAIN 直接存取 Windows 原始資料；Data Contract v1.0.1 獲治理層正式接受，其檔內 main_acceptance=PENDING 是送審狀態，後續交接前需同步元資料並重測。 |
 | STUDENT_APPROVAL | 已批准進行 M2；不包含 M3、Web 建置或 M4 Evidence Prompt 執行授權。 |
 
 ### M2 Phase A — Trust & Source Semantics (MANDATORY GATE)
@@ -261,3 +261,21 @@ TYPE=BRAIN_TO_BRAIN_RETURN; WORK_ITEM_ID=WO-M2-RESEARCH-001; FROM=STUDENT-RESEAR
 - **DISCLOSURE CHECK:** 本次 Worker Commit 新增/修改的內容未新增 Windows 使用者絕對路徑；GitHub tree 未含原始 FD001 資料。但 `WORK_ITEM.md` 內仍可見先前 M1/M2 治理紀錄留下的 Windows 絕對路徑文字（**非此次 Worker 新增**）。因此不能宣稱整個公開儲存庫「完全不含私人絕對路徑」；請 MAIN 另依治理權限審視既有文件公開邊界與 Git 歷史（禁止擅自 force push/改寫歷史）。
 - **VERIFICATION_LIMITATION:** Research Brain 無法直接開啟學生本地 FD001 檔重算 SHA-256 或在學生環境獨立執行測試；實際本地成功/雜湊來自 Worker 記錄；Worker 報告的 commit-object SHA-256 未由 Research Brain 獨立重算。GitHub 原始程式/契約及報告內 JSON 則已由 Research Brain 直接審查。
 - **FINAL_GATE:** `PHASE_A_RESEARCH_REVIEW=ACCEPTED`、`PHASE_B_RESEARCH_REVIEW=ACCEPTED`、`M2_FINAL_PASS=PENDING_MAIN`、`DATA_CONTRACT_MAIN_ACCEPTANCE=PENDING`、`M3/WEB=BLOCKED`。
+
+## WO-M2-RESEARCH-001 — MAIN FINAL ACCEPTANCE (2026-11-24)
+
+- **TYPE:** MAIN_INDEPENDENT_GITHUB_ACCEPTANCE
+- **WORK_ITEM_ID:** WO-M2-RESEARCH-001
+- **REVIEWER:** STUDENT-MAIN Brain
+- **RESEARCH_RETURN:** RESEARCH_ACCEPTED / READY_FOR_MAIN_REVIEW
+- **MAIN_FINAL_DECISION:** PASS（Phase A、Phase B 及 Data Contract 1.0.1，M2 結案；不構成 M3 執行授權）。
+- **REVIEW_BASELINE:** GitHub `main` Commit `b739d3ea96306e2136f0f2e6faa9815aa7be01b1`；Worker 修復 Commit `5d3dd036d2c247a1c134d728d8ce3cde4a305f95`。
+- **INDEPENDENT_GITHUB_REVIEW:** MAIN 已讀取 GitHub 最新 `AGENTS.md`、`WORK_ITEM.md`、`ROADMAP.md`、兩個 M2 Python 模組、20 項 Unittest 定義、三份 M2 報告、`contracts/FD001_DATA_CONTRACT.md` 與 `.json`、`.gitignore`、遠端遞迴 Git tree、Worker 修復 Commit 與 Research Brain Review Commit。驗證修復 Commit 的九個變更檔案均在允許範圍內，Research Review 僅修改 WORK_ITEM.md；遠端 tree 不包含 FD001 三份來源檔、合成 CSV 或完整原始數列。M0/M1 程式 Blob 未變動。
+- **PHASE_A_ACCEPTANCE:** 已獨立解析 `reports/M2_EXECUTION_EVIDENCE.md` 的公開安全 compact JSON：`phase_a_status=PASS`，11/11 gate checks 為 true，26 欄 mapping 正確，Train 20,631×26 / 100 Units，Test 13,096×26 / 100 Units，RUL 100×1；無 missing、重複 Unit/Cycle keys、解析錯誤或 Cycle gaps。由 GitHub 驗證報告獨立解析各 100 Unit 的 Cycle 計數並加總，Train=20,631、Test=13,096，與 Phase A JSON 一致。Train/Test/RUL 語意及 RUL 依 Test Unit 首次出現與升冪順序、數量一致後的標籤映射均已記錄。修復程式以 project-relative source path 輸出並拒絕 project root 外路徑；RUL reference 每次重新開啟檔案、核對來源 SHA-256、行號、原始 Token、數值；相關正反測試均存在。
+- **PHASE_B_ACCEPTANCE:** 已獨立解析公開安全 compact JSON：`phase_b_status=PASS`，契約六項驗證檢查為 true；Train/Test 各 3 settings + 21 sensors 共 24 個統計欄位、min/max/mean/population std 與 constant/near-constant 規則；Train Unit 1 sensor_2 192 點、Cycle 1–192，公開七個來源抽查點均連結 `FD001/train_FD001.txt` 正確 Source Column 7、Physical Line、Unit、Cycle，`reread_matches=true`，無插值平滑。Unittest 補證記錄 20/20 PASS、Exit Code=0。
+- **SOURCE_INTEGRITY_WORKER_EVIDENCE:** Train SHA-256 `963b5e22825b34d8b21c69e1aeb4af3e647050eb672ee8834ba4b5d91d2de0f8`；Test `3cda7109ce17bafb5443f2ac926cfcf88154b941b8c4cf95eb55d1ddd6f52851`；RUL `a19c8ec94931949d0485bdc35118206e9c81c4547b422efb9cf86f4ceddbceca`。三個原始檔案 before/after 一致（依 Worker EVIDENCE_RERUN）；來源型態 TRUSTED_LOCAL_FILES 且 READ_ONLY；無外部下載/來源核對。
+- **DATA_CONTRACT_DECISION:** MAIN_ACCEPTED：`FD001_DATA_CONTRACT` v1.0.1，Markdown/JSON 兩份內容與六個介面定義均經 GitHub 審查，作為 M3/Web 後續資料接口的已批准研究基準。**注意版本快照：**兩份 Research 契約在 MAIN 審查時原有的 `main_acceptance=PENDING` 尚未被更改；本段 WORK_ITEM.md 的 MAIN 正式決議是權威驗收紀錄。於對 Web Brain 正式交接之前，須安排受控的合約狀態元資料同步與相容測試，避免直接修改契約狀態導致現有 `validate_contract()`（目前要求 PENDING）的測試／Gate 失敗；不能無測試直接將其改成 ACCEPTED。
+- **EVIDENCE_LIMITATION:** MAIN 未直接存取學生本地 Windows FD001 原始檔，無法獨立重新計算原始檔案 SHA-256 或實際本地測試 Exit Code；已核查的是 GitHub 內的完整 Worker 執行紀錄、程式、契約與 JSON 一致性。Worker 所報 commit-object SHA-256 未獨立重算；驗收未宣稱超出此證據等級。
+- **PRIVACY_NOTICE:** 歷史 `WORK_ITEM.md` 曾含學生 Windows 絕對路徑文字；此為已存在的公開治理資訊，不是 M2 Worker 新增。MAIN 不擅自改寫 Git 歷史、不 force push；可在 STUDENT 明確授權後另外進行目前文件的去識別化與歷史風險治理。此項獨立列為公開資訊治理議題，不構成 M2 來源資料上傳。
+- **NEXT_GATE:** M2 PASS；`M3_NOT_AUTHORIZED`。在 STUDENT 批准 M3 前，不得由 MAIN、Research Brain、Web Brain 或任何 Own Worker 開始網站工作；Data Contract 實際 Web 交接要先確認元資料版本同步與受控 handoff；每次派工前重讀 GitHub 最新 AGENTS.md。
+- **RETURN_TO:** STUDENT
