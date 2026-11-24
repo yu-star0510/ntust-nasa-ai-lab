@@ -293,7 +293,7 @@ TYPE=BRAIN_TO_BRAIN_RETURN; WORK_ITEM_ID=WO-M2-RESEARCH-001; FROM=STUDENT-RESEAR
 | TO | STUDENT-RESEARCH Brain |
 | RETURN_TO | STUDENT-MAIN Brain |
 | AUTHORIZED_BY | STUDENT (2026-11-24: 進行未完成的部分) |
-| STATUS | RESEARCH_OWN_WORKER_READY_FOR_REVIEW / RESEARCH_BRAIN_REVIEW_PENDING / MAIN_REVIEW_PENDING |
+| STATUS | RESEARCH_REVIEW_FAIL / REMEDIATION_REQUIRED（2026-11-24，公開 DERIVED RUL 來源參考缺口與 SHA-256 補證命令/Exit Code/時間/PowerShell 版本不完整；原 WO-M2-RESEARCH-001 PASS 不變；M3/M4/Web NOT_STARTED） |
 | PREREQUISITES | M2 MAIN PASS at ee27d43d4f72ff11d75d84125ca66326ae036069; accepted FD001_DATA_CONTRACT v1.0.1 per WORK_ITEM.md; no other active worker work item on GitHub main |
 | INPUT | Trusted local FD001/train_FD001.txt, FD001/test_FD001.txt, FD001/RUL_FD001.txt; existing M2 validated Python data interfaces; no external download or source lookup |
 | AUTHORITY | MAIN dispatches only to STUDENT-RESEARCH Brain. Research Brain must reread latest GitHub main AGENTS.md and WORK_ITEM.md and instruct only its own Research Own Worker. Worker must separately reread latest AGENTS.md before executing. MAIN never directly dispatches Own Worker. |
@@ -372,3 +372,15 @@ STATUS: READY_FOR_MAIN_REVIEW / FAIL / BLOCKED
 RESEARCH_BRAIN_REVIEW: RESEARCH_ACCEPTED / FAIL / BLOCKED
 
 Must include: used local file relative paths, before/after SHA-256, selected split/unit/sensor/cycle ranges, OBSERVATION/INFERENCE/UNKNOWN sample and links, label/RUL semantic matrix, raw row crosschecks, commands/timestamps/stdout/stderr/Exit Codes/tests, repository commit SHA and URL, actual changed paths, data safety, independent GitHub review, acceptance results and blockers.
+
+## WO-M2-RESEARCH-002 — RESEARCH INDEPENDENT REVIEW 001 (2026-11-24)
+
+- **TYPE:** RESEARCH_BRAIN_INDEPENDENT_GITHUB_REVIEW
+- **RESEARCH_DECISION:** `FAIL / REMEDIATION_REQUIRED`（限本工作單可補證項目，非 MAIN 最終結果；原 `WO-M2-RESEARCH-001=PASS` 保持不變）
+- **GITHUB_REVIEWED:** `main` HEAD `cdea6a0386a03779fb388d5efd90a41b6794acec`，前一已授權工作單提交 `d4c4537dd92785d35561561d5a0e0c6fadcac09a`；compare ahead=1/behind=0，僅修改 .gitignore、WORK_ITEM.md 及五項允許交付。Research Brain 獨立讀取最新 AGENTS.md、WORK_ITEM.md、FD001_DATA_CONTRACT v1.0.1、研究分類器、11 個 unittest 原始碼、三份報告及完整 Git tree。原始 Train/Test/RUL 未上傳，已驗收 M2 Data Contract / M2 研究程式未修改。
+- **STATICALLY_VERIFIED:** Train Unit 1 sensor_2 Cycle 1–5 與 Test Unit 1 sensor_2 Cycle 27–31 的原始來源參考/欄位位置、OBSERVATION 分類、端點差值 +0.55/+0.50、5 點區間 min/max 均由 Research Brain 直接解析公開樣本重算一致；ground-truth RUL 112.0 正確標示非模型預測；11 項 epistemic UNKNOWN、Train DERIVED RUL 而非原始欄位、無故障診斷/虛構 baseline；程式測試 11 項定義存在，Worker 本地證據記錄 11/11 PASS 且 Exit 0。公開相對路徑符合契約，Git tree 不含 FD001 原始資料。
+- **FINDING A — DERIVED_RUL_PUBLIC_PROVENANCE_INCOMPLETE:** `reports/M2_EVIDENCE_SAMPLES.json` 中 Train Unit 1 的 DERIVED RUL `192-cycle` 紀錄有公式及衍生數列 191..187，但該筆 INFERENCE 的 `source_references=[]`；無公開對應 `final_observed_train_cycle=192` 的可回查原始 Cycle 來源列/欄。原分類器 `_train_derived_rul()` 已包含選定 Cycle 的來源參考，但未將最終觀測 Cycle 來源獨立連結，公開樣本亦未保留所需追溯。違反本工作單 INFERENCE 須有來源參考及公式/來源數值的要求。請補充少量真實 Train raw reference（可用 Cycle 欄位的已核准 `get_raw_reference()`），並由自動測試驗證 published JSON 與程式抽取結果一致，禁止公開完整數列。
+- **FINDING B — SOURCE_HASH_EXECUTION_EVIDENCE_INCOMPLETE:** `reports/M2_EVIDENCE_EXECUTION.md` 存在三檔 SHA-256 Before/After 摘要，但沒有實際取得摘要的完整命令、分別的開始/結束時間、Exit Code、stderr 記錄，且缺明確 PowerShell 版本；整體 `Evidence start/end` 不能代替每次必要步驟的命令層級證據。分類器與 unittest 的完整 bounded stdout/stderr/Exit Code 已具備，不需重做功能。若原雜湊原始終端紀錄不完整，須使用同一份已授權唯讀 FD001 以 `EVIDENCE_RERUN` 明確標記補跑，不得捏造舊紀錄。
+- **EVIDENCE_LIMIT:** Research Brain 無法直接存取學生本地 FD001 原始資料或在其環境重跑測試；來源雜湊與測試實際 Exit Code 依 GitHub Worker 執行報告，並不冒稱已在學生電腦獨立重新計算。
+- **REMEDIATION_SCOPE:** 僅可改動本工作單五份新交付文件/程式及 WORK_ITEM.md 必要狀態；禁止改原始 FD001、先前 M2 程式/契約或 Web/M3/M4。Worker 補正後必須真正執行測試、完整記錄必要命令、三來源雜湊 before/after、Commit+Push main，再由 Research Brain 重新從 GitHub 獨立審查。
+- **NEXT_GATE:** `WO-M2-RESEARCH-002=NOT_ACCEPTED`，`RESEARCH_REMEDIATION_PENDING`，原 `WO-M2-RESEARCH-001=PASS`，M3/M4/Web 未經本工作單授權且不得啟動。
