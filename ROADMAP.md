@@ -2,7 +2,7 @@
 
 專案最終交付為本地端網站，支援選擇 Engine Unit、Cycle 和 Sensor，顯示真實數值與 Sensor Trend，可查閱 Source Evidence，並依據來源數據產生 Evidence Prompt。
 
-依 M0 至 M5 循序執行，僅能在前一工作獲 MAIN 驗收且 STUDENT 明確批准後執行下一項。截至 2026-11-25，M0、M1、M2（含研究證據補充）、FD001 Contract Handoff、M3 已驗收 FD001 唯讀 API 均 PASS。先前工單以 M3-A 表示 API 階段，但依 STUDENT 已提供的教師指令，M3 實際交付範圍就是此四項 FD001 唯讀 API；先前自行推定的 M3-B 並非 M3 完成必要條件。STUDENT 已於 2026-11-25 授權 M4 互動瀏覽器網站，MAIN 向 STUDENT-WEB Brain 建立 WO-M4-WEB-001（等待 STUDENT 轉交，Web Own Worker 未開始）。原 Roadmap M4 Evidence Prompt Generator 為較早的預擬安排，與本次正式學生指令不符，故以 D-M4-001 及本次 M4 工作單改定為 Interactive Browser UI；Evidence Prompt 仍未授權，M5 也未授權。M4 須交真實操作 UAT，UI↔API↔原始空白分隔 FD001 TXT 三方對照（不可假造 CSV），單一 main、READ_ONLY 與 GitHub 實際審查規則均維持。
+依 M0 至 M5 循序執行，每項工作須由 STUDENT 正式授權並在完成後由 MAIN 獨立驗收。截至 2026-11-25，M0、M1、M2（含研究補充）、M3 FD001 唯讀 API、Data Contract Handoff 均 PASS。STUDENT 於 2026-11-25 正式授權 M4 互動瀏覽器網站（D-M4-001），由 Web Brain 管理 Web Own Worker；M4 工單 WO-M4-WEB-001 已由 MAIN 獨立 GitHub 驗收 PASS，交付 Train/Test、Engine Unit、Sensor、Cycle 控制項、真實 SVG 趨勢圖、來源資料列、Chrome 真實 Browser UAT 16 個情境、8 筆 UI↔API↔原始 FD001 TXT 交叉核對與 64 項回歸測試。原 Roadmap 預排 M4 Evidence Prompt Generator 已被本次學生授權之互動 UI 範圍替代，不是已完成成果，且尚未獲新授權。M5 亦尚未授權，不得自行啟動。單一 main、來源 READ_ONLY 及 GitHub 驗收規則保持有效。
 
 ## M0 — Governance Initialization
 
@@ -43,7 +43,7 @@
 - **ACCEPTANCE**：`WO-M3-WEB-001` API 已由 MAIN 於 2026-11-25 正式 PASS（歷史工單名稱 M3-A 保留，不另強制 M3-B）。
 - **NEXT_ROLE**：STUDENT 授權後 MAIN 向 STUDENT-WEB Brain 派 M4 互動網頁工作單。
 
-## M4 — Interactive FD001 Browser UI (STUDENT-authorized; pending execution)
+## M4 — Interactive FD001 Browser UI (MAIN PASS; 2026-11-25)
 
 - **GOAL**：根據已驗收 FD001 唯讀 API，在學生本地 Workspace 建立可在真實瀏覽器操作的 Engine Unit、Cycle 範圍與 Sensor 選擇器、即時趨勢圖及來源資料列展示。
 - **INPUT**：M3 已 PASS 的 FD001 API、M2 已驗證來源與 Data Contract v1.0.1；來源 FD001 為空白分隔 TXT，非 CSV。
@@ -54,7 +54,7 @@
 - **SCOPE_NOTICE**：原預排 M4 Evidence Prompt Generator 被 STUDENT 這次 M4 互動網頁正式授權取代；不授權製作 Prompt、模型或健康故障判斷。
 - **NEXT_ROLE**：M4 MAIN PASS 後仍須 STUDENT 獨立授權 M5 或其他新範圍。
 
-## M5 — Final Integration and Acceptance
+## M5 — Final Integration and Acceptance (NOT AUTHORIZED)
 
 - **GOAL**：完成整合測試並交付本地端網站。
 - **INPUT**：M0 至 M4 全部已驗收成果。
