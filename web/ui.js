@@ -449,6 +449,20 @@ function renderResults(data) {
     chart.append(svg('text', { x: x(cycle), y: box.bottom + 20, 'text-anchor': 'middle', class: 'axis-label' }, formatTick.format(cycle)));
   }
 
+  const trend = [];
+  for (let index = 1; index < points.length; index++) {
+    const previous = points[index - 1];
+    const current = points[index];
+    if (current.cycle - previous.cycle !== 1) continue;
+    if (index === 1 || previous.cycle - points[index - 2].cycle !== 1) {
+      trend.push(`M ${x(previous.cycle)} ${y(previous.value)}`);
+    }
+    trend.push(`L ${x(current.cycle)} ${y(current.value)}`);
+  }
+  if (trend.length) {
+    chart.append(svg('path', { d: trend.join(' '), class: 'trend-line', 'aria-hidden': 'true' }));
+  }
+
   plotted = points.map((point, index) => {
     const dot = svg('circle', {
       cx: x(point.cycle), cy: y(point.value), r: 4.5, class: 'point', 'data-cycle': point.cycle,

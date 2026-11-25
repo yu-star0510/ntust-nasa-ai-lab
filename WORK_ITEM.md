@@ -985,7 +985,7 @@ Include exact Worker commit and Web Brain review commit, current main HEAD, actu
 | TO | STUDENT-WEB Brain |
 | RETURN_TO | STUDENT-MAIN Brain |
 | AUTHORIZED_BY | STUDENT explicitly requested converting dots to a line chart and selected the formal work-order approach, 2026-11-25. |
-| STATUS | COMMAND_DISPATCHED / RELAY_STATUS=PENDING_STUDENT_RELAY / WEB_OWN_WORKER=NOT_STARTED / WEB_DOMAIN_ACCEPTANCE=PENDING / MAIN_FINAL_ACCEPTANCE=PENDING |
+| STATUS | WEB_OWN_WORKER=READY_FOR_REVIEW / WEB_DOMAIN_ACCEPTANCE=PENDING / MAIN_FINAL_ACCEPTANCE=PENDING（2026-11-25） |
 | PREREQUISITE | M0–M5 and Post-M4 Evidence Prompt all MAIN PASS/CLOSED; M5 final acceptance commit b6bdfdd7940a3c0fc78993fa32705530cf322fe5, Roadmap commit 19a975535f728e9988849f0bd59e885d44848a5f. |
 | AUTHORITY | MAIN dispatches only to STUDENT-WEB Brain; Web Brain independently rereads latest GitHub main AGENTS.md / WORK_ITEM.md / ROADMAP.md / DECISIONS.md and manages Web Own Worker. Worker rereads governance before editing. No concurrent work order. |
 | SCOPE | Change existing point-only Sensor Trend into straight connected lines + retained original clickable dots; preserve exact approved live API, fail-closed History validator, Evidence Prompt and source data semantics. |
@@ -1028,3 +1028,12 @@ STATUS=READY_FOR_MAIN_REVIEW / FAIL / BLOCKED
 WEB_DOMAIN_ACCEPTANCE=PASS / FAIL / BLOCKED
 MAIN_FINAL_ACCEPTANCE=PENDING
 Include Worker Git commit SHA and URL, Web Brain independent acceptance commit, real Chrome version/start/URL/commands and Exit Codes, SVG path geometry/node/dot-count checks and true screenshot, at least six source four-way checks, regressions and original data SHA before/after, security/changed paths/tree and limitations. MAIN alone may record final PASS.
+
+### WO-VIS-WEB-001 — OWN WORKER EXECUTION RETURN (2026-11-25)
+
+- **TYPE:** `WORKER_TO_BRAIN_RETURN` · **RETURN_TO:** STUDENT-WEB Brain · **STATUS:** `READY_FOR_REVIEW`.
+- **BASELINE:** GitHub `main` `b9c94e8e22cf8f2ec01916eefbc1d2e827ad7ad7` verified, D-VIS-001 authorized and M5 accepted.
+- **IMPLEMENTATION:** The SVG draws straight path segments only for consecutive verified Cycles. It preserves original circle geometry, click/keyboard selection, source evidence and the Prompt. The line is behind the markers and cannot intercept input.
+- **UAT:** Chrome 158.0.8127.37 at 8765 showed 100 markers before and after, with one move and 99 new segments. Nine original TXT samples matched API/UI/Prompt, six synthetic gap fixtures passed, and fail-closed errors cleared lines. Actual stop/restart and port closure were completed on a separate owned 8766 process; the pre-existing 8765 service was left running. Native clipboard readback was exact.
+- **REGRESSION:** 64 Python tests, 11 Prompt tests, 14 M5 gate tests and final VIS Chrome runs exited 0. All three FD001 source hashes matched before and after. Accepted API, validation, Prompt and M5 artifacts were unchanged.
+- **EVIDENCE:** [Browser UAT](reports/LINE_CHART_BROWSER_UAT.md), [source check](reports/LINE_CHART_SOURCE_CROSSCHECK.md), [execution](reports/LINE_CHART_EXECUTION_EVIDENCE.md), [before/after screenshot](reports/LINE_CHART_BROWSER_SCREENSHOT.png). GitHub commit and remote tree verification are in the Worker return. Both acceptance gates remain `PENDING`.

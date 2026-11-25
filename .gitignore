@@ -102,3 +102,10 @@ research/
 !/reports/M5_EXECUTION_EVIDENCE.md
 !/reports/M5_BROWSER_SCREENSHOT.png
 !/reports/M5_FINAL_INTEGRATION_CHECKLIST.md
+
+# WO-VIS-WEB-001: allow only Sensor Trend line chart tests and evidence.
+!/tests/test_sensor_line_chart.mjs
+!/reports/LINE_CHART_BROWSER_UAT.md
+!/reports/LINE_CHART_SOURCE_CROSSCHECK.md
+!/reports/LINE_CHART_EXECUTION_EVIDENCE.md
+!/reports/LINE_CHART_BROWSER_SCREENSHOT.png

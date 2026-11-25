@@ -58,6 +58,7 @@ button, select { cursor: pointer; }
 .axis { stroke: #97aabd; }
 .axis-label { fill: #486279; font-size: 13px; }
 .axis-title { fill: #203e57; font-size: 14px; font-weight: 600; }
+.trend-line { fill: none; stroke: #417597; stroke-width: 1.5; pointer-events: none; }
 .point { fill: var(--accent); stroke: #fff; stroke-width: 1.5; cursor: pointer; }
 .point:hover, .point.selected { fill: #0e3654; stroke: #0e3654; stroke-width: 3; }
 .plot-note { padding: .1rem 1.05rem .85rem; }
