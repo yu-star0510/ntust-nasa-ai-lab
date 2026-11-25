@@ -837,3 +837,69 @@ Must include latest baseline/commit, changed paths, local start/URL, browser sce
 - **MAIN_LIMITATION:** MAIN fetched and inspected GitHub code, evidence, screenshot and structured browser transcript and independently checked their consistency. MAIN cannot access student's Windows FD001 originals or independently re-run local Chrome, clipboard, source hash and HTTP operations; those facts rely on Worker-preserved authentic execution records and are not claimed as MAIN-local reproduction.
 - **FINAL_GATE:** WO-EP-WEB-001 = PASS/CLOSED; previous WO-M4-WEB-001 PASS preserved, M5 Final Integration and any external AI implementation remain NOT_AUTHORIZED pending a fresh explicit STUDENT decision. Do not auto-start any later work.
 - **RETURN_TO:** STUDENT.
+
+
+## WO-M5-WEB-001 — FD001 Final Integration Browser UAT and Two-tier Acceptance (2026-11-25)
+
+| FIELD | VALUE |
+| --- | --- |
+| TYPE | BRAIN_TO_BRAIN_WORK_ORDER |
+| WORK_ITEM_ID | WO-M5-WEB-001 |
+| MILESTONE | M5 — Final Integration Browser User Acceptance Test, scope specifically granted by STUDENT. This is M5 Browser UAT execution and evidence; MAIN may grant final acceptance only after Web Domain Acceptance and independent main review. |
+| FROM | STUDENT-MAIN Brain |
+| TO | STUDENT-WEB Brain |
+| RETURN_TO | STUDENT-MAIN Brain |
+| AUTHORIZED_BY | STUDENT 2026-11-25: requests Web Brain to task its Own Worker with M5 Browser UAT of Unit/Sensor/Cycle, original FD001 rows, invalid input, null, API interruption, Evidence Prompt; retain actual commands, Exit Codes, screenshots and real results, Web Domain Acceptance first, MAIN final acceptance second. |
+| STATUS | COMMAND_DISPATCHED / RELAY_STATUS=PENDING_STUDENT_RELAY / WEB_OWN_WORKER=NOT_STARTED / WEB_DOMAIN_ACCEPTANCE=PENDING / MAIN_FINAL_ACCEPTANCE=PENDING |
+| PREREQUISITES | M0–M3, M4 UI and Post-M4 Evidence Prompt work item WO-EP-WEB-001 all MAIN PASS; FD001_DATA_CONTRACT v1.0.1 ACCEPTED; current GitHub main baseline 7c20760e2d09f35da19c0db1e75744620db3ccea. No other active work order. |
+| COMMAND_AUTHORITY | STUDENT-MAIN dispatches only to STUDENT-WEB Brain, which independently preflights current GitHub main governance and directs Web Own Worker. Worker separately rechecks latest AGENTS.md and work order before execution. No MAIN direct-to-Worker bypass. |
+| OBJECTIVE | Demonstrate the complete real local Unit -> Cycle -> Sensor -> live Trend -> Source Evidence -> copyable Evidence Prompt flow in a real browser and with independently reopened original FD001 rows, positive and failure states and actual reproducible evidence. Primarily verification, NOT new feature development. |
+| SOURCES | Trusted local READ_ONLY FD001/train_FD001.txt, FD001/test_FD001.txt, FD001/RUL_FD001.txt; already-accepted FD001 API GET /api/health, /api/catalog, /api/units, /api/history and validated browser UI and Evidence Prompt. Original files are whitespace-separated TXT; do not rename them CSV. |
+| ALLOWED_NEW_FILES | tests/test_m5_browser_uat.mjs and/or tests/test_m5_browser_uat.py (genuine browser driver / standalone controlled tests), reports/M5_BROWSER_UAT.md, reports/M5_SOURCE_CROSSCHECK.md, reports/M5_EXECUTION_EVIDENCE.md, reports/M5_BROWSER_SCREENSHOT.png (actual browser image, bounded public-safe), reports/M5_FINAL_INTEGRATION_CHECKLIST.md. Any extra path/large binary artifact needs MAIN advance approval. |
+| ALLOWED_EXISTING_CHANGES | WORK_ITEM.md for Worker/Web Domain review and MAIN final decision; web/README.md limited to tested startup/UAT/cleanup instructions; .gitignore minimal new evidence allowlisting. No implementation edits by default. If a failure requires modifications to web/api.py, web/ui.js, research, prior tests or contracts, STOP_IF and request MAIN narrowly scoped remediation authorization before editing; do not silently patch accepted M3/M4/EP. |
+| READ_ONLY | All original FD001 files and synthetic_sensor.csv; all previous acceptance artifacts and Research M2 analysis, M3 API contract, validated UI/API and Evidence Prompt source, except explicitly allowed README and governance records; secrets and student private data. |
+| OUT_OF_SCOPE | New model/LLM API, RUL prediction, fault classification, baselines/thresholds, changes to accepted data contract, public service, remote hosting, any raw data export, modifying source rows or force pushing Git history. |
+| GATES | Gate 1 Worker READY_FOR_REVIEW with real browser/local/source evidence and GitHub commit+push. Gate 2 Web Brain directly checks GitHub code/test/evidence and remote tree then records WEB_DOMAIN_ACCEPTANCE=PASS or FAIL/BLOCKED in WORK_ITEM.md and sends formal BRAIN_TO_BRAIN_RETURN. Gate 3 MAIN independently reads GitHub latest work, tests and real UAT evidence and records MAIN_FINAL_ACCEPTANCE=PASS/FAIL/BLOCKED. A Worker self-PASS or Web Brain domain PASS cannot substitute for MAIN final PASS. |
+
+### Required positive end-to-end browser UAT
+
+1. From student's actual local workspace with verified FD001 originals, start python -B -m web.api --port 8765. Verify readiness with direct GET /api/health and that http://127.0.0.1:8765/ loads in real Chrome or Edge, record exact OS, Python, Node and browser versions, timezone, UTC offset, startup command, process/PID identification where safe, real URL and HTTP status. The browser must actually operate page controls; a static screenshot, synthetic-only test or HTTP-only script is insufficient.
+2. In live browser, test Train and Test split selection, actual Unit1 and Unit2, Sensor7 and a second sensor such as Sensor5, inclusive Cycle1–20, 5–12, first and final observed boundaries, exact 100-cycle window, singleton and valid no-observation window. Capture user actions (native mouse/keyboard or reliably automated browser events), current DOM controls, actual Network request URL/status/body, graph coordinates/data-cycle and observation table/provenance. Verify changing split resets Unit source correctly and no stale response or ghost points.
+3. For at least eight selected displayed observations across Train Unit1, another Train Unit and Test Unit, including Sensor7 and a different Sensor, compare (a) UI selection, value/chart/table/source details, (b) actual GET /api/history HTTP body, (c) Evidence Prompt row and (d) independently reopened original FD001 TXT bytes/physical line/token. Verify source SHA-256, split, Unit, Cycle, numeric value versus verbatim token, 1-based physical_line_number, 0-based data_row_index, source_column_index = sensor index + 5 (sensor7 -> column12; sensor5 -> column10), reread_matches. NEVER equate physical line with cycle across Units. Do not copy whole raw dataset into GitHub.
+4. Evidence Prompt: verify current confirmed split/Unit/Sensor/Cycle window, source file/hash, 26-column layout, observed count/scope and all returned observations for 100-Cycle selection, split vs window data quality, KNOWN / INFERENCE / UNKNOWN, Train/Test/RUL distinctions, and external-AI abstention from unsupported failure, health and RUL claims. Native user-gesture Copy and subsequent real browser Clipboard readText must match preview exactly including Windows CRLF; test isolated denied permission and no false Copy success, no auto-network submission and prompt invalidation on split/Unit/Sensor/range change.
+5. Initial load, reload and multiple independent control changes should produce deterministic visible results, not cached screenshots. Capture at least two genuine screenshots of relevant states if privacy-safe within one approved composite screenshot or ask MAIN for additional screenshot path approval; screenshots supplement real UAT transcript and cannot replace it.
+
+### Failure modes and null/missing semantics (mandatory)
+
+1. Invalid input: reversed range, 0/negative/malformed Cycle, >100 inclusive Cycle span, Sensor outside 1..21, wrong/absent split, unknown Unit, malformed/duplicate/unknown API parameters, unsupported methods. Exercise UI error handling and direct API error contract as appropriate. Capture actual HTTP 400/404/405 and safe error codes where supported; where frontend prevents the request record the absence of a network call and disabled/cleared chart and Prompt. Do not invent status codes.
+2. Real FD001 M2 quality acceptance states zero missing values for Train/Test and API currently returns no JSON null. Verify valid empty Cycle range returns HTTP 200, points=[], count=0 and no phantom chart point/prompt; absent Cycle is NOT null. For actual null handling, use a clearly labelled separate SYNTHETIC fixture or isolated mocked response and assert the accepted missing/null rule and UI fail-closed behavior. Do not modify trusted FD001 or insert null into live response while claiming it is NASA data. If the contract prohibits null in verified source, treat a null sensor value as invalid/503 or documented test failure, not normal observed data.
+3. API interruption: perform actual controlled local server stop/unreachable or equivalent genuine network failure during a browser visit, observe Network failure, meaningful UI error, cleared data/Prompt and disabled Copy. Restore the real local server, repeat request and verify recovery and correct selected data. ALSO test the accepted API 503 unready/integrity failure safely using an isolated synthetic fixture/injected response if necessary; label 503 injection SYNTHETIC and separate it from the genuinely stopped-server outage. Do not mutate or tamper with trusted originals to induce a failure.
+4. Race/stale state: rapidly change Sensor/Unit/split during an in-flight request, and deliberately verify that a late response cannot overwrite new controls, chart, source reference or copyable Prompt. Test clipboard denied/pending completion and ensure any stale or failed window is never copyable.
+5. Fail-closed data integrity: genuine /api/health confirms accepted source hashes. Missing/altered synthetic fixtures must produce documented fail-closed errors; do not test source alteration on originals. Distinguish UNKNOWN fault status from missing measured value and from absent Cycle.
+
+### Evidence deliverables and execution contract
+
+- reports/M5_BROWSER_UAT.md: browser name/version, real local URL, time, scenario-by-scenario actual click/key sequence, before/after controls, DOM/chart/table/prompt/copy, Network URL/body/status, expected versus actual and PASS/FAIL, screenshots references, actual server stop/restart behavior and exact failure labels.
+- reports/M5_SOURCE_CROSSCHECK.md: at least 8 small real rows with four-way UI/API/Prompt/independently reopened TXT checks; source relative paths/hashes/physical-line, row/column and token. No private local paths, complete 100-row text, or full raw series.
+- reports/M5_EXECUTION_EVIDENCE.md: exact commands, environment versions, actual start/end local timestamps/timezone, stdout and stderr with Exit Codes from every command (even first unsuccessful attempts), automated browser driver script and invocation if used, status/response excerpts, verified screenshot origin, server stop/restart and port-closed checks, before and after three FD001 SHA256 vs contract, git status/staged safety and remote HEAD.
+- reports/M5_FINAL_INTEGRATION_CHECKLIST.md: one row per required functional/error/source/prompt/governance item with linked evidence, Web Domain Acceptance recommendation and separate MAIN final field PENDING at Worker stage.
+- Run all previously accepted M1/M2/M3/M4 Python tests (baseline 64) plus Evidence Prompt Node tests (baseline 11), new M5 tests and syntax checks; record actual counts, stdout/stderr, exits; no regression allowed. The 64/11 baseline counts are reference only, not predeclared successful outcomes for this run.
+- Before/after SHA-256 of READ_ONLY three local originals must match accepted contract. Confirm no unexpected browser outgoing requests or storage; no auto data transfer to an LLM. Real browser screenshots and evidence must be sanitized, bounded, and generated from running page and linked to the tested commit or exact source revision.
+- Web Own Worker checks staged changed file names, raw data exclusion and remote branch main, Commit+Push only allowed files; report exact commit URL, SHA, full changed paths and verified remote Git tree. Web Brain independently reviews code/test and real evidence after push; reports domain decision with supporting GitHub links and any unresolved limitation. MAIN conducts separate final GitHub acceptance and documents precise scope.
+
+### STOP_IF and final decision
+
+STOP_IF: no true browser UAT, only screenshots/HTTP calls; inability to verify independent original source rows; null mistaken for absent Cycle or generated source data; unhandled real API outage; stale copyable Prompt; fabricated fault/RUL; original source hash change; private data/complete dataset published; unsupported Web modifications; dependency/console failure not transparently recorded; git conflict, no push, different branch, AGENTS mismatch or prior acceptance missing.
+
+If a criterion fails, return FAILED or BLOCKED with exact reason and actual evidence. Do not self-report PASS or proceed to MAIN final without Web Domain independent acceptance.
+
+### RETURN_TO STUDENT-MAIN Brain
+
+TYPE=BRAIN_TO_BRAIN_RETURN
+WORK_ITEM_ID=WO-M5-WEB-001
+FROM=STUDENT-WEB Brain
+RETURN_TO=STUDENT-MAIN Brain
+STATUS=READY_FOR_MAIN_REVIEW / FAIL / BLOCKED
+WEB_DOMAIN_ACCEPTANCE=PASS / FAIL / BLOCKED
+MAIN_FINAL_ACCEPTANCE=PENDING
+Include exact Worker commit and Web Brain review commit, current main HEAD, actual local start URL/command, real browser operations and screenshots, actual GET statuses/errors and genuine outage/recovery, null-vs-no-data fixture, at least 8 source checks, full prompt copy, regression counts, source SHA256 before/after, GitHub tree and work scope, known limitations. MAIN must independently inspect GitHub before its final decision.
