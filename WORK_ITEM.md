@@ -737,3 +737,75 @@ M4 final MAIN acceptance pending; M5 not authorized.
 - **LIMITATION:** MAIN did not access student local Windows FD001 originals or personally rerun Chrome/HTTP; MAIN verified GitHub code, screenshot, transcript, tests and consistency. Local SHA-256, browser operations and exits are grounded in Worker-preserved execution evidence, not claimed as MAIN-local reproduction.
 - **NEXT_GATE:** M4 PASS / CLOSED. M5 and Evidence Prompt work require a fresh explicit STUDENT authorization; no automatic dispatch.
 - **RETURN_TO:** STUDENT.
+
+
+## WO-EP-WEB-001 — Source-grounded Evidence Prompt Generator (2026-11-25)
+
+| FIELD | VALUE |
+| --- | --- |
+| TYPE | BRAIN_TO_BRAIN_WORK_ORDER |
+| WORK_ITEM_ID | WO-EP-WEB-001 |
+| MILESTONE | POST-M4-EVIDENCE-PROMPT-SUPPLEMENT; standalone approved feature; does NOT reopen M4 or authorize M5 Final Integration |
+| FROM | STUDENT-MAIN Brain |
+| TO | STUDENT-WEB Brain |
+| RETURN_TO | STUDENT-MAIN Brain |
+| AUTHORIZED_BY | STUDENT on 2026-11-25: add Evidence Prompt Generator to existing FD001 website based on selected Engine/Cycle/Sensor with copy, source indexes, quality and known/inferred/unknown limitations |
+| STATUS | COMMAND_DISPATCHED / RELAY_STATUS=PENDING_STUDENT_RELAY / WEB_OWN_WORKER=NOT_STARTED / MAIN_ACCEPTANCE=PENDING |
+| PREREQUISITES | M0, M1, M2, M3 API and M4 interactive UI all MAIN PASS; M2 Evidence Supplement accepted; Data Contract v1.0.1 main_acceptance=ACCEPTED. Last accepted M4 Roadmap HEAD 52a3eaa6df372d56c37dec21632e6dca33444712. |
+| AUTHORITY | Only STUDENT-WEB Brain may instruct Web Own Worker; MAIN must not bypass hierarchy. Brain and Worker each reread current GitHub main AGENTS.md and WORK_ITEM.md before dispatch/execution. Single main and one active work order; separate Worker Commit+Push, Web Brain independent review, MAIN final acceptance. |
+| INPUT | Accepted local read-only FD001 DATA CONTRACT v1.0.1; live M3 GET /api/health, /api/catalog, /api/units, /api/history; accepted M4 browser state and selected point; approved M2 FD001 Evidence Classification and M2 quality statistics. Original FD001 are whitespace-separated TXT (not CSV). |
+| GOAL | Add a visible, dynamically generated, copyable plain-text Evidence Prompt tied EXACTLY to current Split (Train/Test), Engine Unit, inclusive Cycle range and Sensor, optionally distinguishing selected clicked observation from whole window. No external AI/API requests; the user alone decides whether to paste copied text into another service. |
+| ALLOWED_EXISTING_CHANGES | web/index.html, web/ui.js, web/style.css, web/README.md, WORK_ITEM.md and minimal .gitignore; tests/test_m4_ui.py only if needed for backward-compatible UI contract tests. Preserve all previous accepted behavior. |
+| ALLOWED_NEW_FILES | web/evidence_prompt.js (optional but preferred deterministic formatter), tests/test_evidence_prompt.py OR tests/test_evidence_prompt.mjs, reports/EP_BROWSER_UAT.md, reports/EP_SOURCE_CROSSCHECK.md, reports/EP_EXECUTION_EVIDENCE.md, reports/EP_BROWSER_SCREENSHOT.png (only genuine local browser screenshot and safe small content). Different paths/dependencies require MAIN advance approval. |
+| READ_ONLY | web/api.py, Research/M2 parser and quality/classification code, all FD001 and synthetic originals, M2 Data Contract, M3 API Contract and all accepted past reports/tests outside explicitly allowed paths. No new API endpoint needed; do not modify original raw data or add exports. |
+| OUT_OF_SCOPE | M5 final integration and acceptance, actual LLM integrations/auto-submission, RUL prediction, fault detection/diagnosis, health score, artificial threshold/baseline, external CDN/hosting, raw source uploads, complete FD001 series publication. |
+| ACCEPTANCE_AUTHORITY | Web Own Worker can report only READY_FOR_REVIEW; Web Brain independently reviews actual GitHub source, test, source evidence and UAT; MAIN independently decides PASS, FAIL or BLOCKED. |
+
+### Feature requirements
+
+1. Present a clearly labelled Evidence Prompt Generator with readable/selectable preview and Copy button within the accepted FD001 Sensor Explorer. Must generate from LIVE confirmed M4 selected split/unit/sensor/start/end and the matching current GET /api/history response, not hard-coded samples, stale requests, only the selected chart dot or an unrelated unit. If one point was clicked, identify it as a separate focused observation without replacing the entire selected window.
+2. Every prompt includes NASA C-MAPSS FD001, the accepted contract version 1.0.1, source split train/test, unit, sensor, inclusive requested Cycle window, actual observed cycle range and count, correct project-relative source_file and exact SHA-256. Explain original whitespace-delimited TXT layout: column 1 Unit ID, 2 Cycle, 3-5 operational settings 1-3, 6-26 Sensors 1-21; sensor N maps to 1-based source column 5+N; original physical_line_number is 1-based and data_row_index 0-based, neither generally equals Cycle across all Units. Never describe source as an invented CSV.
+3. Include ALL actual returned observations for the selected API bounded window of maximum 100 inclusive cycles (no silent truncation or resampling). Each record must show actual Cycle, numeric sensor value, verbatim original token, physical source line, zero-based row, 1-based sensor source column and reread_matches; file/hash may be in a shared header only when identical and unambiguously tied to every record. An absent cycle is not a null measurement. If request has no observations, do not produce a valid analysis prompt.
+4. Data Quality must be fact-based: cite actual /api/catalog split-scoped missing count and verified contract/hash state; clearly distinguish split-global reported row count/missing count from selected-window observed count and descriptive range. If computing window min/max, population mean or endpoint difference, use only live selected observations with explicit formulas and scoped labels; a quality constant/near-constant heuristic in the M2 report is a statistical data-quality rule, NEVER a physical healthy/fault baseline. Do not invent sensor units, wall-clock timestamps or missing-value imputations.
+5. Use explicitly titled KNOWN / OBSERVATION, INFERENCE / DESCRIPTIVE ONLY, and UNKNOWN / NOT EVIDENCED sections. Known contains raw facts and source refs. Inference contains transparent bounded descriptive arithmetic (e.g. last-point minus first-point with actual two Cycles and values, window min/max) without asserting monotonicity, degradation or failure; for a single actual point do not label a zero delta as meaningful trend. Unknown must cover fault occurrence/type/severity/time, health status, root cause, normal/abnormal threshold or diagnostic baseline, failure probability, physical unit if not documented, model-predicted RUL.
+6. Train/Test/RUL semantics: Train follows run-to-failure convention but 26 raw Train columns include no fault-class or original per-Cycle RUL. Test is a partial record and its last observed Cycle is NOT the failure point. The RUL_FD001 file contains Test ground-truth labels at each Test Unit last observed Cycle, but /api/history does not supply these and they are not model predictions; DO NOT create Test RUL, Train derived RUL, any predicted RUL or label as part of the prompt unless a separate, formally authorized source-supported extension is granted.
+7. Explicitly instruct external AI in the prompt: answer ONLY using the supplied observations, separate known/derived/unknown, retain exact indexing and provenance, never invent faults, health conditions, causal conclusions, thresholds or RUL/time-to-failure, and state UNKNOWN / INSUFFICIENT EVIDENCE when not supported. The feature generates prompt TEXT ONLY, not a prediction and not an outbound AI request.
+8. Preview and copy behavior: plain text, safe textContent/value rendering (not unescaped HTML), Clipboard API with honest permissions/error handling and a documented tested fallback or explicit failure. Show Copied only after verified successful write. Copy text must EXACTLY match currently displayed preview in a real browser readback test. No automatic clipboard writes, localStorage storage, generated file export, unrequested network calls or server logs of copied content.
+9. Never allow a stale prompt. On any selection change, new request/loading, invalid range, empty window, aborted response, raw-reference mismatch, API error/503 or server unready, immediately clear or disable preview/copy; only enable after returned split/unit/sensor/start/end and every source record match current controls and verified API response. Handle rapid Train/Test/Sensor switches and 503 recovery.
+10. Preserve prior localhost 127.0.0.1/static allowlist/M3 API/FD001 raw READ_ONLY requirements. Limit public test evidence to small source-audited samples and do not commit a full prompt covering a real 100-Cycle window or complete raw history.
+
+### Mandatory tests, browser UAT and evidence
+
+- Actual local run with python -B -m web.api --port 8765 and verified http://127.0.0.1:8765/ URL. Perform genuine Chrome/Edge user gesture/DevTools UAT, not screenshot-only or Python HTTP-only tests. Record browser version, launch commands, current selection, Network GET status and response, visible prompt and clipboard copy readback. Demonstrate Clipboard write success and denial/failure with no fake success.
+- At least six independent Prompt ↔ current UI ↔ live API ↔ original TXT physical-source-line/column/token/sha256 checks, covering Train Unit1 sensor7 Cycles1-20, another Train Unit sensor5 window, and a Test Unit sensor7 window. Reopen original TXT locally read-only; do not reuse API raw_reference as the sole independent check. For Sensor 7 original source column=12, Sensor 5=10. Include focused observation and whole-window differentiation.
+- Test new split, Unit, sensor, range and selected point; zero-point valid window; one-point range; reversed/over-100 window; synthetic HTTP 503 then recovery; stale/out-of-order responses; reload; no remote LLM/network submission. Confirm prompt content updates exactly with current selection and only copied when valid.
+- Run new prompt unit/negative tests and entire existing M1-M4 regression; document counts, commands, exact timestamps, full safe stdout/stderr, Exit Codes, real browser steps and evidence, before/after Train/Test/RUL approved SHA-256 and clean server shutdown/closed port.
+- Verify git status/diff/stage names strictly allowed, no raw TXT/synthetic CSV/full trace/private machine paths/API keys/complete prompt leaked; Commit+Push to main and verify remote HEAD, Git Tree and Commit. Web Brain reviews actual code, tests, JSON/screenshot/UAT evidence from GitHub before returning.
+- Report expected user-facing prompt wording and a small provenance-tested excerpt only; never claim that the external AI has performed a diagnosis or RUL estimate.
+
+### ACCEPTANCE CHECKLIST
+
+[ ] Exactly current selected state, live confirmed API points, all bounded observations and raw token/physical line/data index/column/source hash are present.
+[ ] FD001 identification and 26-column meanings correct; Train/Test, partial Test and RUL ground-truth/model prediction distinct.
+[ ] Split-scoped quality versus window statistics scoped accurately; no invented physical units or diagnostic baseline.
+[ ] KNOWN / INFERENCE / UNKNOWN precise, arithmetic reproducible and anti-fabrication instruction clear.
+[ ] Preview and copy work with actual browser clipboard readback; failure truthful; no remote AI calls.
+[ ] Stale/invalid/empty/503 never expose a copyable prior prompt; 100-Cycle bound respected.
+[ ] At least six source-audited samples across Train/Test, two Sensors and two Units.
+[ ] Genuine browser UAT and screenshots plus source/API/DOM/clipboard evidence, not only static image.
+[ ] M1-M4 full regression plus new tests pass; source hashes unchanged; localhost-only API maintained.
+[ ] Worker commits only approved paths, no raw data or secrets; Web Brain independent GitHub review then MAIN final acceptance.
+
+### STOP_IF
+
+Accepted M4 or contract invalid; original hashes mismatch; source column/raw reference mismatch; stale or fabricated prompt values, diagnostic thresholds or RUL; copying invalid/stale content; unsupported clipboard behavior falsely reported; no real browser source and clipboard UAT; API regressions; source disclosure, credential or absolute private path; Git conflicts or nonconforming AGENTS; unauthorized M5 or LLM integration. Return BLOCKED with exact evidence, never guess results or extend scope.
+
+### RETURN_TO STUDENT-MAIN
+
+TYPE=BRAIN_TO_BRAIN_RETURN
+WORK_ITEM_ID=WO-EP-WEB-001
+FROM=STUDENT-WEB Brain
+RETURN_TO=STUDENT-MAIN Brain
+STATUS=READY_FOR_MAIN_REVIEW / FAIL / BLOCKED
+WEB_BRAIN_REVIEW=WEB_ACCEPTED / FAIL / BLOCKED
+Must include latest baseline/commit, changed paths, local start/URL, browser scenario/clipboard readback and source crosschecks, full tests/execution/SHA-256 before-after, precise prompt example/safety checks, independent GitHub review and blockers. MAIN_FINAL_ACCEPTANCE=PENDING. M5 remains NOT_AUTHORIZED.
