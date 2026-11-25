@@ -639,3 +639,74 @@ Include: original M2 approval reference, source hashes before/after, contract ve
 - **NONBLOCKING_FOLLOW-UP:** Future frontend work should preserve localhost-only policy, explicit GET error/null semantics, source provenance and bounded history queries; local-development HTTP handling can be revisited under an appropriately authorized follow-on work order, without claiming public deployment safety.
 - **NEXT_GATE:** WO-M3-WEB-001 M3-A = PASS; M3-B frontend/UI and full M3 website NOT_COMPLETED / NOT_AUTHORIZED; M4 and M5 NOT_AUTHORIZED. Requires separate STUDENT approval and new authorized work item before any frontend or Evidence Prompt work.
 - **RETURN_TO:** STUDENT.
+
+
+## WO-M4-WEB-001 — Interactive FD001 Browser UI, Live UAT and Source Crosscheck (2026-11-25)
+
+| FIELD | VALUE |
+| --- | --- |
+| TYPE | BRAIN_TO_BRAIN_WORK_ORDER |
+| WORK_ITEM_ID | WO-M4-WEB-001 |
+| MILESTONE | M4 — Interactive Browser UI, aligned to current STUDENT direct authorization (replaces previously planned M4 Evidence Prompt scope for this work only; no prompt generation authorized) |
+| FROM | STUDENT-MAIN Brain |
+| TO | STUDENT-WEB Brain |
+| RETURN_TO | STUDENT-MAIN Brain |
+| AUTHORIZED_BY | STUDENT (2026-11-25; explicit instruction: MAIN opens M4 to Web Brain for interactive Engine Unit / Cycle / Sensor browser with source-data verification and real browser/manual UAT) |
+| STATUS | COMMAND_DISPATCHED / RELAY_STATUS=PENDING_STUDENT_RELAY / WEB_OWN_WORKER=NOT_STARTED |
+| PREREQUISITES | M0=PASS; M1=PASS; M2 original+Evidence Supplement=PASS; WO-M3-HANDOFF-001=PASS; WO-M3-WEB-001 readonly FD001 API=MAIN_PASS (acceptance GitHub commit f605b0d479c76b9ca0c073f1d7b42cfd844f435d, Roadmap GitHub commit b4725db9027cb17f6519d161da19db40c98c7301). |
+| AUTHORITY | MAIN dispatches only to STUDENT-WEB Brain. Before dispatch Web Brain must reread latest GitHub main AGENTS.md, WORK_ITEM.md and this scope, check no active other worker; only Web Brain directs Web Own Worker. Web Own Worker rereads AGENTS.md and checks Git status before working. |
+| SOURCE_OF_TRUTH | Existing accepted FD001_DATA_CONTRACT v1.0.1 main_acceptance=ACCEPTED, previously accepted M3 API GET /api/health, /api/catalog, /api/units and /api/history, and trusted local read-only FD001/train_FD001.txt, FD001/test_FD001.txt, FD001/RUL_FD001.txt (source hash unchanged). Original FD001 is whitespace-separated .txt, NOT a source CSV; user's "API/CSV" crosscheck means UI↔API↔actual original TXT, never fabricate a CSV source. |
+| CORE_SCOPE | Browser-operable local readonly page with Dataset Split train/test, Engine Unit selector, inclusive Cycle start/end range, Sensor 1..21 selector, actual trend plot (x=Cycle, y=observed sensor value) and visible original-source provenance table/row, all driven by live accepted FD001 API. Deliver executable local launch, real reachable URL, real browser or reproducible human-operation UAT and screenshot/video/trace evidence plus independently verified UI↔API↔actual original TXT row checks. Not static screenshot-only. |
+| AUTHORIZED_NEW_FILES | web/index.html; web/ui.js; web/style.css; tests/test_m4_ui.py; reports/M4_BROWSER_UAT.md; reports/M4_UI_API_SOURCE_CROSSCHECK.md; reports/M4_UI_EXECUTION_EVIDENCE.md; reports/M4_BROWSER_SCREENSHOT.png (only if securely captured of actual running page; optional additional bounded screenshot filenames require WEB Brain declaration in work record and MAIN approval); minimal frontend assets or test scripts strictly necessary only with MAIN prior approval. |
+| AUTHORIZED_EXISTING_EDITS | web/api.py ONLY for minimal localhost same-origin static asset routes and hardcoded safe path allowlist, while preserving all four M3 API semantics/behavior; web/README.md for launch/browser instructions; tests/test_m3_api.py ONLY for backward-compat regression tests if needed; .gitignore minimal allowlisting M4 artifact filenames, ensuring raw FD001 remains excluded; WORK_ITEM.md M4 execution/review records. Other changes or external dependencies require prior MAIN authorization. |
+| READ_ONLY | FD001 raw data, synthetic CSV, all accepted Research M2 contracts/parsers, M2 tests/reports, M3 Data Contract v1.0.1, M3 API contract, M1/M2 evidence, unrelated student files; no raw file copies or complete telemetry exports to GitHub. |
+| OUT_OF_SCOPE | Evidence Prompt Generator; AI diagnosis, fault classification, RUL prediction, fabricated baseline threshold, M5 integration, public deployment, external web hosting, unrestricted source downloads, external CDN, modifying raw source or contract. Previous Roadmap described M4 as Evidence Prompt; scope is amended by new explicit STUDENT instruction without rewriting past decisions. |
+| COMMIT_REVIEW | Single main only. Worker Commit+Push, inspect staged paths/content and origin/main, Web Brain independently checks actual GitHub code/tests/reports/images/commit/tree, returns WEB_ACCEPTED/FAIL/BLOCKED, MAIN independently verifies GitHub and decides M4 PASS/FAIL/BLOCKED. |
+
+### M4-A Required actual browser UI
+
+1. Serve a real interactive page over a documented local loopback URL, e.g. http://127.0.0.1:8765/ (only if implemented and verified). Same-origin static serving through existing accepted web.api is preferred so GET /api routes remain unchanged, no CORS workarounds, file:// and static mock UIs are NOT accepted. Existing M3 API may receive only narrow safe local static-GET handler; prohibit arbitrary file serving, path traversal, remote origins or enabling mutating HTTP methods. Python standard library + local HTML/CSS/JS preferred; any dependencies must be explicit and pinned/approved.
+2. Controls must include split train/test, Engine Unit (actual split-local /api/units list), Sensor 1..21 (actual /api/catalog mapping) and inclusive positive Cycle range; label actual selected split/Unit/sensor/range and provenance. Populate options dynamically from GET /api/catalog and /api/units, never hardcode unit IDs or invent sensor physical units. Switching split must not reuse a stale previous split Unit or data; keep selection-to-API mapping exact.
+3. Fetch /api/history using exact selected state and accepted API constraints (max 100 inclusive Cycles per request). Honor up to-100 window by validation, or if supporting longer UI range implement safe bounded pagination with explicit requests and verified Cycle merges; no unbounded single call, no silent truncation, no fabricated interpolation, smoothing, random data or decimated/misleading plot. Preserve x=actual numeric Cycle/y=raw sensor reading. Chart must render live data after user action; mouse/keyboard inspectable point/value (table acceptable for full exact provenance). Clean, legible UI with accessible label/focus and error/empty/loading states; actual observed values visibly tied to selected state.
+4. Display source evidence on the page for selected point(s) and ideally each point via table/detail: dataset_split, unit_id, cycle, sensor_name, displayed numeric value, original token, project-relative source_file, source_sha256, 1-based physical_line_number, 0-based data_row_index, 1-based source_column_index and reread_matches. Never show raw machine absolute paths, arbitrary file content or stack traces. Keep numeric value and visual/chart row exactly matching accepted API; not fake healthy/fault status or predicted RUL.
+5. HTTP 400/404/405/503 must surface truthful, understandable status without fabricating plots. For missing legitimate cycles show no point / clear empty window, not a sensor value=null. If null appears in future API fields, treat only as true missing datum per contract; UNKNOWN diagnosis is separate. Handle stale fetch responses/race conditions on quick selector switching; prevent selection and visualization mismatch.
+6. No automatic public exposure: bind 127.0.0.1 by default, prevent external/network resource fetch (no CDN), keep original FD001 READ_ONLY and uncommitted. Browser-facing rendering must not introduce XSS from any API/source token; use safe DOM text insertion, not unsanitized innerHTML. Explicitly report if browser policies block scripting or local requests.
+
+### M4-B UAT evidence — static screenshots alone do not satisfy
+
+1. In student's real local workspace actually start the API+page from a clean checkout (with FD001 local originals in place) using documented exact command and record actual URL, response headers, console/server launch timestamp, versions, stdout/stderr and Exit Code; confirm API /api/health and real UI page load in an actual browser (Chrome/Edge or equivalent). If authentic automation via browser tool available, perform Playwright/Selenium or browser automation with evidence; otherwise perform verified human UAT with step-by-step explicit clicks/inputs/actual observed results, browser name/version, time and genuine trace (e.g., DevTools Network HAR sanitized or inspected request URL/status/selected response, console errors). A script that directly sends HTTP requests or static screenshot by itself is NOT a substitute for real UI interaction.
+2. UAT scenarios: initial loaded state; split train→test→train with Unit options changing provenance; select Engine Unit 1 and then 2; Sensor 7 and another sensor (verify numeric selector ↔ original source columns); Cycle 1–20, change to bounded different range, near-final Cycle and empty valid window; test invalid range (start>end) and >100 span, 503 missing/hash/source error (can use temporary synthetic fixture, never modify originals); observe chart/table refresh and human-readable error state; reload page and check consistency. Must record exact UI state and matching actual API requests/responses; no browser UAT = BLOCKED/NOT_VERIFIED.
+3. Capture real screenshots of running browser UI that show controls, rendered graph and selected row/source provenance; screens are supplemental to UAT log, not acceptance evidence alone. Screenshots/reports must contain no private path, personal identity, complete dataset or sensitive browser profile. If user-visible files need larger output, save bounded screenshots only and use Git LFS only if specifically authorized; no binary data dumps without permission.
+4. Verification chain: for at least six distinct actual displayed points across Train Unit 1, a non-first Train Unit and Test Unit, including required /api/history?split=train&unit=1&sensor=7&start=1&end=20, compare (i) currently rendered UI text/chart plotted coordinates or exposed point data, (ii) live API response exactly at current selection, and (iii) an independent READ_ONLY reopening and parsing of FD001 source physical rows/columns in student's workspace. For Sensor 7 source column must be 12; for other Sensor N source column=5+N. Verify token → numeric, split/Unit/Cycle, SHA-256, 1-based physical line, 0-based data row, source column, original/reread and value. Must not assume physical line equals Cycle across arbitrary Units; don't use UI/API reference itself as the only source of 'independent' raw check. No per-Cycle RUL shown as original source.
+5. Ensure screenshots correspond to actual tested version/Commit; record browser interaction sequence, request URL+HTTP status for selected UI state, observed chart point/value, original TXT row/source evidence; evidence may include small safe captured samples, not complete data. Negative and accessibility/keyboard-focused tests should demonstrate dynamic behavior; no fake transcripts. If browser automation is unavailable, honestly perform and record real manual interaction with observable proof; never label synthetic HTTP script as Browser UAT.
+6. Re-run all M1/M2/M3 previously accepted tests plus new M4 UI checks; ensure M3 contract/HTTP/API still works unchanged. Source SHA256 before/after matches accepted M2 hashes. Verify clean server shutdown / port closed and no local source mutation. Secure Git staging; submit new UI source, tests, small screenshot/trace and execution/UAT reports.
+
+### Acceptance Checklist
+
+- [ ] Latest AGENTS.md and WORK_ITEM.md read before Web Brain / Own Worker dispatch; previous M3 API MAIN PASS confirmed.
+- [ ] Real loopback UI URL loads, actual GET API endpoint response drives controls and live trend, not static mock.
+- [ ] Train/Test, actual Unit, Sensor and inclusive Cycle range selectors work and dynamically update trend and matching provenance.
+- [ ] Chart point labels, raw value table, x/y coordinates and original source row/column agree; no smoothing/interpolation/fake baseline/diagnosis.
+- [ ] 100-cycle API request bound and invalid/empty/error/loading states correctly represented.
+- [ ] At least six real UI ↔ live API ↔ independent raw TXT source checks across different Units and both splits; Sensor 7 maps original column 12; another sensor tested.
+- [ ] Actual browser UAT evidenced with click/change sequence and response/console/network observations, not screenshot alone or HTTP-only tests.
+- [ ] Actual browser screenshot(s) of running page with controlled bounded content, tied to Commit/version and sanitized for privacy.
+- [ ] New UI tests plus full M1/M2/M3 regression pass; data SHA-256 before/after same; real commands, environment, timestamps, stdout/stderr, Exit Codes included.
+- [ ] Loopback only, no raw files publicly exposed, source data READ_ONLY, no unsupported RUL claims, no unsafe path access/XSS.
+- [ ] Only authorized files committed/pushed to main, GitHub independently reviewed by Web Brain and then MAIN.
+- [ ] Worker returns READY_FOR_REVIEW, Web Brain returns BRAIN_TO_BRAIN_RETURN; only MAIN records final M4 PASS.
+
+### STOP_IF
+
+M3 API not MAIN_PASS; accepted FD001 contract mismatch or source SHA changes; unavailable sources; wrong split/Unit/Cycle/Sensor or source column; graph from synthetic/static values; no independent TXT source verification; no genuine browser/manual UAT; cannot prove dynamic selections and API correspondence; unsafe static file handler, external bind, API regression, unapproved dependency, data disclosure, personal path/secrets in screenshot or report; GitHub conflicts or unverified push; latest AGENTS.md governance conflict; worker attempts prompt generation/other milestone. Return BLOCKED with exact scope and evidence. Never fabricate UAT or enlarge scope.
+
+### RETURN_TO STUDENT-MAIN Brain
+
+TYPE=BRAIN_TO_BRAIN_RETURN
+WORK_ITEM_ID=WO-M4-WEB-001
+FROM=STUDENT-WEB Brain
+RETURN_TO=STUDENT-MAIN Brain
+STATUS=READY_FOR_MAIN_REVIEW / FAIL / BLOCKED
+WEB_BRAIN_REVIEW=WEB_ACCEPTED / FAIL / BLOCKED
+REPORT= actual local URL & launch, browser/version, interaction steps/screenshots/network evidence, selected API requests/responses & original TXT row/column crosscheck, UI controls/plot/source provenance, failure/empty cases, testing commands/stdout/stderr/Exit Codes, FD001 SHA256 before/after, git file scope/commit/tree, governance review and blockers.
+M4 final MAIN acceptance pending; M5 not authorized.
