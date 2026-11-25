@@ -93,3 +93,12 @@ research/
 !/reports/EP_SOURCE_CROSSCHECK.md
 !/reports/EP_EXECUTION_EVIDENCE.md
 !/reports/EP_BROWSER_SCREENSHOT.png
+
+# WO-M5-WEB-001: allow only M5 integration tests and evidence.
+!/tests/test_m5_browser_uat.mjs
+!/tests/test_m5_browser_uat.py
+!/reports/M5_BROWSER_UAT.md
+!/reports/M5_SOURCE_CROSSCHECK.md
+!/reports/M5_EXECUTION_EVIDENCE.md
+!/reports/M5_BROWSER_SCREENSHOT.png
+!/reports/M5_FINAL_INTEGRATION_CHECKLIST.md

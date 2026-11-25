@@ -30,7 +30,7 @@ function requireEvidence(condition) {
   if (!condition) throw new Error('FD001 evidence does not match the verified selection.');
 }
 
-function validateEvidence({ selection, catalog, health, unitSource, history, focusCycle }) {
+function validateHistory({ selection, catalog, health, unitSource, history }) {
   const { split, unit, sensor, start, end } = selection;
   const positive = value => Number.isSafeInteger(value) && value > 0;
   requireEvidence(['train', 'test'].includes(split) && positive(unit) && positive(sensor) && sensor <= 21);
@@ -59,7 +59,7 @@ function validateEvidence({ selection, catalog, health, unitSource, history, foc
   const points = history?.points;
   requireEvidence(history?.dataset_split === split && history.unit_id === unit && history.sensor_name === sensorName
     && history.start === start && history.end === end && Array.isArray(points)
-    && points.length > 0 && points.length <= end - start + 1 && history.count === points.length);
+    && Number.isSafeInteger(history.count) && history.count === points.length && points.length <= end - start + 1);
 
   let previousCycle = 0;
   let previousLine = 0;
@@ -67,7 +67,7 @@ function validateEvidence({ selection, catalog, health, unitSource, history, foc
   for (const point of points) {
     const { cycle, value, raw_reference: ref } = point;
     requireEvidence(positive(cycle) && cycle >= start && cycle <= end && cycle > previousCycle
-      && Number.isFinite(value) && point.sensor_name === sensorName);
+      && typeof value === 'number' && Number.isFinite(value) && point.sensor_name === sensorName);
     requireEvidence(ref?.dataset_split === split && ref.unit_id === unit && ref.cycle === cycle
       && ref.column_name === sensorName && ref.source_column_index === column
       && ref.source_file === file && ref.source_sha256 === hash && ref.reread_matches === true);
@@ -81,14 +81,15 @@ function validateEvidence({ selection, catalog, health, unitSource, history, foc
     previousLine = ref.physical_line_number;
     previousRow = ref.data_row_index;
   }
-  const focus = points.find(point => point.cycle === focusCycle);
-  requireEvidence(focusCycle === undefined || focus);
-  return { sensorName, column, quality, file, hash, points, focus };
+  return { sensorName, column, quality, file, hash, points };
 }
 
 function formatEvidencePrompt(context) {
   const { split, unit, sensor, start, end } = context.selection;
-  const { sensorName, column, quality, file, hash, points, focus } = validateEvidence(context);
+  const { sensorName, column, quality, file, hash, points } = validateHistory(context);
+  requireEvidence(points.length > 0);
+  const focus = points.find(point => point.cycle === context.focusCycle);
+  requireEvidence(context.focusCycle === undefined || focus);
   const row = ({ cycle, value, raw_reference: ref }) => [cycle, value, ref.original_value,
     ref.physical_line_number, ref.data_row_index, ref.source_column_index, ref.reread_matches].join(' | ');
   const values = points.map(point => point.value);
@@ -337,12 +338,21 @@ function scheduleHistory(delay = 0) {
     try {
       const data = await getData(`/api/history?${query}`, request.signal);
       if (historyRequest !== request || !selectionMatches(selection)) return;
+      const windowEvidence = { selection, catalog, health, unitSource, history: data };
+      try {
+        validateHistory(windowEvidence);
+      } catch {
+        clearResults();
+        service('Invalid history data', 'error');
+        feedback('CLIENT_HISTORY_VALIDATION_FAILED. History did not match the verified selection and source records.', 'error');
+        return;
+      }
       service('Local API ready', 'ready');
       feedback(data.count ? 'Observations loaded.' : 'No observations in this cycle range.', data.count ? 'ready' : 'empty');
       elements.count.textContent = `${data.count} ${data.count === 1 ? 'point' : 'points'}`;
       elements.count.hidden = false;
       if (data.count) {
-        evidenceWindow = { selection, catalog, health, unitSource, history: data };
+        evidenceWindow = windowEvidence;
         renderResults(data);
       }
     } catch (error) {
