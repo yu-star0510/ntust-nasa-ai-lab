@@ -2,7 +2,7 @@
 
 專案最終交付為本地端網站，支援選擇 Engine Unit、Cycle 和 Sensor，顯示真實數值與 Sensor Trend，可查閱 Source Evidence，並依據來源數據產生 Evidence Prompt。
 
-依 M0 至 M5 循序執行，每項工作須由 STUDENT 正式授權並在完成後由 MAIN 獨立驗收。截至 2026-11-25，M0、M1、M2（含研究補充）、M3 FD001 唯讀 API、Data Contract Handoff 均 PASS。STUDENT 於 2026-11-25 正式授權 M4 互動瀏覽器網站（D-M4-001），由 Web Brain 管理 Web Own Worker；M4 工單 WO-M4-WEB-001 已由 MAIN 獨立 GitHub 驗收 PASS，交付 Train/Test、Engine Unit、Sensor、Cycle 控制項、真實 SVG 趨勢圖、來源資料列、Chrome 真實 Browser UAT 16 個情境、8 筆 UI↔API↔原始 FD001 TXT 交叉核對與 64 項回歸測試。原 Roadmap 預排 M4 Evidence Prompt Generator 已被本次學生授權之互動 UI 範圍替代，不是已完成成果，且尚未獲新授權。M5 亦尚未授權，不得自行啟動。單一 main、來源 READ_ONLY 及 GitHub 驗收規則保持有效。
+依 M0 至 M5 循序執行，每項工作須由 STUDENT 正式授權並在完成後由 MAIN 獨立驗收。截至 2026-11-25，M0、M1、M2（含研究補充）、M3 FD001 唯讀 API、Data Contract Handoff 均 PASS。STUDENT 於 2026-11-25 正式授權 M4 互動瀏覽器網站（D-M4-001），由 Web Brain 管理 Web Own Worker；M4 工單 WO-M4-WEB-001 已由 MAIN 獨立 GitHub 驗收 PASS，交付 Train/Test、Engine Unit、Sensor、Cycle 控制項、真實 SVG 趨勢圖、來源資料列、Chrome 真實 Browser UAT 16 個情境、8 筆 UI↔API↔原始 FD001 TXT 交叉核對與 64 項回歸測試。原 Roadmap 預排 M4 Evidence Prompt Generator 曾被本次學生授權之互動 UI 範圍替代；其實作現已另獲 STUDENT 於 2026-11-25 獨立授權為 Post-M4 工作單 WO-EP-WEB-001，MAIN 已正式派交 Web Brain（等待 STUDENT 轉交、Web Own Worker 未開始、MAIN PASS 尚待驗收）。M5 Final Integration 尚未授權，不得自行啟動。單一 main、來源 READ_ONLY 及 GitHub 驗收規則保持有效。
 
 ## M0 — Governance Initialization
 
@@ -53,6 +53,15 @@
 - **STOP_IF**：頁面只是靜態截圖、無法在真實瀏覽器互動、選項與 API/來源 TXT 不一致、圖表用虛構數值或錯誤欄位、FD001 原始資料受修改、外網暴露、違反治理或無法驗證。
 - **SCOPE_NOTICE**：原預排 M4 Evidence Prompt Generator 被 STUDENT 這次 M4 互動網頁正式授權取代；不授權製作 Prompt、模型或健康故障判斷。
 - **NEXT_ROLE**：M4 MAIN PASS 後仍須 STUDENT 獨立授權 M5 或其他新範圍。
+
+## Post-M4 — Evidence Prompt Generator (WO-EP-WEB-001; AUTHORIZED / NOT_YET_ACCEPTED)
+
+- **AUTHORIZATION**：2026-11-25 STUDENT 新指令、D-EP-001；此為已 PASS 的 M4 UI 之後獨立增補功能，不重開 M4、不批准 M5。
+- **GOAL**：根據目前 Train/Test、Engine Unit、Sensor、Cycle 範圍及即時已驗證 /api/history，產生含完整 raw provenance、欄位意義、來源、樣本、品質、KNOWN/INFERENCE/UNKNOWN 的可預覽與複製文字，要求外部 AI 不憑單一趨勢推測故障或 RUL。
+- **DELIVERABLES**：網站 Evidence Prompt Generator、真實 Clipboard 複製與錯誤處理、動態選擇一致性/失效保護、Chrome/Edge Browser UAT、Prompt/Live API/原始 TXT 的至少六筆交叉核對、相容測試與 GitHub 執行證據。
+- **RESPONSIBLE_BRAIN**：STUDENT-WEB Brain 管理 Web Own Worker；STUDENT-MAIN Brain 進行獨立 GitHub 最終驗收。
+- **ACCEPTANCE**：不得向外部 AI 自動送資料，不得捏造官方正常/故障門檻、健康分數、RUL 真值/預測或物理單位；全套 M1–M4 測試及原始資料 SHA-256 前後一致。具體規範依 WORK_ITEM.md 的 WO-EP-WEB-001。
+- **NEXT_GATE**：此單獨項目仍為 NOT_YET_ACCEPTED；M5 Final Integration 需 STUDENT 另行正式授權。
 
 ## M5 — Final Integration and Acceptance (NOT AUTHORIZED)
 
