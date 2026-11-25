@@ -79,12 +79,12 @@
 - **NEXT_ROLE**：由 STUDENT 確認是否另行授權新增工作；M5 已驗收結案，無自動延伸工作。
 
 
-## Post-M5 — Sensor Trend Line + Observation Dots (WO-VIS-WEB-001; AUTHORIZED / PENDING)
+## Post-M5 — Sensor Trend Line + Observation Dots (WO-VIS-WEB-001; MAIN PASS / CLOSED, 2026-11-25)
 
-- **AUTHORIZATION:** STUDENT 2026-11-25 明確要求將目前 Sensor Trend 散點圖改成折線圖，並選擇正式工單派工。決策 D-VIS-001；MAIN 已將 WO-VIS-WEB-001 交付 STUDENT-WEB Brain（待 STUDENT 轉交），Web Own Worker 尚未開始。
+- **AUTHORIZATION:** STUDENT 2026-11-25 明確要求將 Sensor Trend 散點圖改成折線＋保留圓點，並選擇正式工單派工；決策 D-VIS-001。Web Own Worker 已提交 409000ecb2008d8f8ca3e5d5c1517dbede42601c，STUDENT-WEB Brain 獨立 Web Domain PASS 提交 dd63ef1607559085bda7e23cea5d46ed9d06d44a，MAIN 依序獨立 GitHub 驗收並正式 PASS。
 - **BASELINE:** M0–M5 與 Post-M4 Evidence Prompt 全部 MAIN PASS/CLOSED，M5 已驗收缺值 fail-closed 與來源核對不得破壞。
 - **GOAL:** 使用經 M5 嚴格驗證的真實 FD001 /api/history 觀測，依 Cycle 順序以直線連接真正 Cycle 相鄰的數值，同時保留每個可點擊之真實圓點、Source Provenance 與 Evidence Prompt。若兩個實際觀測間有缺少的 Cycle，不得跨缺口連線或補值。
 - **SCOPE:** web/ui.js 的 Sensor Trend SVG 繪圖區及必要最小 CSS/README；不能變更 FD001 原始數值、M3 API、Research/Data Contract、M5 fail-closed、Prompt/Copy 或新加入外部依賴。
 - **REQUIRED UAT:** 真實 Chrome/Edge 實際操作 Train Unit1 Sensor9 Cycle1–100、其他 Unit/Sensor/Test、合法單點/空視窗、isolated SYNTHETIC 缺 Cycle 的斷線測試；SVG path/circle 數量、與 live API 和獨立 READ_ONLY 原始 TXT 核對至少六筆；全套既有 M1–M5/EP 測試、新增 line chart tests、Before/After 原始 SHA、真實截圖與執行命令/Exit Code，以及 GitHub Commit+Push。
-- **ACCEPTANCE:** Web Own Worker 只能 READY_FOR_REVIEW，STUDENT-WEB Brain 獨立查 GitHub 後 WEB_DOMAIN_ACCEPTANCE=PASS/FAIL/BLOCKED，MAIN 另行從 GitHub 最終驗收。只有 MAIN_FINAL_ACCEPTANCE=PASS 才正式結案；本次目前 NOT_YET_ACCEPTED。
+- **ACCEPTANCE_RESULT:** 2026-11-25 WEB_DOMAIN_ACCEPTANCE=PASS → MAIN_FINAL_ACCEPTANCE=PASS（WO-VIS-WEB-001 CLOSED）。MAIN 獨立核對 14 行新增之 SVG 折線繪圖碼、折線/圓點相同座標、真實 Chrome BEFORE/AFTER 截圖、Sensor9 Cycle1–100 100 點及 99 個連續線段、6 組 SYNTHETIC 缺口情境、9 筆 UI/API/Prompt/原始 TXT 四方核對、原 M1–M5/EP 64+11+14 回歸測試、新 Browser UAT 及原始來源 SHA-256 前後一致。真實 API stop/restart 在 Worker 管理的 8766 服務完成；既有使用者持有的 8765 服務未被擅自中止。MAIN 不宣稱曾親自重跑學生 Windows；本次由 Worker 本地實測並保存 GitHub 證據，Web Brain 和 MAIN 各自獨立核查。所有其他 M0–M5／Evidence Prompt 原驗收保持 PASS。新功能仍需 STUDENT 另行授權。
 - **STOP_IF:** 圖表假造數值、錯誤跨越缺失 Cycle、點擊/來源失效、Prompt 或 null fail-closed 回歸、測試/來源 SHA 未通過、修改未授權檔案或無真實瀏覽器 UAT。
