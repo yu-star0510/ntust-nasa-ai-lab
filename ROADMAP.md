@@ -77,3 +77,14 @@
 - **WORK_ITEM**：WO-M5-WEB-001。2026-11-25 Web Brain 的 M5-NULL-UI-FAIL-CLOSED 阻礙由 MAIN 接受；依 D-M5-002，除原允許之 M5 測試／證據檔之外，僅追加 web/ui.js 的 History 預渲染嚴格 fail-closed 修正許可。原始失敗證據必須保留、null vs. 合法 0 vs. 空 [] 必須明確區分，且仍須完成真正 API 停止/恢復、來源核對、Prompt Clipboard、完整回歸與雙層驗收。具體授權與 STOP_IF 依 WORK_ITEM.md 的 CONTROLLED REMEDIATION AUTHORIZATION 段落為準。
 - **ACCEPTANCE_RESULT**：2026-11-25，WO-M5-WEB-001 WEB_DOMAIN_ACCEPTANCE=PASS → MAIN_FINAL_ACCEPTANCE=PASS，工作正式 CLOSED。MAIN 真正審閱 GitHub 程式、完整 Chrome UAT/原始列/補正/測試證據及 Web Domain 紀錄；MAIN 並未直接操作學生本地 Windows 原始檔或重跑 Chrome，執行記錄由 Worker 保存。
 - **NEXT_ROLE**：由 STUDENT 確認是否另行授權新增工作；M5 已驗收結案，無自動延伸工作。
+
+
+## Post-M5 — Sensor Trend Line + Observation Dots (WO-VIS-WEB-001; AUTHORIZED / PENDING)
+
+- **AUTHORIZATION:** STUDENT 2026-11-25 明確要求將目前 Sensor Trend 散點圖改成折線圖，並選擇正式工單派工。決策 D-VIS-001；MAIN 已將 WO-VIS-WEB-001 交付 STUDENT-WEB Brain（待 STUDENT 轉交），Web Own Worker 尚未開始。
+- **BASELINE:** M0–M5 與 Post-M4 Evidence Prompt 全部 MAIN PASS/CLOSED，M5 已驗收缺值 fail-closed 與來源核對不得破壞。
+- **GOAL:** 使用經 M5 嚴格驗證的真實 FD001 /api/history 觀測，依 Cycle 順序以直線連接真正 Cycle 相鄰的數值，同時保留每個可點擊之真實圓點、Source Provenance 與 Evidence Prompt。若兩個實際觀測間有缺少的 Cycle，不得跨缺口連線或補值。
+- **SCOPE:** web/ui.js 的 Sensor Trend SVG 繪圖區及必要最小 CSS/README；不能變更 FD001 原始數值、M3 API、Research/Data Contract、M5 fail-closed、Prompt/Copy 或新加入外部依賴。
+- **REQUIRED UAT:** 真實 Chrome/Edge 實際操作 Train Unit1 Sensor9 Cycle1–100、其他 Unit/Sensor/Test、合法單點/空視窗、isolated SYNTHETIC 缺 Cycle 的斷線測試；SVG path/circle 數量、與 live API 和獨立 READ_ONLY 原始 TXT 核對至少六筆；全套既有 M1–M5/EP 測試、新增 line chart tests、Before/After 原始 SHA、真實截圖與執行命令/Exit Code，以及 GitHub Commit+Push。
+- **ACCEPTANCE:** Web Own Worker 只能 READY_FOR_REVIEW，STUDENT-WEB Brain 獨立查 GitHub 後 WEB_DOMAIN_ACCEPTANCE=PASS/FAIL/BLOCKED，MAIN 另行從 GitHub 最終驗收。只有 MAIN_FINAL_ACCEPTANCE=PASS 才正式結案；本次目前 NOT_YET_ACCEPTED。
+- **STOP_IF:** 圖表假造數值、錯誤跨越缺失 Cycle、點擊/來源失效、Prompt 或 null fail-closed 回歸、測試/來源 SHA 未通過、修改未授權檔案或無真實瀏覽器 UAT。
