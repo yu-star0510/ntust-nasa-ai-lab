@@ -2,7 +2,7 @@
 
 專案最終交付為本地端網站，支援選擇 Engine Unit、Cycle 和 Sensor，顯示真實數值與 Sensor Trend，可查閱 Source Evidence，並依據來源數據產生 Evidence Prompt。
 
-依 M0 至 M5 循序執行，每項工作須由 STUDENT 正式授權並在完成後由 MAIN 獨立驗收。截至 2026-11-25，M0–M4、Post-M4 Evidence Prompt 與 M3 Data Contract Handoff 已 MAIN PASS；STUDENT 已批准 M5 Browser UAT（D-M5-001），由 STUDENT-WEB Brain 管理 Web Own Worker。M5 UAT 中發現隔離 SYNTHETIC null 回應被前端視為零值觀測之缺陷，Web Brain 依 STOP_IF 回報 BLOCKED / M5-NULL-UI-FAIL-CLOSED。MAIN 獨立審閱 GitHub web/ui.js 並於 D-M5-002 在原 WO-M5-WEB-001 中僅授權修改 web/ui.js 以加入繪圖前的 History fail-closed 驗證；Web Brain 得依此限縮範圍指派補正，不得擴增 API/Research 或修改 FD001 原始檔。原失敗 Exit Code 1 與待完成的真實 Browser UAT 均須保存/補足。M5 目前仍 BLOCKED / REMEDIATION_AUTHORIZED、Web Domain Acceptance 與 MAIN Final Acceptance 都尚未通過；完成全套測試後必須先 Web Domain PASS，再由 MAIN 獨立 GitHub 最終驗收，才可能宣布 M5 PASS。
+依 M0 至 M5 循序執行，經 STUDENT 明確授權並由 MAIN 獨立審查 GitHub 後才能認列 PASS。2026-11-25：M0、M1、M2（含 Evidence Supplement）、M3 FD001 唯讀 API、M4 互動網站、Post-M4 Evidence Prompt Generator 及 M5 Final Integration Browser UAT 均由 MAIN 正式驗收 PASS。M5 中發現的 SYNTHETIC null 轉零值顯示缺陷（M5-NULL-UI-FAIL-CLOSED）依 D-M5-002 在原工單限縮授權修正 web/ui.js，保留原測試 Exit Code 1；Web Brain 先完成 WEB_DOMAIN_ACCEPTANCE=PASS（review commit 03c89626999a9acb869a7c104cc83b1de1275e27），MAIN 再直接審閱最新 GitHub 程式、真實 Chrome UAT 的 30 情境、10 項合成異常、17 項實際 HTTP 測試、9 筆四方原始來源列核對、64/11/14 項自動化測試、原始 SHA-256 前後一致、真實 API 斷線恢復及三態實際截圖，於 WORK_ITEM.md 登錄 MAIN_FINAL_ACCEPTANCE=PASS；M5 CLOSED。此次驗收僅限 STUDENT 授權之本地 FD001 網站與 Browser UAT，不授權外部 AI、故障診斷/RUL 模型或公開網路部署。
 
 ## M0 — Governance Initialization
 
@@ -64,9 +64,9 @@
 - **ACCEPTANCE_RESULT**：2026-11-25 MAIN_FINAL PASS；19 個真實 Chrome UAT 情境、9/9 Prompt/UI/API/TXT 來源核對、11/11 Evidence Prompt tests、64/64 M1–M4 regression、原始 SHA-256 前後一致、無自動對外 AI 傳送；決議及驗證限制詳見 WORK_ITEM.md 的 WO-EP-WEB-001 MAIN FINAL ACCEPTANCE。
 - **NEXT_GATE**：本專項 PASS/CLOSED，M5 Final Integration 仍須 STUDENT 另行正式授權。
 
-## M5 — Final Integration Browser UAT and Acceptance (AUTHORIZED; PENDING)
+## M5 — Final Integration Browser UAT and Acceptance (MAIN PASS; 2026-11-25)
 
-- **GOAL**：驗證本地端 FD001 網站可在真實瀏覽器完整完成 Unit → Cycle → Sensor → Trend → Source → Evidence Prompt，並正確處理錯誤與 API 中斷。
+- **GOAL（已完成）**：驗證本地端 FD001 網站可在真實瀏覽器完整完成 Unit → Cycle → Sensor → Trend → Source → Evidence Prompt，並正確處理錯誤與 API 中斷。
 - **INPUT**：全部 MAIN PASS 的 M0–M4、Data Contract v1.0.1、Post-M4 Evidence Prompt；本地唯讀 FD001 Train/Test/RUL 來源。
 - **RESPONSIBLE_BRAIN**：STUDENT-WEB Brain 管理 Web Own Worker 執行與 Web Domain Acceptance；STUDENT-MAIN Brain 最後獨立 GitHub FINAL Acceptance。
 - **DELIVERABLES**：實際 Chrome／Edge Browser UAT、啟動命令及真實 localhost URL、選取與錯誤輸入/空範圍/隔離合成 null 規則測試、真實 API stop/restart（和合成 503 分開）、Evidence Prompt Copy、至少八筆 UI/API/Prompt/原始 FD001 TXT 來源核對、測試命令及 Exit Codes、真實截圖、回歸測試、前後原始檔 SHA-256、GitHub 安全提交與二級審查。
@@ -75,4 +75,5 @@
 - **ACCEPTANCE_GATE_2**：只有 Web Domain PASS 才交 MAIN；MAIN 獨立從 GitHub 查驗後記錄 MAIN_FINAL_ACCEPTANCE=PASS/FAIL/BLOCKED。未取得 MAIN 結論之前 M5 不是 PASS。
 - **SCOPE_LIMIT**：本次主要是驗證，不是重新開發 API/UI/Prompt；若需修改已驗收程式，必須 STOP_IF 並取得 MAIN 針對缺陷的補正授權。不授權外部 AI 連線、故障/RUL 模型、原始檔案修改、資料公開或外網部署。
 - **WORK_ITEM**：WO-M5-WEB-001。2026-11-25 Web Brain 的 M5-NULL-UI-FAIL-CLOSED 阻礙由 MAIN 接受；依 D-M5-002，除原允許之 M5 測試／證據檔之外，僅追加 web/ui.js 的 History 預渲染嚴格 fail-closed 修正許可。原始失敗證據必須保留、null vs. 合法 0 vs. 空 [] 必須明確區分，且仍須完成真正 API 停止/恢復、來源核對、Prompt Clipboard、完整回歸與雙層驗收。具體授權與 STOP_IF 依 WORK_ITEM.md 的 CONTROLLED REMEDIATION AUTHORIZATION 段落為準。
-- **NEXT_ROLE**：Web Brain 完成 Domain Acceptance 後向 MAIN 正式回報；MAIN FINAL 結果再交 STUDENT。
+- **ACCEPTANCE_RESULT**：2026-11-25，WO-M5-WEB-001 WEB_DOMAIN_ACCEPTANCE=PASS → MAIN_FINAL_ACCEPTANCE=PASS，工作正式 CLOSED。MAIN 真正審閱 GitHub 程式、完整 Chrome UAT/原始列/補正/測試證據及 Web Domain 紀錄；MAIN 並未直接操作學生本地 Windows 原始檔或重跑 Chrome，執行記錄由 Worker 保存。
+- **NEXT_ROLE**：由 STUDENT 確認是否另行授權新增工作；M5 已驗收結案，無自動延伸工作。
