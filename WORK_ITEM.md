@@ -750,7 +750,7 @@ M4 final MAIN acceptance pending; M5 not authorized.
 | TO | STUDENT-WEB Brain |
 | RETURN_TO | STUDENT-MAIN Brain |
 | AUTHORIZED_BY | STUDENT on 2026-11-25: add Evidence Prompt Generator to existing FD001 website based on selected Engine/Cycle/Sensor with copy, source indexes, quality and known/inferred/unknown limitations |
-| STATUS | COMMAND_DISPATCHED / RELAY_STATUS=PENDING_STUDENT_RELAY / WEB_OWN_WORKER=NOT_STARTED / MAIN_ACCEPTANCE=PENDING |
+| STATUS | WEB_OWN_WORKER=READY_FOR_REVIEW / WEB_BRAIN_REVIEW=PENDING / MAIN_ACCEPTANCE=PENDING（2026-11-25） |
 | PREREQUISITES | M0, M1, M2, M3 API and M4 interactive UI all MAIN PASS; M2 Evidence Supplement accepted; Data Contract v1.0.1 main_acceptance=ACCEPTED. Last accepted M4 Roadmap HEAD 52a3eaa6df372d56c37dec21632e6dca33444712. |
 | AUTHORITY | Only STUDENT-WEB Brain may instruct Web Own Worker; MAIN must not bypass hierarchy. Brain and Worker each reread current GitHub main AGENTS.md and WORK_ITEM.md before dispatch/execution. Single main and one active work order; separate Worker Commit+Push, Web Brain independent review, MAIN final acceptance. |
 | INPUT | Accepted local read-only FD001 DATA CONTRACT v1.0.1; live M3 GET /api/health, /api/catalog, /api/units, /api/history; accepted M4 browser state and selected point; approved M2 FD001 Evidence Classification and M2 quality statistics. Original FD001 are whitespace-separated TXT (not CSV). |
@@ -809,3 +809,12 @@ RETURN_TO=STUDENT-MAIN Brain
 STATUS=READY_FOR_MAIN_REVIEW / FAIL / BLOCKED
 WEB_BRAIN_REVIEW=WEB_ACCEPTED / FAIL / BLOCKED
 Must include latest baseline/commit, changed paths, local start/URL, browser scenario/clipboard readback and source crosschecks, full tests/execution/SHA-256 before-after, precise prompt example/safety checks, independent GitHub review and blockers. MAIN_FINAL_ACCEPTANCE=PENDING. M5 remains NOT_AUTHORIZED.
+
+### WO-EP-WEB-001 — WEB OWN WORKER EXECUTION RETURN (2026-11-25)
+
+- **TYPE:** `WORKER_TO_BRAIN_RETURN` · **FROM:** Web Own Worker · **RETURN_TO:** STUDENT-WEB Brain · **STATUS:** `READY_FOR_REVIEW`.
+- **BASELINE:** GitHub `main` `3ee7d1dd3dcb3687eec61b2f2c8c7a3d157cc4fb`。已核對 M4、M3、M2 Evidence 的接受紀錄及 FD001 v1.0.1 `ACCEPTED`。
+- **DELIVERY:** 同一頁面新增完整視窗的 Evidence Prompt、可選定觀測點及本地手動 Copy。Prompt 明列來源、欄位、索引、品質作用範圍、KNOWN／INFERENCE／UNKNOWN 與 Train／Test／RUL 限制。
+- **UAT:** Chrome 158.0.8127.37 以原生點擊驗證剪貼簿寫入及 4,849 字元逐字讀回。隔離 `NotAllowedError` 顯示失敗，既有剪貼簿內容一致。測得 19 個請求／狀態情境、9 筆 Prompt ↔ UI ↔ API ↔ 原始 TXT 核對，以及 100 筆完整視窗。頁面外部 HTTP 請求為零，localStorage 與 sessionStorage 無項目。
+- **VERIFICATION:** 11 項 EP 測試與 64 項 M1–M4 回歸通過。三份原始 TXT 前後 SHA-256 符合契約。真實服務程序正常退出，驗證 8765 關閉。
+- **EVIDENCE:** [Browser UAT](reports/EP_BROWSER_UAT.md)、[逐筆來源核對](reports/EP_SOURCE_CROSSCHECK.md)、[執行證據](reports/EP_EXECUTION_EVIDENCE.md)、[實際截圖](reports/EP_BROWSER_SCREENSHOT.png)。提交與遠端檔案樹核對隨 Worker 回報提供。

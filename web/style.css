@@ -75,6 +75,17 @@ th, td { padding: .4rem 1.05rem; border-top: 1px solid var(--border); font-size:
 thead th { position: sticky; top: 0; background: #eaf0f5; color: #38536a; font-weight: 600; }
 tbody tr.selected { background: #fff0e8; }
 tbody button { background: transparent; color: #164766; border: 0; border-radius: .25rem; font: inherit; font-weight: 650; text-decoration: underline; padding: .15rem .2rem; }
+.control-footer { display: flex; justify-content: space-between; align-items: baseline; gap: .5rem; }
+.control-footer a { color: var(--blue); font-size: .9rem; font-weight: 600; }
+.evidence-panel { margin-top: 1rem; scroll-margin-top: 1rem; }
+#copy-prompt { flex: none; min-height: 2.55rem; padding: .35rem 1rem; border: 1px solid var(--blue); border-radius: .4rem; background: var(--blue); color: #fff; font: inherit; font-weight: 600; }
+.prompt-body { padding: 0 1.05rem .95rem; }
+#prompt-preview-label { font-size: .9rem; font-weight: 600; }
+#prompt-preview { width: 100%; height: 17rem; overflow: auto; margin-block: .35rem .5rem; padding: .65rem .75rem; resize: vertical; color: var(--ink); background: #f5f8fb; border: 1px solid #a7b9c9; border-radius: .4rem; font: .875rem/1.55 'Cascadia Mono', Consolas, monospace; }
+#prompt-preview:empty::before { content: 'A verified observation window is required.'; color: var(--muted); }
+.prompt-status { min-height: 1.4rem; color: var(--muted); font-size: .9rem; }
+.prompt-status[data-state="copied"] { color: #245b44; font-weight: 600; }
+.prompt-status[data-state="copy-failed"], .prompt-status[data-state="error"] { color: #932f20; font-weight: 600; }
 .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 @media (max-width: 59rem) {
   form { grid-template-columns: repeat(3, minmax(0, 1fr)); }

@@ -11,6 +11,8 @@ Open [the local Sensor Explorer](http://127.0.0.1:8765/) in Chrome or Edge while
 
 Click a plotted observation or focus a Cycle button in **Observed values** and press Enter or Space to view the source file, SHA-256, physical line, data row, source column and original token. The plot uses dots at observed cycles. An empty range or unavailable API clears the chart, table and provenance.
 
+Use **Evidence prompt** to jump to the preview. The preview includes all actual observations for the current window, the original TXT provenance, split-wide quality, window-only statistics, and the known/inference/unknown limits. Selecting a plot point or table row adds a focused observation while retaining the whole window. Copy becomes available once the response matches the selection and source references. If copy fails, focus the preview and use Ctrl+A then Ctrl+C to copy its text manually. The page prepares the text locally and clipboard writes require a click or keyboard activation of **Copy prompt**.
+
 In a second PowerShell window, send requests directly to `127.0.0.1`.
 
 ```powershell
@@ -28,6 +30,7 @@ Run the API integration tests on the same machine as the approved source files. 
 python -B -m unittest discover -s tests -p test_m3_api.py -v
 python -B -m unittest discover -s tests -p test_m4_ui.py -v
 python -B -m unittest discover -s tests -v
+node --test tests/test_evidence_prompt.mjs
 ```
 
-The listener accepts only direct loopback requests and serves three fixed UI assets. See the [HTTP contract](../contracts/M3_API_CONTRACT.md), [browser UAT](../reports/M4_BROWSER_UAT.md) and [M4 execution evidence](../reports/M4_UI_EXECUTION_EVIDENCE.md).
+The listener accepts only direct loopback requests and serves three fixed UI assets. See the [HTTP contract](../contracts/M3_API_CONTRACT.md), [M4 browser UAT](../reports/M4_BROWSER_UAT.md), and [Evidence Prompt browser UAT](../reports/EP_BROWSER_UAT.md).

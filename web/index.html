@@ -34,7 +34,10 @@
         </fieldset>
         <button id="load" type="submit" disabled>Load window</button>
       </form>
-      <p class="feedback" id="feedback" role="status" aria-live="polite">Loading dataset catalog…</p>
+      <div class="control-footer">
+        <p class="feedback" id="feedback" role="status" aria-live="polite">Loading dataset catalog…</p>
+        <a href="#evidence">Evidence prompt</a>
+      </div>
     </section>
     <div class="workspace">
       <section class="panel trend-panel" aria-labelledby="trend-heading">
@@ -57,6 +60,17 @@
           <thead><tr><th scope="col">Cycle</th><th scope="col">Value</th><th scope="col">Original token</th><th scope="col">Physical line</th><th scope="col">Data row</th><th scope="col">Source column</th></tr></thead>
           <tbody id="rows"></tbody>
         </table>
+      </div>
+    </section>
+    <section id="evidence" class="panel evidence-panel" aria-labelledby="evidence-heading">
+      <header class="panel-header">
+        <div><h2 id="evidence-heading">Evidence Prompt Generator</h2><p id="prompt-scope">Waiting for a verified observation window</p></div>
+        <button id="copy-prompt" type="button" disabled>Copy prompt</button>
+      </header>
+      <div class="prompt-body">
+        <p id="prompt-preview-label">Prompt preview</p>
+        <pre id="prompt-preview" tabindex="0" role="textbox" aria-readonly="true" aria-multiline="true" aria-labelledby="prompt-preview-label" aria-describedby="prompt-status"></pre>
+        <p id="prompt-status" role="status" class="prompt-status" data-state="loading">Loading verified observations…</p>
       </div>
     </section>
   </main>

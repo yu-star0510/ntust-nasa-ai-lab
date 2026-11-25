@@ -86,3 +86,10 @@ research/
 !/reports/M4_UI_API_SOURCE_CROSSCHECK.md
 !/reports/M4_UI_EXECUTION_EVIDENCE.md
 !/reports/M4_BROWSER_SCREENSHOT.png
+
+# WO-EP-WEB-001: allow only the authorized prompt tests and evidence.
+!/tests/test_evidence_prompt.mjs
+!/reports/EP_BROWSER_UAT.md
+!/reports/EP_SOURCE_CROSSCHECK.md
+!/reports/EP_EXECUTION_EVIDENCE.md
+!/reports/EP_BROWSER_SCREENSHOT.png
