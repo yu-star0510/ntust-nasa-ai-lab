@@ -2,7 +2,7 @@
 
 專案最終交付為本地端網站，支援選擇 Engine Unit、Cycle 和 Sensor，顯示真實數值與 Sensor Trend，可查閱 Source Evidence，並依據來源數據產生 Evidence Prompt。
 
-依 M0 至 M5 循序執行。每個里程碑均須先驗收，再由 STUDENT 正式批准下一階段。截至 2026-11-24：M0、M1、M2 已由 STUDENT-MAIN Brain 正式驗收 PASS；M2 `WO-M2-RESEARCH-001` 的 Phase A/B 與 FD001_DATA_CONTRACT v1.0.1 已接受（以 `WORK_ITEM.md` 的 MAIN FINAL ACCEPTANCE 為權威紀錄）。截至 2026-11-24，STUDENT 已批准 M3-A 本地唯讀 FD001 API 工單 WO-M3-WEB-001，由 MAIN 正式向 STUDENT-WEB Brain 派工（等待 STUDENT 轉交）；Web Own Worker 尚未開始。STUDENT-WEB Brain 原回報 BLOCKED / HANDOFF_CONTRACT_STATE；Research-owned `WO-M3-HANDOFF-001` 已於 2026-11-25 經 MAIN 獨立驗收 PASS，FD001 Data Contract v1.0.1 兩份檔案的 `main_acceptance=ACCEPTED` 已同步、M2 相容性測試通過，原交接阻礙解除。原已授權的 M3-A API 工作恢復至 WEB_BRAIN_RECHECK_REQUIRED／COMMAND_DISPATCHED（等待 STUDENT 轉交），Web Own Worker 尚未開始；Web Brain 須獨立重新查驗最新 main 治理、契約與相容性證據後才可派工。M3-A 未驗收、M3 全站未完成，M4–M5 未授權。各階段具體範圍與驗收以 WORK_ITEM.md 最新工作單和 AGENTS.md 為準。
+依 M0 至 M5 循序執行。每個里程碑均須先驗收，再由 STUDENT 正式批准下一項工作。截至 2026-11-25：M0、M1、M2（含 Research Evidence Supplement）均由 STUDENT-MAIN Brain 驗收 PASS；FD001 Data Contract v1.0.1 經 MAIN 接受後完成 `WO-M3-HANDOFF-001` 狀態同步 PASS（JSON／Markdown 均 `main_acceptance=ACCEPTED`）。M3-A 本地唯讀 FD001 API `WO-M3-WEB-001` 已於 2026-11-25 由 MAIN 獨立 GitHub 驗收 PASS，四個 GET 端點、19 項 API 測試、全套 59 項測試，以及本地原始來源列交叉驗證已交付。這僅表示 M3-A API 階段完成，M3-B 互動網站 Frontend/Browser UAT 尚未完成、未授權；M4 Evidence Prompt 與 M5 整合交付亦未授權。後續須由 STUDENT 另行正式批准，並重讀最新 AGENTS.md 與 WORK_ITEM.md 才能派工。
 
 ## M0 — Governance Initialization
 
