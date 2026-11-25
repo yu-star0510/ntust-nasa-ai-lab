@@ -2,7 +2,7 @@
 
 專案最終交付為本地端網站，支援選擇 Engine Unit、Cycle 和 Sensor，顯示真實數值與 Sensor Trend，可查閱 Source Evidence，並依據來源數據產生 Evidence Prompt。
 
-依 M0 至 M5 循序執行，每項工作須由 STUDENT 正式授權並在完成後由 MAIN 獨立驗收。截至 2026-11-25，M0、M1、M2（含研究證據補充）、Data Contract Handoff、M3 FD001 唯讀 API、M4 互動式網頁均經 MAIN 正式驗收 PASS。STUDENT 於 2026-11-25 另外授權 Post-M4 的 Evidence Prompt Generator（D-EP-001 / WO-EP-WEB-001），Web Brain 管理 Web Own Worker；MAIN 已獨立核對 GitHub 的真實 Chrome Clipboard UAT 19 情境、9 筆 Prompt／UI／API／原始 FD001 TXT 來源核對，以及 11 項新測試與 64 項既有回歸測試，並正式驗收 PASS。此專項完成並不代表整個 M5 Final Integration 已授權或完成；M5 仍等待 STUDENT 另行正式批准，不得自行啟動。原始 FD001 READ_ONLY、單一 main 與分層驗收治理不變。
+依 M0 至 M5 循序執行，每項工作須由 STUDENT 正式授權並在完成後由 MAIN 獨立驗收。截至 2026-11-25，M0、M1、M2（含研究補充）、Data Contract Handoff、M3 FD001 唯讀 API、M4 互動瀏覽器 UI 與 Post-M4 Evidence Prompt Generator 均由 MAIN 正式驗收 PASS。STUDENT 已於 2026-11-25 正式批准 M5 Browser UAT（D-M5-001），MAIN 建立 WO-M5-WEB-001 向 STUDENT-WEB Brain 派工，待 STUDENT 轉交、Web Own Worker 尚未開始。M5 必須真實操作 Unit/Sensor/Cycle、原始 FD001 TXT 行列比對、錯誤輸入、空資料與 null 的正確區別、真正本地 API 斷線／恢復、Evidence Prompt 與 Clipboard；保留執行命令、Exit Code、真實截圖和來源證據。先通過 Web Domain Acceptance，再由 MAIN 獨立 GitHub 審查決定 M5 FINAL PASS/FAIL/BLOCKED。M5 現在是 AUTHORIZED / NOT_YET_ACCEPTED；來源 READ_ONLY、單一 main、不可捏造故障/RUL 及原始資料不可上傳等規則不變。
 
 ## M0 — Governance Initialization
 
@@ -64,12 +64,15 @@
 - **ACCEPTANCE_RESULT**：2026-11-25 MAIN_FINAL PASS；19 個真實 Chrome UAT 情境、9/9 Prompt/UI/API/TXT 來源核對、11/11 Evidence Prompt tests、64/64 M1–M4 regression、原始 SHA-256 前後一致、無自動對外 AI 傳送；決議及驗證限制詳見 WORK_ITEM.md 的 WO-EP-WEB-001 MAIN FINAL ACCEPTANCE。
 - **NEXT_GATE**：本專項 PASS/CLOSED，M5 Final Integration 仍須 STUDENT 另行正式授權。
 
-## M5 — Final Integration and Acceptance (NOT AUTHORIZED)
+## M5 — Final Integration Browser UAT and Acceptance (AUTHORIZED; PENDING)
 
-- **GOAL**：完成整合測試並交付本地端網站。
-- **INPUT**：M0 至 M4 全部已驗收成果。
-- **DELIVERABLES**：完整網站、啟動說明、整合測試報告及最終驗收文件。
-- **RESPONSIBLE_BRAIN**：STUDENT-MAIN Brain 負責審查，獲授權的 Worker 負責執行。
-- **ACCEPTANCE_CRITERIA**：網站可在本地啟動並完整執行 Unit → Cycle → Sensor → Trend → Source → Evidence Prompt。顯示資料與原始 FD001 一致。
-- **STOP_IF**：網站無法啟動、核心功能失敗或來源驗證失敗。
-- **NEXT_ROLE**：STUDENT 進行最終核准。
+- **GOAL**：驗證本地端 FD001 網站可在真實瀏覽器完整完成 Unit → Cycle → Sensor → Trend → Source → Evidence Prompt，並正確處理錯誤與 API 中斷。
+- **INPUT**：全部 MAIN PASS 的 M0–M4、Data Contract v1.0.1、Post-M4 Evidence Prompt；本地唯讀 FD001 Train/Test/RUL 來源。
+- **RESPONSIBLE_BRAIN**：STUDENT-WEB Brain 管理 Web Own Worker 執行與 Web Domain Acceptance；STUDENT-MAIN Brain 最後獨立 GitHub FINAL Acceptance。
+- **DELIVERABLES**：實際 Chrome／Edge Browser UAT、啟動命令及真實 localhost URL、選取與錯誤輸入/空範圍/隔離合成 null 規則測試、真實 API stop/restart（和合成 503 分開）、Evidence Prompt Copy、至少八筆 UI/API/Prompt/原始 FD001 TXT 來源核對、測試命令及 Exit Codes、真實截圖、回歸測試、前後原始檔 SHA-256、GitHub 安全提交與二級審查。
+- **NULL RULE**：已驗證真實 FD001 無缺值，API 目前不應生成 null；無 Cycle 是空點陣列而非 null。要測 null 行為只用明示 SYNTHETIC 的獨立 fixture，不可篡改真實 NASA 原始資料。
+- **ACCEPTANCE_GATE_1**：Worker READY_FOR_REVIEW → Web Brain 獨立從 GitHub 審查實際程式、瀏覽器與資料證據，記錄 WEB_DOMAIN_ACCEPTANCE=PASS/FAIL/BLOCKED。
+- **ACCEPTANCE_GATE_2**：只有 Web Domain PASS 才交 MAIN；MAIN 獨立從 GitHub 查驗後記錄 MAIN_FINAL_ACCEPTANCE=PASS/FAIL/BLOCKED。未取得 MAIN 結論之前 M5 不是 PASS。
+- **SCOPE_LIMIT**：本次主要是驗證，不是重新開發 API/UI/Prompt；若需修改已驗收程式，必須 STOP_IF 並取得 MAIN 針對缺陷的補正授權。不授權外部 AI 連線、故障/RUL 模型、原始檔案修改、資料公開或外網部署。
+- **WORK_ITEM**：WO-M5-WEB-001。完整測試、Evidence 路徑、Git 允許檔案及 STOP_IF 依 WORK_ITEM.md 工作單為準。
+- **NEXT_ROLE**：Web Brain 完成 Domain Acceptance 後向 MAIN 正式回報；MAIN FINAL 結果再交 STUDENT。
