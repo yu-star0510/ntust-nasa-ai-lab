@@ -652,7 +652,7 @@ Include: original M2 approval reference, source hashes before/after, contract ve
 | TO | STUDENT-WEB Brain |
 | RETURN_TO | STUDENT-MAIN Brain |
 | AUTHORIZED_BY | STUDENT (2026-11-25; explicit instruction: MAIN opens M4 to Web Brain for interactive Engine Unit / Cycle / Sensor browser with source-data verification and real browser/manual UAT) |
-| STATUS | COMMAND_DISPATCHED / RELAY_STATUS=PENDING_STUDENT_RELAY / WEB_OWN_WORKER=NOT_STARTED |
+| STATUS | WEB_OWN_WORKER=READY_FOR_REVIEW / WEB_BRAIN_REVIEW=PENDING / MAIN_ACCEPTANCE=PENDING（2026-11-25） |
 | PREREQUISITES | M0=PASS; M1=PASS; M2 original+Evidence Supplement=PASS; WO-M3-HANDOFF-001=PASS; WO-M3-WEB-001 readonly FD001 API=MAIN_PASS (acceptance GitHub commit f605b0d479c76b9ca0c073f1d7b42cfd844f435d, Roadmap GitHub commit b4725db9027cb17f6519d161da19db40c98c7301). |
 | AUTHORITY | MAIN dispatches only to STUDENT-WEB Brain. Before dispatch Web Brain must reread latest GitHub main AGENTS.md, WORK_ITEM.md and this scope, check no active other worker; only Web Brain directs Web Own Worker. Web Own Worker rereads AGENTS.md and checks Git status before working. |
 | SOURCE_OF_TRUTH | Existing accepted FD001_DATA_CONTRACT v1.0.1 main_acceptance=ACCEPTED, previously accepted M3 API GET /api/health, /api/catalog, /api/units and /api/history, and trusted local read-only FD001/train_FD001.txt, FD001/test_FD001.txt, FD001/RUL_FD001.txt (source hash unchanged). Original FD001 is whitespace-separated .txt, NOT a source CSV; user's "API/CSV" crosscheck means UI↔API↔actual original TXT, never fabricate a CSV source. |
@@ -710,3 +710,12 @@ STATUS=READY_FOR_MAIN_REVIEW / FAIL / BLOCKED
 WEB_BRAIN_REVIEW=WEB_ACCEPTED / FAIL / BLOCKED
 REPORT= actual local URL & launch, browser/version, interaction steps/screenshots/network evidence, selected API requests/responses & original TXT row/column crosscheck, UI controls/plot/source provenance, failure/empty cases, testing commands/stdout/stderr/Exit Codes, FD001 SHA256 before/after, git file scope/commit/tree, governance review and blockers.
 M4 final MAIN acceptance pending; M5 not authorized.
+
+### WO-M4-WEB-001 — WEB OWN WORKER EXECUTION RETURN (2026-11-25)
+
+- **TYPE:** `WORKER_TO_BRAIN_RETURN` · **FROM:** Web Own Worker · **RETURN_TO:** STUDENT-WEB Brain · **STATUS:** `READY_FOR_REVIEW`.
+- **BASELINE:** GitHub `main` `26fcdb66d4cea2f1c826024dbd0729ed50f5510f`。已核對 M3 MAIN PASS、學生授權與 FD001 v1.0.1 `ACCEPTED`。
+- **DELIVERY:** `python -B -m web.api --port 8765` 提供本地互動 UI。僅新增三個固定的靜態 GET 路由。既有 M3 API 回歸通過。
+- **BROWSER:** Chrome 158.0.8127.37 實際操作、DevTools Network / Console 記錄及顯示選取列的 PNG。已驗證切換、邊界、空範圍、輸入驗證、過期請求取消及獨立注入的 HTTP 503。
+- **VERIFICATION:** 64/64 自動測試通過，含 5 項 M4 整合測試；八筆 UI ↔ HTTP API ↔ 原始 TXT 三方核對通過。三份原始檔前後 SHA-256 均符合契約。獨立子程序的啟停驗證結束碼為 0，確認 8765 關閉。
+- **EVIDENCE:** [Browser UAT](reports/M4_BROWSER_UAT.md)、[來源核對](reports/M4_UI_API_SOURCE_CROSSCHECK.md)、[執行證據](reports/M4_UI_EXECUTION_EVIDENCE.md)、[真實截圖](reports/M4_BROWSER_SCREENSHOT.png)。提交與遠端核對隨 Worker 回報交付。

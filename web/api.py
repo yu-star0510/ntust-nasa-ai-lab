@@ -41,6 +41,11 @@ ROUTES = {
     "/api/units": ("split",),
     "/api/history": ("split", "unit", "sensor", "start", "end"),
 }
+STATIC_ROUTES = {
+    "/": ("index.html", "text/html"),
+    "/style.css": ("style.css", "text/css"),
+    "/ui.js": ("ui.js", "text/javascript"),
+}
 
 
 class APIError(Exception):
@@ -254,6 +259,9 @@ class FD001Handler(BaseHTTPRequestHandler):
                 or any(not 33 <= ord(char) <= 126 for char in target)):
                 raise APIError(400, "INVALID_REQUEST", "Expected an origin-form request target")
             path, _, query = target.partition("?")
+            if path in STATIC_ROUTES and "?" not in target:
+                self.send_static(path)
+                return
             data = self.server.api.get(path, query)
             self.send_json(200, {"status": "ok", "data": data,
                                  "meta": {"schema_version": "1.0", "source": f"FD001_DATA_CONTRACT v{VERSION}"}})
@@ -261,6 +269,28 @@ class FD001Handler(BaseHTTPRequestHandler):
             self.send_api_error(error)
         except (ConnectionError, TimeoutError):
             pass
+
+    def send_static(self, route: str) -> None:
+        name, content_type = STATIC_ROUTES[route]
+        asset = PROJECT_ROOT / "web" / name
+        try:
+            if asset.resolve(strict=True) != asset or not asset.is_file():
+                raise OSError
+            payload = asset.read_bytes()
+        except (OSError, RuntimeError):
+            raise APIError(404, "UNKNOWN_ENDPOINT", "Static asset is unavailable") from None
+
+        self.send_response(200)
+        self.send_header("Content-Type", f"{content_type}; charset=utf-8")
+        self.send_header("Content-Length", str(len(payload)))
+        self.send_header("Cache-Control", "no-store")
+        self.send_header("X-Content-Type-Options", "nosniff")
+        self.send_header("Content-Security-Policy", "default-src 'none'; script-src 'self'; "
+                         "style-src 'self'; connect-src 'self'; img-src data:; "
+                         "base-uri 'none'; form-action 'none'; frame-ancestors 'none'")
+        self.send_header("Connection", "close")
+        self.end_headers()
+        self.wfile.write(payload)
 
     def send_api_error(self, error: APIError) -> None:
         self.send_json(error.status, {"status": "error", "error": {

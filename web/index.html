@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>FD001 Sensor Explorer</title>
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="/style.css">
+  <script src="/ui.js" defer></script>
+</head>
+<body>
+  <header class="masthead">
+    <div class="mast-content">
+      <div>
+        <p class="dataset">NASA C-MAPSS <span>FD001</span></p>
+        <h1>Sensor Explorer</h1>
+      </div>
+      <div class="service" id="service" role="status">Checking local API</div>
+    </div>
+  </header>
+  <main>
+    <section class="panel controls" aria-label="Observation controls">
+      <form id="filters" novalidate>
+        <label for="split">Dataset split<select id="split" name="split" disabled></select></label>
+        <label for="unit">Engine unit<select id="unit" name="unit" disabled></select></label>
+        <label for="sensor">Sensor<select id="sensor" name="sensor" disabled></select></label>
+        <fieldset>
+          <legend>Cycle range <span id="range-limit">inclusive</span></legend>
+          <div class="range">
+            <label for="start"><span class="sr-only">Start cycle</span><input id="start" name="start" type="text" inputmode="numeric" value="1" autocomplete="off" disabled></label>
+            <span aria-hidden="true">–</span>
+            <label for="end"><span class="sr-only">End cycle</span><input id="end" name="end" type="text" inputmode="numeric" value="20" autocomplete="off" disabled></label>
+          </div>
+        </fieldset>
+        <button id="load" type="submit" disabled>Load window</button>
+      </form>
+      <p class="feedback" id="feedback" role="status" aria-live="polite">Loading dataset catalog…</p>
+    </section>
+    <div class="workspace">
+      <section class="panel trend-panel" aria-labelledby="trend-heading">
+        <header class="panel-header">
+          <div><h2 id="trend-heading">Sensor trend</h2><p id="selection">Select an observation window.</p></div>
+          <span class="count" id="count" hidden></span>
+        </header>
+        <div id="chart" class="chart"></div>
+        <p class="plot-note">Select a point or a table row to inspect its original source.</p>
+      </section>
+      <section class="panel source-panel" aria-labelledby="source-heading">
+        <header class="panel-header"><div><h2 id="source-heading">Source provenance</h2><p id="point-label">No point selected</p></div><span id="reread-badge" class="verified" hidden></span></header>
+        <div id="source" class="source" aria-live="polite"></div>
+      </section>
+    </div>
+    <section class="panel rows-panel" aria-labelledby="rows-heading">
+      <header class="panel-header"><div><h2 id="rows-heading">Observed values</h2></div><p class="rows-note">Original sensor readings in ascending Cycle order</p></header>
+      <div class="table-wrap" tabindex="0" role="region" aria-label="Observed values table">
+        <table>
+          <thead><tr><th scope="col">Cycle</th><th scope="col">Value</th><th scope="col">Original token</th><th scope="col">Physical line</th><th scope="col">Data row</th><th scope="col">Source column</th></tr></thead>
+          <tbody id="rows"></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+</body>
+</html>
