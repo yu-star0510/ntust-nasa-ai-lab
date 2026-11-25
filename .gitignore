@@ -66,3 +66,13 @@ research/
 # WO-M3-HANDOFF-001: allow only the authorized contract handoff reports.
 !/reports/M3_CONTRACT_HANDOFF.md
 !/reports/M3_CONTRACT_HANDOFF_EVIDENCE.md
+
+# WO-M3-WEB-001: allow only the authorized local API deliverables.
+!/web/
+/web/*
+!/web/api.py
+!/web/README.md
+!/tests/test_m3_api.py
+!/contracts/M3_API_CONTRACT.md
+!/reports/M3_API_EXECUTION_EVIDENCE.md
+!/reports/M3_API_SOURCE_CROSSCHECK.md
