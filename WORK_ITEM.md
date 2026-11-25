@@ -972,3 +972,59 @@ Include exact Worker commit and Web Brain review commit, current main HEAD, actu
 - **VERIFICATION_BOUNDARY:** MAIN independently verified GitHub code, policies, commits, source test script, evidence content, PNG pixels, structured scenario event counts and their correspondence. MAIN has not accessed the student's Windows machine, original raw FD001 files or independently rerun local Chrome, HTTP, clipboard, tests and SHA-256; those local facts are Worker-reported execution evidence independently reviewed, not MAIN-local reproduction.
 - **CLOSEOUT:** WO-M5-WEB-001 = PASS / CLOSED. WEB_DOMAIN_ACCEPTANCE=PASS precedes and is separate from MAIN_FINAL_ACCEPTANCE=PASS. No unresolved M5 blocker in submitted evidence. Further functionality, models or public deployment require a new STUDENT-authorized work order.
 - **RETURN_TO:** STUDENT.
+
+
+## WO-VIS-WEB-001 — Post-M5 Sensor Trend Line + Observation Dots (2026-11-25)
+
+| FIELD | VALUE |
+| --- | --- |
+| TYPE | BRAIN_TO_BRAIN_WORK_ORDER |
+| WORK_ITEM_ID | WO-VIS-WEB-001 |
+| MILESTONE | POST-M5-SENSOR-TREND-UI-ENHANCEMENT; only a new graph-presentation feature, not reopening M5. |
+| FROM | STUDENT-MAIN Brain |
+| TO | STUDENT-WEB Brain |
+| RETURN_TO | STUDENT-MAIN Brain |
+| AUTHORIZED_BY | STUDENT explicitly requested converting dots to a line chart and selected the formal work-order approach, 2026-11-25. |
+| STATUS | COMMAND_DISPATCHED / RELAY_STATUS=PENDING_STUDENT_RELAY / WEB_OWN_WORKER=NOT_STARTED / WEB_DOMAIN_ACCEPTANCE=PENDING / MAIN_FINAL_ACCEPTANCE=PENDING |
+| PREREQUISITE | M0–M5 and Post-M4 Evidence Prompt all MAIN PASS/CLOSED; M5 final acceptance commit b6bdfdd7940a3c0fc78993fa32705530cf322fe5, Roadmap commit 19a975535f728e9988849f0bd59e885d44848a5f. |
+| AUTHORITY | MAIN dispatches only to STUDENT-WEB Brain; Web Brain independently rereads latest GitHub main AGENTS.md / WORK_ITEM.md / ROADMAP.md / DECISIONS.md and manages Web Own Worker. Worker rereads governance before editing. No concurrent work order. |
+| SCOPE | Change existing point-only Sensor Trend into straight connected lines + retained original clickable dots; preserve exact approved live API, fail-closed History validator, Evidence Prompt and source data semantics. |
+| ALLOWED_EXISTING_FILES | web/ui.js ONLY in Sensor Trend SVG renderResults visualization; web/style.css minimal line styling; web/README.md description; WORK_ITEM.md Worker and review records; .gitignore minimal approved evidence allowlisting. |
+| ALLOWED_NEW_FILES | tests/test_sensor_line_chart.mjs; reports/LINE_CHART_BROWSER_UAT.md; reports/LINE_CHART_SOURCE_CROSSCHECK.md; reports/LINE_CHART_EXECUTION_EVIDENCE.md; reports/LINE_CHART_BROWSER_SCREENSHOT.png (genuine Chrome only). Any other path or dependency requires MAIN advance approval. |
+| READ_ONLY | web/api.py, web/index.html, all Research/parser/contract files, all accepted M1–M5 and EP tests/evidence, local original FD001 Train/Test/RUL TXT, synthetic_sensor.csv, secrets, unrelated files. |
+| OUT_OF_SCOPE | New API, external chart library/CDN, toggles, interpolation, smoothing, gap imputation, sensor data edits, diagnosis, RUL, exports, public hosting. |
+| GATES | Web Own Worker Commit+Push main and READY_FOR_REVIEW → Web Brain independent actual GitHub code/browser/source review records WEB_DOMAIN_ACCEPTANCE PASS/FAIL/BLOCKED → MAIN independently reviews GitHub and records MAIN_FINAL_ACCEPTANCE PASS/FAIL/BLOCKED. |
+
+### Implementation requirements
+
+1. The current GitHub main web/ui.js renderResults() maps verified data.points into circles and original-source table rows. After its accepted pre-render validateHistory() gate, add a thin solid SVG line that uses exactly the SAME x(Cycle) and y(value) coordinate functions as those circles. Draw line BEHIND original dots. Preserve every circle, source selection click handler, focus styling, observed-value table, accessible labels and Source Provenance.
+2. Connect ONLY adjacent actual observations with Cycle difference exactly 1. A gap between real observed Cycles MUST break the stroke (a new SVG path/subpath move command), not bridge absent Cycle values. Do not generate any extra observations, interpolation, spline, smoothing, interpolation tooltip values or invented data. Preserve sorted ascending actual Cycles. A single-point segment yields only its dot.
+3. Valid empty window leaves zero lines and dots and original EMPTY state. Singleton has one dot and no line. Two consecutive actual Cycles create one straight segment; isolated missing-Cycle test (e.g. SYNTHETIC Cycles 1, 2, 4) yields line only from 1 to 2, not to 4. At 100 actual points, show all dots and correct stroke and no decimation.
+4. Existing strict History fail-closed must run before BOTH dots and line; invalid null, undefined, NaN/Infinity, numeric strings or wrong provenance must leave chart/table/source/Prompt empty and Copy disabled without forging HTTP 503. Genuine number 0 with consistent source token remains valid. No graph when API stopped, HTTP 503 or invalid Cycle range, and no stale line after changing split/unit/sensor.
+5. Keep original raw numeric values and SVG data-cycle/data-value attributes, min/max, scale, axes, source row/column/hash, number of table observations and Prompt generated text unchanged. An SVG line is ONLY a visual connection of two recorded readings; it is not a measured or inferred intermediate value. Use native SVG DOM API, avoid unescaped HTML and external dependencies. Line should not intercept point clicks (pointer-events:none).
+6. No unapproved edits to existing M5/EP code paths except the narrowly necessary drawing section. If rendering cannot be changed safely within allowed scope, STOP_IF and ask MAIN.
+
+### Verification and evidence
+
+1. Actual Windows workspace start command: python -B -m web.api --port 8765. Actual URL http://127.0.0.1:8765/. Run genuine Chrome/Edge native user gesture or DevTools Browser UAT. Retain browser/version, timestamp +08:00, commands, stdout, stderr, Exit Codes and clean server shutdown. Static PNG or HTTP-only proof is insufficient.
+2. Browser test LIVE: Train Unit1 Sensor9 Cycles1–100 (STUDENT screenshot), Train Unit1 Sensor7 Cycles1–20, Train Unit2 Sensor5 Cycles5–12, Test Unit1 sensor7 range, valid singleton, valid empty. Check actual SVG path endpoints against actual clicked dots and observed-values rows and live /api/history response bodies. At least one true 100-Cycle chart must have exactly 100 original dots. A clicked dot or keyboard-selected table cycle must still update Source Provenance and Evidence Prompt.
+3. Isolated clearly labelled SYNTHETIC missing-Cycle fixture ensures gap segments break; do NOT modify actual trusted FD001 or claim a synthetic missing Cycle occurs in FD001. Also isolated SYNTHETIC null and source mismatch fail-closed; legitimate synthetic numeric zero allowed with matching source evidence. No line or dot on invalid/error response. Verify rapid selection changes do not leave old lines and actual API stop/restart and clipboard readback remain functional if rerunning M5 Browser UAT under changed code.
+4. At least SIX different true displayed observations across Train Unit1 Sensor9, Train Unit1 Sensor7, Train Unit2 Sensor5 and a Test Unit7 compare browser dot/line endpoint/chart/table/provenance/Evidence Prompt, live API and independently READ_ONLY reopened original FD001 TXT physical row/token/hash/column. Source columns: Sensor9=14, Sensor7=12, Sensor5=10. Physical line != Cycle for arbitrary units.
+5. Capture genuine screenshot of line+dots on Train Unit1 Sensor9 Cycles1–100, and a second meaningful tested view (can composite two actual Chrome captures into the one approved PNG); screenshots are supplemental to actual browser event and SVG/HTTP evidence. Do not publish full raw dataset or complete 100-point Prompt in reports. No external network connection or source upload.
+6. Run fresh node --check web/ui.js; python -B -m unittest discover -s tests -v (baseline 64); node --test tests/test_evidence_prompt.mjs (baseline 11); node tests/test_m5_browser_uat.mjs --gate-unit (baseline 14); new dedicated line chart tests and real Chrome UAT. Preserve actual test counts, commands, logs, Exit Codes, including failures, not predicted PASS. Before/after Train/Test/RUL source SHA-256 match accepted FD001 Data Contract v1.0.1; verify loopback-only behavior and shut down/closed port.
+7. Commit+Push ONLY authorized paths to GitHub main; independently verify remote main HEAD, Commit/diff/tree, no FD001 raw TXT/synthetic CSV/full histories/private Windows paths/secrets. Web Brain reviews actual source/test/UAT/screenshots and reports WEB_DOMAIN_ACCEPTANCE. MAIN final acceptance follows separately and only after Web Domain PASS.
+
+### STOP_IF
+
+Unauthorized files or dependencies; changed Data Contract/API/M5 fail-closed/Prompt/clipboard; gap mistakenly connected or synthetic data treated as real; source value/geometry/selection mismatch, lost clickable dots or Provenance; missing actual browser test, raw original source hash difference, data leak, regression failures, git conflict or AGENTS mismatch. Report BLOCKED with actual evidence and request narrowly scoped MAIN remedy.
+
+### FORMAL RETURN
+
+TYPE=BRAIN_TO_BRAIN_RETURN
+WORK_ITEM_ID=WO-VIS-WEB-001
+FROM=STUDENT-WEB Brain
+RETURN_TO=STUDENT-MAIN Brain
+STATUS=READY_FOR_MAIN_REVIEW / FAIL / BLOCKED
+WEB_DOMAIN_ACCEPTANCE=PASS / FAIL / BLOCKED
+MAIN_FINAL_ACCEPTANCE=PENDING
+Include Worker Git commit SHA and URL, Web Brain independent acceptance commit, real Chrome version/start/URL/commands and Exit Codes, SVG path geometry/node/dot-count checks and true screenshot, at least six source four-way checks, regressions and original data SHA before/after, security/changed paths/tree and limitations. MAIN alone may record final PASS.
