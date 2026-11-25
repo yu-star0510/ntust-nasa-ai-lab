@@ -441,7 +441,7 @@ Must include: used local file relative paths, before/after SHA-256, selected spl
 | TO | STUDENT-WEB Brain |
 | RETURN_TO | STUDENT-MAIN Brain |
 | AUTHORIZED_BY | STUDENT (2026-11-24: explicitly requested MAIN -> Web Brain M3 readonly API work order after M2 acceptance) |
-| STATUS | BLOCKED / HANDOFF_CONTRACT_STATE（STUDENT-WEB Brain PRE-DISPATCH Gate；Web Own Worker NOT_STARTED；等待 WO-M3-HANDOFF-001 Research 專責補正與 MAIN 驗收後才可恢復） |
+| STATUS | COMMAND_DISPATCHED / HANDOFF_GATE_MAIN_PASS / WEB_BRAIN_RECHECK_REQUIRED / RELAY_STATUS=PENDING_STUDENT_RELAY / WEB_OWN_WORKER=NOT_STARTED（2026-11-25：MAIN 已接受 WO-M3-HANDOFF-001，解除先前 HANDOFF_CONTRACT_STATE；Web Brain 須從最新 main 獨立確認後才可自行派工；M3-A 尚未 PASS） |
 | PRECONDITIONS | M0=PASS, M1=PASS, M2 original WO-M2-RESEARCH-001=MAIN_PASS, evidence supplement WO-M2-RESEARCH-002=MAIN_PASS; this user request grants only M3-A Web API work, not M4 nor entire M3 approval. |
 | GOVERNANCE | GitHub main AGENTS.md read at dispatch, baseline 9607b18f513d20ef7b4b34918cf7834d9bb2155f; Web Brain must independently reread latest AGENTS.md and WORK_ITEM.md before dispatching Web Own Worker; Web Own Worker must reread before work. Only Web Brain directs Web Own Worker; MAIN does not bypass hierarchy. |
 | INPUT | Student's existing local workspace FD001/train_FD001.txt, FD001/test_FD001.txt, FD001/RUL_FD001.txt; read-only verified FD001 parser, Data Contract v1.0.1, M2 source hashes and provenance. Do not redownload, change or Git upload raw datasets. |
@@ -526,7 +526,7 @@ Include: contract handoff resolution reference and tested schema version; endpoi
 | TO | STUDENT-RESEARCH Brain |
 | RETURN_TO | STUDENT-MAIN Brain |
 | AUTHORIZED_SCOPE | This dependency is specifically authorized as the controlled Research/MAIN handoff prerequisite in the STUDENT-approved M3-A order (D-M3-001); request for resolution was relayed by STUDENT from Web Brain. It is NOT approval of another project milestone or overlapping worker development. |
-| STATUS | BRAIN_REVIEWED / RESEARCH_ACCEPTED / READY_FOR_MAIN_REVIEW（2026-11-25 Research Brain 已獨立驗證契約同步、正反測試及執行證據；MAIN FINAL PASS=PENDING；父項 WO-M3-WEB-001 仍 BLOCKED，Web Own Worker NOT_STARTED） |
+| STATUS | PASS / MAIN_ACCEPTED（2026-11-25 MAIN 獨立 GitHub 驗收完成；FD001_DATA_CONTRACT v1.0.1 接受狀態已同步且相容測試通過；研究交接補正正式結案） |
 | PREREQUISITE | M2 original MAIN PASS and M2 evidence supplement MAIN PASS; WO-M3-WEB-001 BLOCKED with WEB_OWN_WORKER NOT_STARTED; latest AGENTS.md governs. |
 | SINGLE_ACTIVE_WORK | While this Research dependency is executing, parent M3-A remains paused: Web Brain must not dispatch Web Own Worker. Once this dependency is accepted by MAIN, Research work stops, then Web Brain rechecks the handoff before resuming its already authorized API work. |
 | INPUT | FD001_DATA_CONTRACT v1.0.1 (JSON + Markdown), research/m2_fd001_analysis.py validate_contract and run_phase_b, tests/test_m2_fd001.py, read-only trusted-local FD001 originals, WORK_ITEM.md original M2 MAIN acceptance. |
@@ -588,3 +588,22 @@ Include: original M2 approval reference, source hashes before/after, contract ve
 - **SOURCE_INTEGRITY (WORKER LOCAL EXECUTION EVIDENCE):** Train before/after/contract `963b5e22825b34d8b21c69e1aeb4af3e647050eb672ee8834ba4b5d91d2de0f8`；Test `3cda7109ce17bafb5443f2ac926cfcf88154b941b8c4cf95eb55d1ddd6f52851`；RUL `a19c8ec94931949d0485bdc35118206e9c81c4547b422efb9cf86f4ceddbceca`。證據含 PowerShell 7.6.9、Python 3.12.7、UTC+08:00 時間、雜湊與測試的輸出及 Exit Codes。After hash 三個步驟以「命令同 Before」直接引用前文完整命令，而各自有時間、完整輸出、空 stderr 與 Exit Code 0；若 MAIN 需六條逐字重複命令，可要求紀錄呈現改善。初次 Phase B 大量 stdout 在執行工具顯示層截斷，Worker 已明確紀錄並以相同命令實際獨立重跑取得可解析的完整 public-safe JSON stdout（補證 17:42:03–17:42:16 +08:00），另有 bounded diagnostic。Research Brain 無法直接存取學生本地 FD001，故不宣稱自行重新計算來源 SHA-256 或親自執行測試；Commit content SHA-256 亦未重算。
 - **SCOPE_SAFETY:** GitHub Tree 未包含 FD001 原始資料／synthetic CSV；.gitignore 僅增加兩個 handoff 報告 allowlist；沒有 Web API 或 M4 檔案變更，沒有新增來源數據副本、完整 Sensor trace / RUL mapping；保留既有 Git 歷史。公開資訊安全檢查限本次變更與可見 Git Tree，不宣稱掃除所有歷史治理文件的私人路徑。
 - **NEXT_GATE:** `WO-M3-HANDOFF-001=READY_FOR_MAIN_REVIEW`、`RESEARCH_BRAIN_REVIEW=RESEARCH_ACCEPTED`、`MAIN_FINAL_PASS=PENDING`；`WO-M3-WEB-001=BLOCKED`、`WEB_OWN_WORKER=NOT_STARTED`；待 MAIN 獨立驗收 Handoff，Research Brain 不自行恢復 Web 交接。
+
+## WO-M3-HANDOFF-001 — MAIN FINAL ACCEPTANCE (2026-11-25)
+
+- **TYPE:** MAIN_INDEPENDENT_GITHUB_ACCEPTANCE
+- **WORK_ITEM_ID:** `WO-M3-HANDOFF-001`
+- **PARENT_WORK_ITEM:** `WO-M3-WEB-001`
+- **RESEARCH_RETURN:** `RESEARCH_ACCEPTED / READY_FOR_MAIN_REVIEW`
+- **MAIN_FINAL_DECISION:** `PASS`（Handoff contract-state blocker resolved and reviewed; NOT an M3-A API PASS）。
+- **REVIEWED_REMOTE_BASELINE:** GitHub main `f36b2efc57a117a26a27b5e21d6d9c26ba0419c1`，Research Own Worker delivery `3770f87d033097bc9e0c033de37c98900aed4caa`，Research Brain independent review `f36b2efc57a117a26a27b5e21d6d9c26ba0419c1`。
+- **INDEPENDENT_GITHUB_REVIEW:** MAIN 實際讀取最新 AGENTS.md、WORK_ITEM.md、ROADMAP.md、FD001_DATA_CONTRACT.json／.md、research/m2_fd001_analysis.py、tests/test_m2_fd001.py、兩份 M3 handoff 報告、Worker/Research GitHub commits、遠端非截斷遞迴 Git tree，並比較修正前後 JSON。
+- **CONTRACT_STATE:** Data Contract `schema_version=1.0.1`，`validation_status=PASS`，JSON/Markdown 同步為 `main_acceptance=ACCEPTED`。MAIN 依 GitHub 先前基準 Commit `243b06c6aeed9a022618384a0bbe2c3bda1c7c04` 及目前 main 完成 JSON 結構化比較，唯一變更之 top-level field 是 `main_acceptance: PENDING→ACCEPTED`；六個介面、欄位、語意、來源相對路徑及 SHA-256 均相同。
+- **VALIDATOR:** `validate_contract()` 的唯一邏輯變動為 `main_acceptance_accepted: contract.get('main_acceptance') == 'ACCEPTED'`，保持其他 name/version/required fields/interfaces/validation-status 條件不變。原 M2 Phase A 與 Phase B 計算未更改。GitHub 已有獨立正反測試，包含拒絕 PENDING、REJECTED、UNKNOWN、小寫 accepted、空字串、null、缺失 acceptance、錯誤名稱/版本/fields/interfaces/status。
+- **RUNTIME_RECORDS:** MAIN 解析 reports/M3_CONTRACT_HANDOFF_EVIDENCE.md 的 Phase A / Phase B 實際 JSON，確認 `Phase A PASS`、`gate_checks 11/11 true`；`Phase B PASS`、`contract_validation.valid=true`、六項契約檢查 true（包含 main_acceptance_accepted）；固定來源統計 Train 20631x26/100 Units，Test 13096x26/100 Units，RUL 100x1。執行證據標記真實起訖時間、Python 3.12.7、PowerShell 7.6.9、命令、stdout/stderr、Exit Code=0；初次 Phase B 過大輸出截斷已明示並以同命令重新執行取得完整可解析 JSON。
+- **REGRESSION:** Focused Contract Tests 3/3 OK，M2 Regression 22/22 OK，M2 Evidence Classification Regression 11/11 OK，均取自 Worker 真實執行紀錄；GitHub 測試原始碼與結果互相一致。未宣稱 MAIN 於本地重新執行。
+- **SOURCE_INTEGRITY_FROM_WORKER_EVIDENCE:** Train `963b5e22825b34d8b21c69e1aeb4af3e647050eb672ee8834ba4b5d91d2de0f8`、Test `3cda7109ce17bafb5443f2ac926cfcf88154b941b8c4cf95eb55d1ddd6f52851`、RUL `a19c8ec94931949d0485bdc35118206e9c81c4547b422efb9cf86f4ceddbceca`；before/after/Contract 一致。After hash 三項以明示『同 Before command』指向先前完整命令，保留各自不同的時間、完整 stdout、空 stderr 與 Exit Code=0；視為可查核的命令引用而非獨立重算證據。MAIN 無法直接存取學生 Windows 原始檔，不能獨立重算 local hashes。
+- **COMMIT_SCOPE_AND_DATA_SAFETY:** Worker commit 僅八個授權檔案 `.gitignore`、WORK_ITEM.md、兩份 Contract、Validator、M2 tests、兩份 handoff reports；Research Brain review commit 僅 WORK_ITEM.md。GitHub 非截斷 tree 未包含 FD001 原始檔、synthetic CSV、完整 sensor histories 或 Web/M4 產物；既有 M2 PASS 治理紀錄維持不變。
+- **DECISION_FOR_PARENT_M3_A:** 解除先前 `HANDOFF_CONTRACT_STATE`，原 STUDENT 已授權之 `WO-M3-WEB-001` 可恢復 Web Brain 派工階段；**Web Own Worker 尚未開始**。STUDENT 須將本 MAIN PASS 決議及 GitHub HEAD 轉交 STUDENT-WEB Brain；Web Brain 在派工前必須自行重讀 GitHub main 最新 AGENTS.md、WORK_ITEM.md、兩份 ACCEPTED Contract、Validator/tests 和本紀錄，確認無新 blocker 及單一 active work order 規則後，才可自行下達 Own Worker 工單。MAIN 不直接指揮 Web Own Worker。
+- **BOUNDARY:** `M3-A API=NOT_PASS`、`M3 overall=NOT_PASS`、`M4/M5=NOT_AUTHORIZED`。此 PASS 只代表 Research-owned Contract Handoff 完成，未建立或實測 HTTP API。
+- **RETURN_TO:** STUDENT (for relay to STUDENT-WEB Brain).
